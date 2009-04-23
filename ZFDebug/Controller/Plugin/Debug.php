@@ -173,7 +173,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     {
         return '<div id="scienta_version" class="scienta_panel">'.
                '<h4>ZFDebug v'.$this->_version.'</h4>'.
-               '<p>©2008-2009 <a href="http://jokke.dk/software/scientadebugbar">Joakim Nygård</a></p>'.
+               '<p>©2008-2009 <a href="http://jokke.dk/software/scientadebugbar">Joakim Nygård</a><br>
+               The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a> and released under the BSD License</p>'.
                '<p>Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>'.
                '</div>';
     }
@@ -288,7 +289,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 $html .= '<h4>Adapter '.$name.'</h4><ol>';
                 foreach ($profiles as $profile) {
                     $html .= '<li><strong>['.round($profile->getElapsedSecs()*1000, 2).' ms]</strong> '
-                             .htmlentities($profile->getQuery()).'</li>';
+                             .htmlentities($profile->getQuery());
+                    if ($profile->getQueryParams())
+                        $html .= '<br><br><strong>Parameters</strong> '.$this->cleanData($profile->getQueryParams());
+                    $html .= '</li>';
                 }
                 $html .= '</ol>';
             }
