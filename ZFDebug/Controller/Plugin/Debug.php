@@ -289,7 +289,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 $html .= '<h4>Adapter '.$name.'</h4><ol>';
                 foreach ($profiles as $profile) {
                     $html .= '<li><strong>['.round($profile->getElapsedSecs()*1000, 2).' ms]</strong> '
-                             .htmlentities($profile->getQuery());
+                             .htmlspecialchars($profile->getQuery());
                     if ($profile->getQueryParams())
                         $html .= '<br><br><strong>Parameters</strong> '.$this->cleanData($profile->getQueryParams());
                     $html .= '</li>';
@@ -513,12 +513,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         $retVal = '<div class="pre">';
         foreach ($values as $key => $value)
         {
-            $key = htmlentities($key);
+            $key = htmlspecialchars($key);
             if (is_numeric($value)) {
                 $retVal .= $key.' => '.$value.'<br>';
             }
             else if (is_string($value)) {
-                $retVal .= $key.' => \''.htmlentities($value).'\'<br>';
+                $retVal .= $key.' => \''.htmlspecialchars($value).'\'<br>';
             }
             else if (is_array($value))
             {
