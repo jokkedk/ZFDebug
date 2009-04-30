@@ -91,7 +91,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         }
 
         /**
-         * Creating ZF Version Tab with always schown
+         * Creating ZF Version Tab always shown
          */
         $version = new ZFDebug_Controller_Plugin_Debug_Plugin_Text();
         $version->setPanel($this->getVersionPanel())
@@ -127,9 +127,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
          */
         foreach ($this->_plugins as $plugin)
         {
+            $panel = $plugin->getPanel();
+            if ($panel == '')
+                continue;
+                
             /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
             $html .= '<div id="ZFDebug_' . $plugin->getIdentifier()
-                  . '" class="ZFDebug_panel">' . $plugin->getPanel() . '</div>';
+                  . '" class="ZFDebug_panel">' . $panel . '</div>';
         }
 
         $html .= '<div id="ZFDebug_info">';
@@ -139,10 +143,14 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
          */
         foreach ($this->_plugins as $plugin)
         {
+            $tab = $plugin->getTab();
+            if ($tab == '')
+                continue;
+                
             /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
             $html .= '<span class="ZFDebug_span clickable" onclick="ZFDebugPanel(\'ZFDebug_' . $plugin->getIdentifier() . '\');">';
             $html .= '<img src="' . $this->icon($plugin->getIdentifier()) . '" style="vertical-align:middle" alt="' . $plugin->getIdentifier() . '" title="' . $plugin->getIdentifier() . '" /> ';
-            $html .= $plugin->getTab() . '</span>';
+            $html .= $tab . '</span>';
         }
 
         $html .= '<span class="ZFDebug_span ZFDebug_last clickable" id="ZFDebug_toggler" onclick="ZFDebugSlideBar()">&#171;</span>';
