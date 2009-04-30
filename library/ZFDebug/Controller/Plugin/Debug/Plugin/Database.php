@@ -35,7 +35,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
     /**
      * @var Zend_Db_Adapter_Abstract $db
      */
-    protected $_db;
+    protected $_db = array();
 
     /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Variables
@@ -43,15 +43,19 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
      * @param Zend_Db_Adapter_Abstract $db
      * @return void
      */
-    public function __construct(Zend_Db_Adapter_Abstract $db = null)
+    public function __construct($adapters = array())
     {
-        if(is_null($db)) {
-            $this->_db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if(!count($adapters) && !is_null(Zend_Db_Table_Abstract::getDefaultAdapter())) {
+            $this->_db[0] = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $this->_db[0]->getProfiler()->setEnabled(true);
+        } else {
+            foreach ($adapters as $name => $adapter) {
+                if ($adapter instanceof Zend_Db_Adapter_Abstract) {
+                    $adapter->getProfiler()->setEnabled(true);
+                    $this->_db[$name] = $adapter;
+                }
+            }
         }
-        else {
-            $this->_db = $db;
-        }
-        $this->_db->getProfiler()->setEnabled(true);
     }
 
     /**
@@ -71,8 +75,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
      */
     public function getTab()
     {
-        $profiler = $this->_db->getProfiler();
-        $html = $profiler->getTotalNumQueries () . ' in ' . round ( $profiler->getTotalElapsedSecs () * 1000, 2 ) . ' ms';
+        if (!$this->_db)
+            return 'No adapter';
+        
+        foreach ($this->_db as $adapter) {
+            $profiler = $adapter->getProfiler();
+            $adapterInfo[] = $profiler->getTotalNumQueries().' in '.round($profiler->getTotalElapsedSecs()*1000, 2).' ms';
+        }
+        $html = implode(' / ', $adapterInfo);
 
         return $html;
     }
@@ -84,6 +94,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
      */
     public function getPanel()
     {
+        if (!$this->_db)
+            return '';
+        
         $html = '<h4>Database queries</h4>';
         if (Zend_Db_Table_Abstract::getDefaultMetadataCache ()) {
             $html .= 'Metadata cache is ENABLED';
@@ -91,20 +104,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
             $html .= 'Metadata cache is DISABLED';
         }
 
-        $profiles = $this->_db->getProfiler()->getQueryProfiles();
-
-        $html .= '<ol>';
-        foreach ( $profiles as $profile )
-        {
-            $html .= '<li><strong>[' . round ( $profile->getElapsedSecs () * 1000, 2 ) . ' ms]</strong> '
-                   . htmlspecialchars($profile->getQuery());
-                    if ($profile->getQueryParams()) {
-                        $html .= '<br><br><strong>Parameters</strong> ';
-                    }
-            $html .= $this->_cleanData($profile->getQueryParams())
-                   . '</li>';
+        foreach ($this->_db as $name => $adapter) {
+            if ($profiles = $adapter->getProfiler()->getQueryProfiles()) {
+                $html .= '<h4>Adapter '.$name.'</h4><ol>';
+                foreach ($profiles as $profile) {
+                    $html .= '<li><strong>['.round($profile->getElapsedSecs()*1000, 2).' ms]</strong> '
+                             .htmlspecialchars($profile->getQuery()).'</li>';
+                }
+                $html .= '</ol>';
+            }
         }
-        $html .= '</ol>';
 
         return $html;
     }
