@@ -95,7 +95,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
         $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',true);
         $timerNamespace->data[$module][$controller][$action][] = $this->_timer['postDispatch'];
 
-        $html .= '<h4>Overall Times</h4>';
+        $html .= '<h4>Overall Timers</h4>';
 
         foreach($timerNamespace->data as $module => $controller)
         {
@@ -109,9 +109,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
                 {
                     $html .= '        ' . $key . '<br />';
                     $html .= '<div class="pre">';
-                    $html .= '            Avg: ' . $this->calcAvg($data) . ' ms<br />';
-                    $html .= '            Min: ' . min($data) . 'ms<br />';
-                    $html .= '            Max: ' . max($data) . ' ms<br />';
+                    $html .= '            Avg: ' . $this->calcAvg($data) . ' ms / '.count($data).' requests<br />';
+                    $html .= '            Min: ' . round(min($data), 2) . ' ms<br />';
+                    $html .= '            Max: ' . round(max($data), 2) . ' ms<br />';
                     $html .= '</div>';
                 }
                 $html .= '</div>';
