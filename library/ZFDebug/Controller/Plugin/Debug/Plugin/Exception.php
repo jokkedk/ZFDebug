@@ -69,7 +69,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
         if ($errorCount)
             $error = ($errorCount == 1 ? '1 error' : $errorCount . ' errors');
         $count = count($response->getException());
-        if ($this->_options['show_exceptions'] && $count)
+        //if ($this->_options['show_exceptions'] && $count)
+        if ($count)
             $exception = ($count == 1) ? '1 exception' : $count . ' exceptions';
         $text = $exception . ($exception == '' || $error == '' ? '' : ' - ') . $error;
         return $text;
