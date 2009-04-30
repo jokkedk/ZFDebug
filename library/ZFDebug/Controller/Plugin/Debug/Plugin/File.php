@@ -33,6 +33,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
      * @var string
      */
     protected $_basePath;
+    
+    protected $_includedFiles = null;
 
 
     /**
@@ -43,6 +45,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
      */
     public function __construct($basePath = '')
     {
+        if ($basePath == '')
+            $basePath = $_SERVER['DOCUMENT_ROOT'];
         $this->_basePath = $basePath;
     }
 
@@ -63,7 +67,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
      */
     public function getTab()
     {
-        return 'Files (' . count(get_included_files()) . ')';
+        return 'Files (' . count($this->getIncludedFiles()) . ')';
     }
 
     /**
@@ -73,24 +77,35 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
      */
     public function getPanel()
     {
-        $included = get_included_files();
+        $included = $this->getIncludedFiles();
         $html = '<h4>File Information</h4>';
         $html .= 'Total Files included: ' . count($included) . '<br />';
-        $html .= 'DocumentRoot: ' . $_SERVER['DOCUMENT_ROOT'] . '<br />';
-        $html .= '<h4>BasePath: ' . $this->_basePath . '</h4>';
+        $html .= 'Basepath: ' . $this->_basePath . '<br />';
 
         $frameworkFiles = '<h4>Zend Framework Files</h4>';
+        $zfdebugFiles = '<h4>ZFDebug Files</h4>';
 
-        sort($included);
-        $included = str_replace($this->_basePath,'',$included);
         $html .= '<h4>Application Files</h4>';
         foreach ($included as $file) {
-            if (false === strstr($file, 'Zend'))
-                $html .= str_replace($_SERVER['DOCUMENT_ROOT'], '', $file).'<br>';
+            $file = str_replace($this->_basePath, '', $file);
+            if (false !== strstr($file, 'Zend'))
+                $frameworkFiles .= $file.'<br>';
+            elseif (false !== strstr($file, 'ZFDebug'))
+                $zfdebugFiles .= $file.'<br>';
             else
-                $frameworkFiles .= str_replace($_SERVER['DOCUMENT_ROOT'], '', $file).'<br>';
+                $html .= $file.'<br>';
         }
-        $html .= $frameworkFiles;
+        $html .= $frameworkFiles . $zfdebugFiles;
         return $html;
+    }
+    
+    protected function getIncludedFiles()
+    {
+        if (null !== $this->_includedFiles)
+            return $this->_includedFiles;
+            
+        $this->_includedFiles = get_included_files();
+        sort($this->_includedFiles);
+        return $this->_includedFiles;
     }
 }
