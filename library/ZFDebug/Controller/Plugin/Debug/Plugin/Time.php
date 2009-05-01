@@ -42,6 +42,15 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     protected $_timer = array();
 
     /**
+     * Creating time plugin
+     * @return void
+     */
+    public function __construct()
+    {
+        Zend_Controller_Front::getInstance()->registerPlugin($this);
+    }
+
+    /**
      * Gets identifier for this plugin
      *
      * @return string
@@ -49,11 +58,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     public function getIdentifier()
     {
         return $this->_identifier;
-    }
-
-    public function __construct()
-    {
-        Zend_Controller_Front::getInstance()->registerPlugin($this);
     }
 
     /**
@@ -109,7 +113,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
                 {
                     $html .= '        ' . $key . '<br />';
                     $html .= '<div class="pre">';
-                    $html .= '            Avg: ' . $this->calcAvg($data) . ' ms / '.count($data).' requests<br />';
+                    $html .= '            Avg: ' . $this->_calcAvg($data) . ' ms / '.count($data).' requests<br />';
                     $html .= '            Min: ' . round(min($data), 2) . ' ms<br />';
                     $html .= '            Max: ' . round(max($data), 2) . ' ms<br />';
                     $html .= '</div>';
@@ -118,7 +122,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
             }
             $html .= '</div>';
         }
-        #$html .= $this->cleanData($timerNamespace->data);
 
         return $html;
     }
@@ -143,54 +146,45 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     #     $this->timer['routeShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     #}
 
+    /**
+     * Defined by Zend_Controller_Plugin_Abstract
+     *
+     * @param Zend_Controller_Request_Abstract
+     * @return void
+     */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
         $this->_timer['preDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
 
+    /**
+     * Defined by Zend_Controller_Plugin_Abstract
+     *
+     * @param Zend_Controller_Request_Abstract
+     * @return void
+     */
     public function postDispatch(Zend_Controller_Request_Abstract $request)
     {
         $this->_timer['postDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
 
-    protected function cleanData($values)
+    /**
+     * Calculate average time from $array
+     *
+     * @param array $array
+     * @param int $precision
+     * @return float
+     */
+    protected function _calcAvg(array $array, $precision=2)
     {
-        ksort($values);
-
-        $retVal = '<div class="pre">';
-        foreach ($values as $key => $value)
-        {
-            $key = htmlentities($key);
-            if (is_numeric($value)) {
-                $retVal .= $key.' => '.$value.'<br>';
-            }
-            else if (is_string($value)) {
-                $retVal .= $key.' => \''.htmlentities($value).'\'<br>';
-            }
-            else if (is_array($value))
-            {
-                $retVal .= $key.' => '.self::cleanData($value);
-            }
-            else if (is_object($value))
-            {
-                $retVal .= $key.' => '.get_class($value).' Object()<br>';
-            }
-            else if (is_null($value))
-            {
-                $retVal .= $key.' => NULL<br>';
-            }
+        if(!is_array($array)) {
+            return 'ERROR in method _calcAvg(): this is a not array';
         }
-        return $retVal.'</div>';
-    }
-
-    protected function calcAvg(Array $array, $precision=2)
-    {
-        if(!is_array($array))
-            return 'ERROR in function array_avg(): this is a not array';
 
         foreach($array as $value)
-            if(!is_numeric($value))
-                return 'ERROR in function array_avg(): the array contains one or more non-numeric values';
+            if(!is_numeric($value)) {
+                return 'ERROR in method _calcAvg(): the array contains one or more non-numeric values';
+            }
 
         $cuantos=count($array);
         return round(array_sum($array)/$cuantos,$precision);

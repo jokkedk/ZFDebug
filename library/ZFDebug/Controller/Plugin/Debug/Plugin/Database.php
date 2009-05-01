@@ -33,14 +33,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
     protected $_identifier = 'database';
 
     /**
-     * @var Zend_Db_Adapter_Abstract $db
+     * @var array
      */
     protected $_db = array();
 
     /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Variables
      *
-     * @param Zend_Db_Adapter_Abstract $db
+     * @param array $adapters
      * @return void
      */
     public function __construct($adapters = array())
@@ -77,7 +77,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
     {
         if (!$this->_db)
             return 'No adapter';
-        
+
         foreach ($this->_db as $adapter) {
             $profiler = $adapter->getProfiler();
             $adapterInfo[] = $profiler->getTotalNumQueries().' in '.round($profiler->getTotalElapsedSecs()*1000, 2).' ms';
@@ -96,7 +96,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
     {
         if (!$this->_db)
             return '';
-        
+
         $html = '<h4>Database queries</h4>';
         if (Zend_Db_Table_Abstract::getDefaultMetadataCache ()) {
             $html .= 'Metadata cache is ENABLED';
@@ -118,7 +118,13 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
         return $html;
     }
 
-    protected function _cleanData($values)
+    /**
+     * Transforms data into readable format
+     *
+     * @param array $values
+     * @return string
+     */
+    protected function _cleanData(array $values)
     {
         ksort($values);
 
@@ -127,18 +133,18 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
         {
             $key = htmlspecialchars($key);
             if (is_numeric($value)) {
-                $retVal .= $key.' => '.$value.'<br>';
+                $retVal .= $key . ' => ' . $value . '<br>';
             }
             else if (is_string($value)) {
-                $retVal .= $key.' => \''.htmlspecialchars($value).'\'<br>';
+                $retVal .= $key . ' => \'' . htmlspecialchars($value) . '\'<br>';
             }
             else if (is_array($value))
             {
-                $retVal .= $key.' => '.self::cleanData($value);
+                $retVal .= $key . ' => ' . self::_cleanData($value);
             }
             else if (is_null($value))
             {
-                $retVal .= $key.' => NULL<br>';
+                $retVal .= $key . ' => NULL<br>';
             }
         }
         return $retVal.'</div>';

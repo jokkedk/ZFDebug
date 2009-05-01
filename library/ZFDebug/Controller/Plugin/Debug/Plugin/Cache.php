@@ -81,7 +81,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
      */
     public function getTab()
     {
-        return ' Cache';
+        return ' Cache (' .  substr(strrchr(get_class($this->_cacheBackend),'_'),1) . ')';
     }
 
     /**

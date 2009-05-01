@@ -87,6 +87,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables implements ZFDebug_Contro
         return $vars;
     }
 
+    /**
+     * Transforms data into readable format
+     *
+     * @param array $values
+     * @return string
+     */
     protected function _cleanData($values)
     {
         ksort($values);
