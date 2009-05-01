@@ -250,6 +250,17 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     	$object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text();
                     }
                     break;
+                case 'auth':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Auth
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Auth.php';
+                    if(isset($options['user']) && isset($options['role'])) {
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text($options['user'],$options['role']);
+                    } else {
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text();
+                    }
+                    break;
                 case 'time':
                     /**
                      * @see ZFDebug_Controller_Plugin_Debug_Plugin_Time
@@ -354,6 +365,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAADPSURBVCjPdZFNCsIwEEZHPYdSz1DaHsMzuPM6RRcewSO4caPQ3sBDKCK02p+08DmZtGkKlQ+GhHm8MBmiFQUU2ng0B7khClTdQqdBiX1Ma1qMgbDlxh0XnJHiit2JNq5HgAo3KEx7BFAM/PMI0CDB2KNvh1gjHZBi8OR448GnAkeNDEDvKZDh2Xl4cBcwtcKXkZdYLJBYwCCFPDRpMEjNyKcDPC4RbXuPiWKkNABPOuNhItegz0pGFkD+y3p0s48DDB43dU7+eLWes3gdn5Y/LD9Y6skuWXcAAAAASUVORK5CYII=';
 
                 return $this->_options['image_path'] . '/file.png';
+                break;
+            case 'auth':
+                if (null === $this->_options['image_path'])
+                    return '';
+
+                return $this->_options['image_path'] . '/auth.png';
                 break;
             default:
                 if (null === $this->_options['image_path'])
