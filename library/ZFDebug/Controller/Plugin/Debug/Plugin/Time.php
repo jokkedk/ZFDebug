@@ -95,12 +95,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
         $controller = $request->getControllerName();
         $action = $request->getActionName();
 
-
-        if (Zend_Session::namespaceIsset('ZFDebug_Time')) {
-        	$timerNamespace = Zend_Session::namespaceGet('ZFDebug_Time');
-        } else {
-        	$timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',true);
-        }
+        $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
         $timerNamespace->data[$module][$controller][$action][] = $this->_timer['postDispatch'];
 
         $html .= '<h4>Overall Timers</h4>';
