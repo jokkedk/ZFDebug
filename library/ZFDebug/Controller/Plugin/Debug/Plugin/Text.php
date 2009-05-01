@@ -29,7 +29,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Text implements ZFDebug_Controller_
      */
     protected $_panel = '';
 
-        /**
+    /**
      * Contains plugin identifier name
      *
      * @var string
@@ -37,13 +37,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Text implements ZFDebug_Controller_
     protected $_identifier = 'text';
 
     /**
-     * @var array
-     */
-    protected $_timer = array();
-
-    /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Text
      *
+     * @param string $tab
+     * @paran string $panel
      * @return void
      */
     public function __construct($tab = '', $panel = '')
