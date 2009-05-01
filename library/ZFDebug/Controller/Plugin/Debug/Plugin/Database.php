@@ -40,7 +40,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
     /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Variables
      *
-     * @param array $adapters
+     * @param Zend_Db_Adapter_Abstract|array $adapters
      * @return void
      */
     public function __construct($adapters = array())
@@ -48,6 +48,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database implements ZFDebug_Control
         if(!count($adapters) && !is_null(Zend_Db_Table_Abstract::getDefaultAdapter())) {
             $this->_db[0] = Zend_Db_Table_Abstract::getDefaultAdapter();
             $this->_db[0]->getProfiler()->setEnabled(true);
+        } else if ($adapters instanceof Zend_Db_Adapter_Abstract ) {
+            $this->_db[0] = $adapters;
+        	$this->_db[0]->getProfiler()->setEnabled(true);
         } else {
             foreach ($adapters as $name => $adapter) {
                 if ($adapter instanceof Zend_Db_Adapter_Abstract) {

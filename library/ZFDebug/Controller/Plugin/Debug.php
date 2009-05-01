@@ -45,6 +45,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      * Contains options to change Debug Bar behavior
      */
     protected $_options = array(
+        'plugins'           => array (
+            'variables' => null,
+            'time' => null,
+            'memory' => null),
         'z-index'           => 255,
         'jquery_path'       => 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js',
         'image_path'        => null
@@ -90,14 +94,23 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             $this->_options['image_path'] = $options['image_path'];
         }
 
+        if (isset($options['plugins'])) {
+        	$this->_options['plugins'] = $options['plugins'];
+        }
+
         /**
          * Creating ZF Version Tab always shown
          */
         $version = new ZFDebug_Controller_Plugin_Debug_Plugin_Text();
-        $version->setPanel($this->getVersionPanel())
-                ->setTab($this->getVersionTab())
+        $version->setPanel($this->_getVersionPanel())
+                ->setTab($this->_getVersionTab())
                 ->setIdentifier('copyright');
         $this->registerPlugin($version);
+
+        /**
+         * Loading aready defined plugins
+         */
+        $this->_loadPlugins();
     }
 
     /**
@@ -128,8 +141,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         foreach ($this->_plugins as $plugin)
         {
             $panel = $plugin->getPanel();
-            if ($panel == '')
+            if ($panel == '') {
                 continue;
+            }
 
             /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
             $html .= '<div id="ZFDebug_' . $plugin->getIdentifier()
@@ -144,29 +158,119 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         foreach ($this->_plugins as $plugin)
         {
             $tab = $plugin->getTab();
-            if ($tab == '')
+            if ($tab == '') {
                 continue;
+            }
 
             /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
             $html .= '<span class="ZFDebug_span clickable" onclick="ZFDebugPanel(\'ZFDebug_' . $plugin->getIdentifier() . '\');">';
-            $html .= '<img src="' . $this->icon($plugin->getIdentifier()) . '" style="vertical-align:middle" alt="' . $plugin->getIdentifier() . '" title="' . $plugin->getIdentifier() . '" /> ';
+            $html .= '<img src="' . $this->_icon($plugin->getIdentifier()) . '" style="vertical-align:middle" alt="' . $plugin->getIdentifier() . '" title="' . $plugin->getIdentifier() . '" /> ';
             $html .= $tab . '</span>';
         }
 
         $html .= '<span class="ZFDebug_span ZFDebug_last clickable" id="ZFDebug_toggler" onclick="ZFDebugSlideBar()">&#171;</span>';
 
         $html .= '</div>';
-        $this->output($html);
+        $this->_output($html);
     }
 
     ### INTERNAL METHODS BELOW ###
+
+    /**
+     * Load plugins set in config option
+     *
+     * @return void;
+     */
+    protected function _loadPlugins()
+    {
+    	foreach($this->_options['plugins'] as $plugin => $options) {
+    		switch ($plugin) {
+    			case 'variables':
+    				/**
+    				 * @see ZFDebug_Controller_Plugin_Debug_Plugin_Variables
+    				 */
+    				require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Variables.php';
+    				$object = new ZFDebug_Controller_Plugin_Debug_Plugin_Variables();
+    				break;
+    			case 'file':
+    				/**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_File
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/File.php';
+                    if(isset($options['basePath']) && isset($options['myLibrary'])) {
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_File($options['basePath'],$options['myLibrary']);
+                    } else {
+                    	$object = new ZFDebug_Controller_Plugin_Debug_Plugin_File();
+                    }
+                    break;
+                case 'cache':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Cache
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Cache.php';
+                    if(isset($options['backend'])) {
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Cache($options['backend']);
+                    } else {
+                    	$object = new ZFDebug_Controller_Plugin_Debug_Plugin_Cache();
+                    }
+                    break;
+                case 'database':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Database
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Database.php';
+                    if(isset($options['adapter'])) {
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Database($options['adapter']);
+                    } else {
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Database();
+                    }
+                    break;
+                case 'exception':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Exception
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Exception.php';
+                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Exception();
+                    break;
+                case 'memory':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Memory
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Memory.php';
+                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Memory();
+                    break;
+                case 'text':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Text
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Text.php';
+                    if(isset($options['tab']) && isset($options['panel'])) {
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text($options['tab'],$options['panel']);
+                    } else {
+                    	$object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text();
+                    }
+                    break;
+                case 'time':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Time
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Time.php';
+                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Time();
+                    break;
+                default:
+                	throw new Zend_Controller_Exception('Plugin ZFDebug: Debug plugin "' . $plugin . '" unknown');
+                	;
+    		}
+    		$this->registerPlugin($object);
+    	}
+    }
 
     /**
      * Return version tab
      *
      * @return string
      */
-    protected function getVersionTab()
+    protected function _getVersionTab()
     {
         return ' ' . Zend_Version::VERSION;
     }
@@ -176,7 +280,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @return string
      */
-    protected function getVersionPanel()
+    protected function _getVersionPanel()
     {
         return '<h4>ZFDebug v'.$this->_version.'</h4>' .
                '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a> & <a href="http://www.bangal.de">Andreas Pankratz</a></p>' .
@@ -189,7 +293,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @return string
      */
-    protected function icon($kind)
+    protected function _icon($kind)
     {
         switch ($kind) {
             case 'database':
@@ -265,7 +369,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @return string
      */
-    protected function headerOutput() {
+    protected function _headerOutput() {
         return ('
             <style type="text/css" media="screen">
                 #ZFDebug_debug { font: 11px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; position:fixed; bottom:5px; left:5px; color:#000; z-index: ' . $this->_options['z-index'] . ';}
@@ -332,10 +436,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      * @param string $html
      * @return void
      */
-    protected function output($html)
+    protected function _output($html)
     {
         $response = $this->getResponse();
-        $response->setBody(str_ireplace('<head>', '<head>' . $this->headerOutput(), $response->getBody()));
+        $response->setBody(str_ireplace('<head>', '<head>' . $this->_headerOutput(), $response->getBody()));
         $response->setBody(str_ireplace('</body>', '<div id="ZFDebug_debug">'.$html.'</div></body>', $response->getBody()));
     }
 }

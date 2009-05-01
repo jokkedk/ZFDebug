@@ -46,9 +46,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Text implements ZFDebug_Controller_
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($tab = '', $panel = '')
     {
-
+        $this->setTab($tab);
+        $this->setPanel($panel);
     }
 
     /**
