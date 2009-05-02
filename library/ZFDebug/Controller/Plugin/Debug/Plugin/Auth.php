@@ -32,12 +32,33 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Auth implements ZFDebug_Controller_
      * @var Zend_Auth
      */
     protected $_auth;
+
+    /**
+     * Contains "column name" for the username
+     *
+     * @var string
+     */
     protected $_user;
+
+    /**
+     * Contains "column name" for the role
+     *
+     * @var string
+     */
     protected $_role;
 
     /**
-     * Create ZFDebug_Controller_Plugin_Debug_Plugin_Text
+     * Contains Acls for this application
      *
+     * @var Zend_Acl
+     */
+    protected $_acl;
+
+    /**
+     * Create ZFDebug_Controller_Plugin_Debug_Plugin_Auth
+     *
+     * @var string $user
+     * @var string $role
      * @return void
      */
     public function __construct($user = 'user', $role = 'role')
