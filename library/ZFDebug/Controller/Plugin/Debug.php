@@ -268,6 +268,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Time.php';
                     $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Time();
                     break;
+                case 'registry':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Registry
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Registry.php';
+                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Registry();
+                    break;
                 default:
                 	throw new Zend_Controller_Exception('Plugin ZFDebug: Debug plugin "' . $plugin . '" unknown');
                 	;
@@ -371,6 +378,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     return '';
 
                 return $this->_options['image_path'] . '/auth.png';
+                break;
+            case 'registry':
+                if (null === $this->_options['image_path'])
+                    return '';
+
+                return $this->_options['image_path'] . '/registry.png';
                 break;
             default:
                 if (null === $this->_options['image_path'])

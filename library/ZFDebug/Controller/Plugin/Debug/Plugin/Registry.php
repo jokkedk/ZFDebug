@@ -7,7 +7,7 @@
  * @subpackage Plugins
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
- * @version    $Id$
+ * @version    $Id: $
  */
 
 /**
@@ -17,28 +17,30 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Variables implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_Registry implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
      *
      * @var string
      */
-    protected $_identifier = 'variables';
+    protected $_identifier = 'registry';
 
     /**
-     * @var Zend_Controller_Request_Abstract
+     * Contains Zend_Registry
+     *
+     * @var Zend_Registry
      */
-    protected $_request;
+    protected $_registry;
 
     /**
-     * Create ZFDebug_Controller_Plugin_Debug_Plugin_Variables
+     * Create ZFDebug_Controller_Plugin_Debug_Plugin_Registry
      *
      * @return void
      */
     public function __construct()
     {
-
+        $this->_registry = Zend_Registry::getInstance();
     }
 
     /**
@@ -58,7 +60,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables implements ZFDebug_Contro
      */
     public function getTab()
     {
-        return ' Variables';
+        return ' Registry (' . $this->_registry->count() . ')';
     }
 
     /**
@@ -68,26 +70,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables implements ZFDebug_Contro
      */
     public function getPanel()
     {
-        $this->_request = Zend_Controller_Front::getInstance()->getRequest();
-        $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
-        $viewVars = $viewRenderer->view->getVars();
-        $vars = '';
-        if ($this->_request->isPost())
-        {
-            $vars .= '<h4>$_POST</h4>'
-                   . '<div id="ZFDebug_post">' . $this->_cleanData($this->_request->getPost()) . '</div>';
-        }
+    	$html .= '<h4>Registered Instances</h4>';
+    	$this->_registry->ksort();
 
-        $vars .= '<h4>$_COOKIE</h4>'
-               . '<div id="ZFDebug_cookie">' . $this->_cleanData($this->_request->getCookie()) . '</div>'
-               . '<h4>Request</h4>'
-               . '<div id="ZFDebug_requests">' . $this->_cleanData($this->_request->getParams()) . '</div>'
-               . '<h4>View vars</h4>'
-               . '<div id="ZFDebug_vars">' . $this->_cleanData($viewVars) . '</div>';
-        return $vars;
+    	foreach ($this->_registry->getIterator() as $key => $data) {
+    		$html .= $key . ': ' . get_class($this->_registry->get($key)) . '<br />';
+    	}
+        return $html;
     }
 
-    /**
+/**
      * Transforms data into readable format
      *
      * @param array $values
@@ -102,22 +94,22 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables implements ZFDebug_Contro
         {
             $key = htmlspecialchars($key);
             if (is_numeric($value)) {
-                $retVal .= $key . ' => ' . $value . '<br>';
+                $retVal .= $key.' => '.$value.'<br>';
             }
             else if (is_string($value)) {
-                $retVal .= $key . ' => \'' . htmlspecialchars($value) . '\'<br>';
+                $retVal .= $key.' => \''.htmlspecialchars($value).'\'<br>';
             }
             else if (is_array($value))
             {
-                $retVal .= $key . ' => ' . self::_cleanData($value);
+                $retVal .= $key.' => '.self::_cleanData($value);
             }
             else if (is_object($value))
             {
-                $retVal .= $key . ' => ' . get_class($value) . ' Object()<br>';
+                $retVal .= $key.' => '.get_class($value).' Object()<br>';
             }
             else if (is_null($value))
             {
-                $retVal .= $key . ' => NULL<br>';
+                $retVal .= $key.' => NULL<br>';
             }
         }
         return $retVal.'</div>';
