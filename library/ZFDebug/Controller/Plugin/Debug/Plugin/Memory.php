@@ -44,7 +44,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory implements ZFDebug_Controlle
     public function getTab()
     {
         if (function_exists('memory_get_peak_usage')) {
-            return round(memory_get_peak_usage()/1024) . ' KB</span>';
+            return round(memory_get_peak_usage()/1024) . 'K of '.ini_get("memory_limit").'</span>';
         }
         return 'MemUsage n.a.';
     }
