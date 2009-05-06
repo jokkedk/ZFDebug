@@ -70,7 +70,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Registry implements ZFDebug_Control
      */
     public function getPanel()
     {
-    	$html .= '<h4>Registered Instances</h4>';
+    	$html = '<h4>Registered Instances</h4>';
     	$this->_registry->ksort();
 
     	foreach ($this->_registry->getIterator() as $key => $data) {
