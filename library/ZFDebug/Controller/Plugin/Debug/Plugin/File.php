@@ -88,7 +88,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
      */
     public function getTab()
     {
-        return 'Files (' . count($this->_getIncludedFiles()) . ')';
+        return count($this->_getIncludedFiles()) . ' Files';
     }
 
     /**
@@ -100,7 +100,13 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
     {
         $included = $this->_getIncludedFiles();
         $html = '<h4>File Information</h4>';
-        $html .= 'Total Files included: ' . count($included) . '<br />';
+        $html .= count($included).' Files Included<br />';
+        $size = 0;
+        foreach ($included as $file) {
+            $size += filesize($file);
+        }
+        $html .= 'Total Size: '. round($size/1024).'K<br />';
+        
         $html .= 'Basepath: ' . $this->_basePath . '<br />';
 
         $frameworkFiles = '<h4>Zend Framework Files</h4>';
