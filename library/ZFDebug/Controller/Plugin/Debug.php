@@ -45,7 +45,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      * Contains options to change Debug Bar behavior
      */
     protected $_options = array(
-        'plugins'           => array (
+        'plugins'           => array(
             'variables' => null,
             'time' => null,
             'memory' => null),
@@ -184,7 +184,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     protected function _loadPlugins()
     {
     	foreach($this->_options['plugins'] as $plugin => $options) {
-    		switch ($plugin) {
+    	    if (is_numeric($plugin)) {
+    	        # Plugin passed as array value instead of key
+    	        $plugin = $options;
+    	        unset($options);
+    	    }
+    		switch ((string)$plugin) {
     			case 'variables':
     				/**
     				 * @see ZFDebug_Controller_Plugin_Debug_Plugin_Variables
@@ -256,9 +261,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                      */
                     require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Auth.php';
                     if(isset($options['user']) && isset($options['role'])) {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text($options['user'],$options['role']);
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Auth($options['user'],$options['role']);
                     } else {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text();
+                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Auth();
                     }
                     break;
                 case 'time':
