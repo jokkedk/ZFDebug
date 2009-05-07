@@ -101,9 +101,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
             $cache = apc_cache_info();
             
             $panel = '<h4>APC '.phpversion('apc').' Enabled</h4>';
-            $panel .= round($mem_avail/1024/1024, 1).'M available, '.round($mem_used/1024/1024, 1).'M used<br>'
-                    . $cache['num_entries'].' Files cached ('.round($cache['mem_size']/1024/1024, 1).'M)<br>'
-                    . $cache['num_hits'].' Hits ('.round($cache['num_hits'] * 100 / ($cache['num_hits']+$cache['num_misses']), 1).'%)'; 
+            $panel .= round($mem_avail/1024/1024, 1).'M available, '.round($mem_used/1024/1024, 1).'M used<br />'
+                    . $cache['num_entries'].' Files cached ('.round($cache['mem_size']/1024/1024, 1).'M)<br />'
+                    . $cache['num_hits'].' Hits ('.round($cache['num_hits'] * 100 / ($cache['num_hits']+$cache['num_misses']), 1).'%)<br />'
+                    . $cache['expunges'].' Expunges (cache full count)'; 
         }
         $panel .= '<h4>Zend_Cache Information</h4>'.
                   '<p>Filling Factor: ' . $this->_fillingPercentage . '%</p>'.
