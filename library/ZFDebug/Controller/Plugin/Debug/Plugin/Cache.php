@@ -91,22 +91,36 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
      */
     public function getPanel()
     {
-        $panel = '<h4>Cache Information</h4>'.
-            '<p>Filling Factor: ' . $this->_fillingPercentage . '%</p>'.
-            '<h4>Ids in Cache:</h4>';
+        # Support for APC
+        if (function_exists('apc_sma_info') && ini_get('apc.enabled')) {
+            $mem = apc_sma_info();
+            $mem_size = $mem['num_seg']*$mem['seg_size'];
+            $mem_avail = $mem['avail_mem'];
+            $mem_used = $mem_size-$mem_avail;
+            
+            $cache = apc_cache_info();
+            
+            $panel = '<h4>APC '.phpversion('apc').' Enabled</h4>';
+            $panel .= round($mem_avail/1024/1024, 1).'M available, '.round($mem_used/1024/1024, 1).'M used<br>'
+                    . $cache['num_entries'].' Files cached ('.round($cache['mem_size']/1024/1024, 1).'M)<br>'
+                    . $cache['num_hits'].' Hits ('.round($cache['num_hits'] * 100 / ($cache['num_hits']+$cache['num_misses']), 1).'%)'; 
+        }
+        $panel .= '<h4>Zend_Cache Information</h4>'.
+                  '<p>Filling Factor: ' . $this->_fillingPercentage . '%</p>'.
+                  '<h4>Ids in Cache:</h4>';
 
-            foreach ($this->_ids as $id)
-            {
-                $idData = $this->_getMetadata($id);
-                $panel .= $id . '<br />';
-                $panel .= '<div class="pre">';
-                $this->_date->set($idData['mtime']);
-                #@todo add support for tags
-                $panel .= '   created: ' . $this->_date->toString() . '<br />';
-                $this->_date->set($idData['expire']);
-                $panel .= '   expires: ' . $this->_date->toString() . '<br />';
-                $panel .= '</div>';
-            }
+        foreach ($this->_ids as $id)
+        {
+            $idData = $this->_getMetadata($id);
+            $panel .= $id . '<br />';
+            $panel .= '<div class="pre">';
+            $this->_date->set($idData['mtime']);
+            #@todo add support for tags
+            $panel .= '   created: ' . $this->_date->toString() . '<br />';
+            $this->_date->set($idData['expire']);
+            $panel .= '   expires: ' . $this->_date->toString() . '<br />';
+            $panel .= '</div>';
+        }
         return $panel;
     }
 
