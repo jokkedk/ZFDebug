@@ -11,11 +11,6 @@
  */
 
 /**
- * @see Zend_Date
- */
-require_once 'Zend/Date.php';
-
-/**
  * @category   ZFDebug
  * @package    ZFDebug_Controller
  * @subpackage Plugins
@@ -34,22 +29,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
     /**
      * @var Zend_Cache_Backend_ExtendedInterface
      */
-    protected $_cacheBackend = null;
-
-    /**
-     * @var float
-     */
-    protected $_fillingPercentage;
-
-    /**
-     * @var array
-     */
-    protected $_ids;
-
-    /**
-     * @var Zend_date
-     */
-    protected $_date = null;
+    protected $_cacheBackends = array();
 
     /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Cache
@@ -57,11 +37,13 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
      * @param Zend_Cache_Backend_ExtendedInterface $backend
      * @return void
      */
-    public function __construct(Zend_Cache_Backend_ExtendedInterface $backend)
+    public function __construct($backends = array())
     {
-        $this->_cacheBackend = $backend;
-        $this->_loadData();
-        $this->_date = new Zend_Date();
+        foreach ($backends as $name => $backend) {
+            if ($backend instanceof Zend_Cache_Backend_ExtendedInterface ) {
+                $this->_cacheBackends[$name] = $backend;
+            }
+        }
     }
 
     /**
@@ -81,7 +63,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
      */
     public function getTab()
     {
-        return ' Cache (' .  substr(strrchr(get_class($this->_cacheBackend),'_'),1) . ')';
+        return ' Cache';
     }
 
     /**
@@ -106,43 +88,29 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
                     . $cache['num_hits'].' Hits ('.round($cache['num_hits'] * 100 / ($cache['num_hits']+$cache['num_misses']), 1).'%)<br />'
                     . $cache['expunges'].' Expunges (cache full count)'; 
         }
-        $panel .= '<h4>Zend_Cache Information</h4>'.
-                  '<p>Filling Factor: ' . $this->_fillingPercentage . '%</p>'.
-                  '<h4>Ids in Cache:</h4>';
 
-        foreach ($this->_ids as $id)
-        {
-            $idData = $this->_getMetadata($id);
-            $panel .= $id . '<br />';
-            $panel .= '<div class="pre">';
-            $this->_date->set($idData['mtime']);
-            #@todo add support for tags
-            $panel .= '   created: ' . $this->_date->toString() . '<br />';
-            $this->_date->set($idData['expire']);
-            $panel .= '   expires: ' . $this->_date->toString() . '<br />';
-            $panel .= '</div>';
+        foreach ($this->_cacheBackends as $name => $backend) {
+            $fillingPercentage = $backend->getFillingPercentage();
+            $ids = $backend->getIds();
+            
+            # Print full class name, backends might be custom
+            $panel .= '<h4>Cache '.$name.' ('.get_class($backend).')</h4>';
+            $panel .= count($ids).' Entr'.(count($ids)>1?'ies':'y').'<br />'
+                    . 'Filling Percentage: '.$backend->getFillingPercentage().'%<br />';
+            
+            $cacheSize = 0;
+            foreach ($ids as $id)
+            {
+                # Calculate valid cache size
+                $mem_pre = memory_get_usage();
+                if ($cached = $backend->load($id)) {
+                    $mem_post = memory_get_usage();
+                    $cacheSize += $mem_post-$mem_pre;
+                    unset($cached);
+                }                
+            }
+            $panel .= 'Valid Cache Size: '.round($cacheSize/1024, 1). 'K';
         }
         return $panel;
-    }
-
-    /**
-     * Loads static data
-     *
-     * @return void
-     */
-    protected function _loadData()
-    {
-        $this->_fillingPercentage = $this->_cacheBackend->getFillingPercentage();
-        $this->_ids = $this->_cacheBackend->getIds();
-    }
-
-    /**
-     * Gets Metadata from the Cache Backend
-     *
-     * @return array
-     */
-    protected function _getMetadata($id)
-    {
-        return $this->_cacheBackend->getMetadatas($id);
     }
 }

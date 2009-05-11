@@ -202,11 +202,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                      * @see ZFDebug_Controller_Plugin_Debug_Plugin_File
                      */
                     require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/File.php';
-                    if(isset($options['basePath']) && isset($options['myLibrary'])) {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_File($options['basePath'],$options['myLibrary']);
-                    } else {
-                    	$object = new ZFDebug_Controller_Plugin_Debug_Plugin_File();
-                    }
+                    isset($options['basePath']) || $options['basePath'] = '';
+                    isset($options['myLibrary']) || $options['myLibrary'] = null;
+                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_File($options['basePath'],$options['myLibrary']);
                     break;
                 case 'cache':
                     /**
@@ -216,7 +214,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     if(isset($options['backend'])) {
                         $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Cache($options['backend']);
                     } else {
-                    	$object = new ZFDebug_Controller_Plugin_Debug_Plugin_Cache();
+                        throw new Zend_Controller_Exception('Plugin ZFDebug: Cache plugin needs \'backend\' parameter');
                     }
                     break;
                 case 'database':
@@ -282,7 +280,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     break;
                 default:
                 	throw new Zend_Controller_Exception('Plugin ZFDebug: Debug plugin "' . $plugin . '" unknown');
-                	;
+                    break;
     		}
     		$this->registerPlugin($object);
     	}
@@ -305,10 +303,15 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _getVersionPanel()
     {
-        return '<h4>ZFDebug v'.$this->_version.'</h4>' .
-               '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a> & <a href="http://www.bangal.de">Andreas Pankratz</a></p>' .
-               'The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a> and released under the BSD License</p>' .
-               '<p>Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>';
+        $panel = '<h4>ZFDebug v'.$this->_version.'</h4>' .
+                 '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a> & <a href="http://www.bangal.de">Andreas Pankratz</a></p>' .
+                 '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a> and released under the BSD License<br />' .
+                 'Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>';
+        // $panel .= '<h4>Zend Framework '.Zend_Version::VERSION.' / PHP '.phpversion().' with extensions:</h4>';
+        // $extensions = get_loaded_extensions();
+        // natcasesort($extensions);
+        // $panel .= implode('<br>', $extensions);
+        return $panel;
     }
 
     /**

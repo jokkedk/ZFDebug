@@ -105,7 +105,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
         foreach ($included as $file) {
             $size += filesize($file);
         }
-        $html .= 'Total Size: '. round($size/1024).'K<br />';
+        $html .= 'Total Size: '. round($size/1024, 1).'K<br />';
         
         $html .= 'Basepath: ' . $this->_basePath . '<br />';
 
