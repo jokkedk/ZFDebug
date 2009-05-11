@@ -46,7 +46,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
      *
      * @var string
      */
-    protected $_myLibrary;
+    protected $_library;
 
     /**
      * Setting Options
@@ -55,20 +55,21 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
      * This will normally not your document root of your webserver, its your
      * application root directory with /application, /library and /public
      *
-     * myLibrary:
-     * Your own library extension
+     * library:
+     * Your own library extension(s)
      *
      * @param string $basePath
-     * @param
+     * @param array $library
      * @return void
      */
-    public function __construct($basePath = '', $myLibary = null)
+    public function __construct($basePath = '', $library = '')
     {
         if ($basePath == '') {
             $basePath = $_SERVER['DOCUMENT_ROOT'];
         }
         $this->_basePath = $basePath;
-        $this->_myLibrary = $myLibary;
+        is_array($library) || $library = array($library);
+        $this->_library = array_merge($library, array('Zend', 'ZFDebug'));
     }
 
     /**
@@ -109,36 +110,31 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
         
         $html .= 'Basepath: ' . $this->_basePath . '<br />';
 
-        $frameworkFiles = '<h4>Zend Framework Files</h4>';
-        $zfdebugFiles = '<h4>ZFDebug Files</h4>';
-        $myFiles = '<h4>' . $this->_myLibrary . ' Files</h4>';
+        $libraryFiles = array();
+        foreach ($this->_library as $key => $value) {
+            if ('' != $value) {
+                $libraryFiles[$key] = '<h4>' . $value . ' Library Files</h4>';
+            }
+        }
 
         $html .= '<h4>Application Files</h4>';
         foreach ($included as $file) {
             $file = str_replace($this->_basePath, '', $file);
-            if (false !== strstr($file, 'Zend')) {
-                $frameworkFiles .= $file . '<br />';
-            } elseif (false !== strstr($file, 'ZFDebug')) {
-                $zfdebugFiles .= $file . '<br />';
-            } else {
-            	if (null !== $this->_myLibrary)
-            	{
-            		if(false !== strstr($file, $this->_myLibrary)) {
-            			$myFiles .= $file . '<br />';
-            		} else {
-            			$html .= $file . '<br />';
-            		}
-            	} else {
-                $html .= $file . '<br />';
-            	}
-            }
+            $inUserLib = false;
+        	foreach ($this->_library as $key => $library)
+        	{
+        		if('' != $library && false !== strstr($file, $library)) {
+        			$libraryFiles[$key] .= $file . '<br />';
+        			$inUserLib = TRUE;
+        		}
+        	}
+        	if (!$inUserLib) {
+    			$html .= $file . '<br />';
+        	}
         }
 
-        if(null !== $this->_myLibrary) {
-        	$html .= $myFiles;
-        }
+    	$html .= implode('', $libraryFiles);
 
-        $html .=  $zfdebugFiles . $frameworkFiles;
         return $html;
     }
 

@@ -203,8 +203,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                      */
                     require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/File.php';
                     isset($options['basePath']) || $options['basePath'] = '';
-                    isset($options['myLibrary']) || $options['myLibrary'] = null;
-                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_File($options['basePath'],$options['myLibrary']);
+                    isset($options['library']) || $options['library'] = null;
+                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_File($options['basePath'],$options['library']);
                     break;
                 case 'cache':
                     /**
