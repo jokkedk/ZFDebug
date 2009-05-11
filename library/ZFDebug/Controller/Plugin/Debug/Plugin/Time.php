@@ -121,6 +121,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
             }
             $html .= '</div>';
         }
+        $html .= '<br />Reset timers by sending ZFDEBUG_RESET as a GET/POST parameter';
 
         return $html;
     }
@@ -153,6 +154,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
+        $reset = Zend_Controller_Front::getInstance()->getRequest()->getParam('ZFDEBUG_RESET');
+        if (isset($reset)) {
+            $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
+            $timerNamespace->unsetAll();
+        }
+        
         $this->_timer['preDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
 
