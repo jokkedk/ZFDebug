@@ -415,9 +415,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 #ZFDebug_debug li {margin:0 0 10px 0;}
                 #ZFDebug_debug .clickable {cursor:pointer}
                 #ZFDebug_toggler { font-weight:bold; background:#BFBFBF; }
-                .ZFDebug_span { border: 1px solid #999; border-right:0px; background:#DFDFDF; padding: 3px 5px; }
+                .ZFDebug_span { border: 1px solid #999; border-right:0px; background:#DFDFDF; padding: 5px 5px; }
                 .ZFDebug_last { border: 1px solid #999; }
-                .ZFDebug_panel { text-align:left; position:absolute;bottom:19px;width:600px; max-height:400px; overflow:auto; display:none; background:#E8E8E8; padding:5px; border: 1px solid #999; }
+                .ZFDebug_panel { text-align:left; position:absolute;bottom:21px;width:600px; max-height:400px; overflow:auto; display:none; background:#E8E8E8; padding:5px; border: 1px solid #999; }
                 .ZFDebug_panel .pre {font: 11px/1.4em Monaco, Lucida Console, monospace; margin:0 0 0 22px}
                 #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
             </style>
@@ -428,9 +428,17 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     scriptObj.type = "text/javascript";
                     var head=document.getElementsByTagName("head")[0];
                     head.insertBefore(scriptObj,head.firstChild);
-                    window.onload = function(){jQuery.noConflict()};
+                    window.onload = function(){jQuery.noConflict(); ZFDebugCollapsed()};
                 }
-
+                
+                function ZFDebugCollapsed() {
+                    if ('.$_COOKIE['ZFDebugCollapsed'].' == 1) {
+                        ZFDebugPanel();
+                        jQuery("#ZFDebug_toggler").html("&#187;");
+                        return jQuery("#ZFDebug_debug").css("left", "-"+parseInt(jQuery("#ZFDebug_debug").outerWidth()-jQuery("#ZFDebug_toggler").outerWidth()+1)+"px");
+                    }
+                }
+                
                 function ZFDebugPanel(name) {
                     jQuery(".ZFDebug_panel").each(function(i){
                         if(jQuery(this).css("display") == "block") {
@@ -446,10 +454,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
 
                 function ZFDebugSlideBar() {
                     if (jQuery("#ZFDebug_debug").position().left > 0) {
+                        document.cookie = "ZFDebugCollapsed=1;expires=;path=/";
                         ZFDebugPanel();
                         jQuery("#ZFDebug_toggler").html("&#187;");
-                        return jQuery("#ZFDebug_debug").animate({left:"-"+parseInt(jQuery("#ZFDebug_debug").outerWidth()-jQuery("#ZFDebug_toggler").outerWidth())+"px"}, "normal", "swing");
+                        return jQuery("#ZFDebug_debug").animate({left:"-"+parseInt(jQuery("#ZFDebug_debug").outerWidth()-jQuery("#ZFDebug_toggler").outerWidth()+1)+"px"}, "normal", "swing");
                     } else {
+                        document.cookie = "ZFDebugCollapsed=0;expires=;path=/";
                         jQuery("#ZFDebug_toggler").html("&#171;");
                         return jQuery("#ZFDebug_debug").animate({left:"5px"}, "normal", "swing");
                     }
