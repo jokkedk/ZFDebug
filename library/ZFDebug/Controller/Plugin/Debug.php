@@ -408,6 +408,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      * @return string
      */
     protected function _headerOutput() {
+        $collapsed = isset($_COOKIE['ZFDebugCollapsed']) ? $_COOKIE['ZFDebugCollapsed'] : 0;
+        
         return ('
             <style type="text/css" media="screen">
                 #ZFDebug_debug { font: 11px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; position:fixed; bottom:5px; left:5px; color:#000; z-index: ' . $this->_options['z-index'] . ';}
@@ -432,7 +434,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 }
                 
                 function ZFDebugCollapsed() {
-                    if ('.$_COOKIE['ZFDebugCollapsed'].' == 1) {
+                    if ('.$collapsed.' == 1) {
                         ZFDebugPanel();
                         jQuery("#ZFDebug_toggler").html("&#187;");
                         return jQuery("#ZFDebug_debug").css("left", "-"+parseInt(jQuery("#ZFDebug_debug").outerWidth()-jQuery("#ZFDebug_toggler").outerWidth()+1)+"px");
