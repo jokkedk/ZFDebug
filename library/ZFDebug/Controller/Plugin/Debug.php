@@ -278,6 +278,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Registry.php';
                     $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Registry();
                     break;
+                case 'html':
+                    /**
+                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Html
+                     */
+                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Html.php';
+                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Html();
+                    break;
                 default:
                 	throw new Zend_Controller_Exception('Plugin ZFDebug: Debug plugin "' . $plugin . '" unknown');
                     break;
@@ -430,8 +437,16 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     scriptObj.type = "text/javascript";
                     var head=document.getElementsByTagName("head")[0];
                     head.insertBefore(scriptObj,head.firstChild);
-                    window.onload = function(){jQuery.noConflict(); ZFDebugCollapsed()};
                 }
+
+                var load = window.onload;
+                window.onload = function(){
+                    if (load) {
+                        load();
+                    }
+                    jQuery.noConflict();
+                    ZFDebugCollapsed();
+                };
                 
                 function ZFDebugCollapsed() {
                     if ('.$collapsed.' == 1) {
