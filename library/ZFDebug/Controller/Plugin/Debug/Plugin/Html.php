@@ -83,8 +83,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Html implements ZFDebug_Controller_
         </script>';
         $panel .= '<span id="ZFDebug_Html_Tagcount"></span> Tags<br />'
                 . 'HTML Size: '.round(strlen($body)/1024, 2).'K<br />'
-                . '<span id="ZFDebug_Html_Stylecount"></span> Stylesheet File<br />'
-                . '<span id="ZFDebug_Html_Scriptcount"></span> Javascript File<br />'
+                . '<span id="ZFDebug_Html_Stylecount"></span> Stylesheet Files<br />'
+                . '<span id="ZFDebug_Html_Scriptcount"></span> Javascript Files<br />'
                 . '<span id="ZFDebug_Html_Imgcount"></span> Images<br />'
                 . '<form method="POST" action="http://validator.w3.org/check" target="_blank"><input type="hidden" name="fragment" value="'.htmlentities($body).'"><input type="submit" value="Validate With W3"></form>';
         return $panel;
