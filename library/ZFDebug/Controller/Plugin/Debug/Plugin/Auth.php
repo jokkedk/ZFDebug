@@ -38,14 +38,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Auth implements ZFDebug_Controller_
      *
      * @var string
      */
-    protected $_user;
+    protected $_user = 'user';
 
     /**
      * Contains "column name" for the role
      *
      * @var string
      */
-    protected $_role;
+    protected $_role = 'role';
 
     /**
      * Contains Acls for this application
@@ -61,11 +61,15 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Auth implements ZFDebug_Controller_
      * @var string $role
      * @return void
      */
-    public function __construct($user = 'user', $role = 'role')
+    public function __construct(array $options = array())
     {
         $this->_auth = Zend_Auth::getInstance();
-        $this->_user = $user;
-        $this->_role = $role;
+        if (isset($options['user'])) {
+            $this->_user = $options['user'];
+        }
+        if (isset($options['role'])) {
+            $this->_role = $options['role'];
+        }
     }
 
     /**
@@ -88,12 +92,19 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Auth implements ZFDebug_Controller_
     	$username = 'Not Authed';
     	$role = 'Unknown Role';
 
-    	if($this->_auth->hasIdentity()) {
+    	if(!$this->_auth->hasIdentity()) {
+    	    return 'Not authorized';
+    	}
+    	$identity = $this->_auth->getIdentity();
+	    if (is_object($identity)) {
     		$username = $this->_auth->getIdentity()->{$this->_user};
     		$role = $this->_auth->getIdentity()->{$this->_role};
+    	} 
+    	else {
+    	    $username = $this->_auth->getIdentity();
+    		$role = '';
     	}
-
-        return $username . ' (' . $role . ')';
+    	return "$username";
     }
 
     /**

@@ -51,25 +51,24 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
     /**
      * Setting Options
      *
-     * basepath:
+     * basePath:
      * This will normally not your document root of your webserver, its your
      * application root directory with /application, /library and /public
      *
      * library:
      * Your own library extension(s)
      *
-     * @param string $basePath
-     * @param array $library
+     * @param array $options
      * @return void
      */
-    public function __construct($basePath = '', $library = '')
+    public function __construct(array $options = array())
     {
-        if ($basePath == '') {
-            $basePath = $_SERVER['DOCUMENT_ROOT'];
-        }
-        $this->_basePath = $basePath;
-        is_array($library) || $library = array($library);
-        $this->_library = array_merge($library, array('Zend', 'ZFDebug'));
+        isset($options['base_path']) || $options['base_path'] = $_SERVER['DOCUMENT_ROOT'];
+        isset($options['library']) || $options['library'] = null;
+        
+        $this->_basePath = $options['base_path'];
+        is_array($options['library']) || $options['library'] = array($options['library']);
+        $this->_library = array_merge($options['library'], array('Zend', 'ZFDebug'));
     }
 
     /**

@@ -53,6 +53,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         'jquery_path'       => 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js',
         'image_path'        => null
     );
+    
+    /**
+     * Standard plugins
+     *
+     * @var array
+     */
+    public static $standardPlugins = array('Cache', 'Html', 'Database', 'Exception', 'File', 'Memory', 'Registry', 'Time', 'Variables');
 
     /**
      * Debug Bar Version Number
@@ -79,7 +86,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
          * Verify that adapter parameters are in an array.
          */
         if (!is_array($options)) {
-            throw new Zend_Controller_Exception('Debug parameters must be in an array or a Zend_Config object');
+            throw new Zend_Exception('Debug parameters must be in an array or a Zend_Config object');
         }
 
         if (isset($options['jquery_path'])) {
@@ -187,108 +194,22 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     	    if (is_numeric($plugin)) {
     	        # Plugin passed as array value instead of key
     	        $plugin = $options;
-    	        unset($options);
+    	        $options = array();
     	    }
-    		switch ((string)$plugin) {
-    			case 'variables':
-    				/**
-    				 * @see ZFDebug_Controller_Plugin_Debug_Plugin_Variables
-    				 */
-    				require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Variables.php';
-    				$object = new ZFDebug_Controller_Plugin_Debug_Plugin_Variables();
-    				break;
-    			case 'file':
-    				/**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_File
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/File.php';
-                    isset($options['basePath']) || $options['basePath'] = '';
-                    isset($options['library']) || $options['library'] = null;
-                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_File($options['basePath'],$options['library']);
-                    break;
-                case 'cache':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Cache
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Cache.php';
-                    if(isset($options['backend'])) {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Cache($options['backend']);
-                    } else {
-                        throw new Zend_Controller_Exception('Plugin ZFDebug: Cache plugin needs \'backend\' parameter');
-                    }
-                    break;
-                case 'database':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Database
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Database.php';
-                    if(isset($options['adapter'])) {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Database($options['adapter']);
-                    } else {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Database();
-                    }
-                    break;
-                case 'exception':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Exception
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Exception.php';
-                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Exception();
-                    break;
-                case 'memory':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Memory
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Memory.php';
-                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Memory();
-                    break;
-                case 'text':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Text
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Text.php';
-                    if(isset($options['tab']) && isset($options['panel'])) {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text($options['tab'],$options['panel']);
-                    } else {
-                    	$object = new ZFDebug_Controller_Plugin_Debug_Plugin_Text();
-                    }
-                    break;
-                case 'auth':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Auth
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Auth.php';
-                    if(isset($options['user']) && isset($options['role'])) {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Auth($options['user'],$options['role']);
-                    } else {
-                        $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Auth();
-                    }
-                    break;
-                case 'time':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Time
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Time.php';
-                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Time();
-                    break;
-                case 'registry':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Registry
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Registry.php';
-                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Registry();
-                    break;
-                case 'html':
-                    /**
-                     * @see ZFDebug_Controller_Plugin_Debug_Plugin_Html
-                     */
-                    require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Html.php';
-                    $object = new ZFDebug_Controller_Plugin_Debug_Plugin_Html();
-                    break;
-                default:
-                	throw new Zend_Controller_Exception('Plugin ZFDebug: Debug plugin "' . $plugin . '" unknown');
-                    break;
-    		}
+    	    $plugin = (string)$plugin;
+    	    if (in_array($plugin, ZFDebug_Controller_Plugin_Debug::$standardPlugins)) {
+    	        // standard plugin
+                $pluginClass = 'ZFDebug_Controller_Plugin_Debug_Plugin_' . $plugin;
+    	    } else {
+    	        // we use a custom plugin
+                if (!preg_match('~^[\w]+$~D', $plugin)) {
+                    throw new Zend_Exception("ZFDebug: Invalid plugin name [$plugin]");
+                }
+                $pluginClass = $plugin;
+            }
+
+            require_once str_replace('_', DIRECTORY_SEPARATOR, $pluginClass) . '.php';
+            $object = new $pluginClass($options);
     		$this->registerPlugin($object);
     	}
     }

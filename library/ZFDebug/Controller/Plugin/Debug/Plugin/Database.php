@@ -43,16 +43,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
      * @param Zend_Db_Adapter_Abstract|array $adapters
      * @return void
      */
-    public function __construct($adapters = array())
+    public function __construct(array $options = array())
     {
-        if(!count($adapters) && !is_null(Zend_Db_Table_Abstract::getDefaultAdapter())) {
+        if(!isset($options['adapter']) || !count($options['adapter'])) {
             $this->_db[0] = Zend_Db_Table_Abstract::getDefaultAdapter();
             $this->_db[0]->getProfiler()->setEnabled(true);
-        } else if ($adapters instanceof Zend_Db_Adapter_Abstract ) {
+        } else if ($options['adapter'] instanceof Zend_Db_Adapter_Abstract ) {
             $this->_db[0] = $adapters;
         	$this->_db[0]->getProfiler()->setEnabled(true);
         } else {
-            foreach ($adapters as $name => $adapter) {
+            foreach ($options['adapter'] as $name => $adapter) {
                 if ($adapter instanceof Zend_Db_Adapter_Abstract) {
                     $adapter->getProfiler()->setEnabled(true);
                     $this->_db[$name] = $adapter;
