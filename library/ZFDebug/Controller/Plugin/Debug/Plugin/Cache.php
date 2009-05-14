@@ -40,7 +40,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
     public function __construct(array $options = array())
     {
         if (!isset($options['backend'])) {
-            throw new Zend_Exception('ZFDebug: Cache plugin needs \'backend\' parameter');
+            throw new Zend_Exception("ZFDebug: Cache plugin needs 'backend' parameter");
         }
         is_array($options['backend']) || $options['backend'] = array($options['backend']);
         foreach ($options['backend'] as $name => $backend) {
@@ -67,7 +67,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
      */
     public function getTab()
     {
-        return ' Cache';
+        return 'Cache';
     }
 
     /**
