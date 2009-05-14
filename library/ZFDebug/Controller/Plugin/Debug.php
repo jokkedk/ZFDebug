@@ -447,6 +447,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     jQuery.noConflict();
                     ZFDebugCollapsed();
                 };
+                load = "";
                 
                 function ZFDebugCollapsed() {
                     if ('.$collapsed.' == 1) {
@@ -504,7 +505,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     protected function _output($html)
     {
         $response = $this->getResponse();
-        $response->setBody(str_ireplace('<head>', '<head>' . $this->_headerOutput(), $response->getBody()));
+        $response->setBody(preg_replace('/(<head.*>)/i', '$1' . $this->_headerOutput(), $response->getBody()));
         $response->setBody(str_ireplace('</body>', '<div id="ZFDebug_debug">'.$html.'</div></body>', $response->getBody()));
     }
 }
