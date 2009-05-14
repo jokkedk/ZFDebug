@@ -34,11 +34,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache implements ZFDebug_Controller
     /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Cache
      *
-     * @param Zend_Cache_Backend_ExtendedInterface $backend
+     * @param array|Zend_Cache_Backend_ExtendedInterface $backends
      * @return void
      */
     public function __construct($backends = array())
     {
+        is_array($backends) || $backends = array($backends);
         foreach ($backends as $name => $backend) {
             if ($backend instanceof Zend_Cache_Backend_ExtendedInterface ) {
                 $this->_cacheBackends[$name] = $backend;
