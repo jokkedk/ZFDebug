@@ -76,35 +76,23 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      * @throws Zend_Controller_Exception
      * @return void
      */
-    public function __construct($options = array())
+    public function __construct($options = null)
     {
-        if ($options instanceof Zend_Config) {
-            $options = $options->toArray();
-        }
+        if (isset($options)) {
+            if ($options instanceof Zend_Config) {
+                $options = $options->toArray();
+            }
 
-        /*
-         * Verify that adapter parameters are in an array.
-         */
-        if (!is_array($options)) {
-            throw new Zend_Exception('Debug parameters must be in an array or a Zend_Config object');
-        }
+            /*
+             * Verify that adapter parameters are in an array.
+             */
+            if (!is_array($options)) {
+                throw new Zend_Exception('Debug parameters must be in an array or a Zend_Config object');
+            }
 
-        if (isset($options['jquery_path'])) {
-            $this->_options['jquery_path'] = $options['jquery_path'];
+            $this->setOptions($options);
         }
-
-        if (isset($options['z-index'])) {
-            $this->_options['z-index'] = $options['z-index'];
-        }
-
-        if (isset($options['image_path'])) {
-            $this->_options['image_path'] = $options['image_path'];
-        }
-
-        if (isset($options['plugins'])) {
-        	$this->_options['plugins'] = $options['plugins'];
-        }
-
+        
         /**
          * Creating ZF Version Tab always shown
          */
@@ -119,6 +107,31 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
          */
         $this->_loadPlugins();
     }
+    
+    /**
+     * Sets options of the Debug Bar
+     *
+     * @param array $options
+     * @return void
+     */
+    public function setOptions(array $options = array())
+    {
+        if (isset($options['jquery_path'])) {
+            $this->_options['jquery_path'] = $options['jquery_path'];
+        }
+
+        if (isset($options['z-index'])) {
+            $this->_options['z-index'] = $options['z-index'];
+        }
+
+        if (isset($options['image_path'])) {
+            $this->_options['image_path'] = $options['image_path'];
+        }
+        
+        if (isset($options['plugins'])) {
+        	$this->_options['plugins'] = $options['plugins'];
+        }
+    }
 
     /**
      * Register a new plugin in the Debug Bar
@@ -128,8 +141,45 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     public function registerPlugin(ZFDebug_Controller_Plugin_Debug_Plugin_Interface $plugin)
     {
-        $this->_plugins[] = $plugin;
+        $this->_plugins[$plugin->getIdentifier()] = $plugin;
         return $this;
+    }
+
+    /**
+     * Unregister a plugin in the Debug Bar
+     *
+     * @param string $plugin
+     * @return ZFDebug_Controller_Plugin_Debug
+     */
+    public function unregisterPlugin($plugin)
+    {
+        if (false !== strpos($plugin, '_')) {
+            foreach ($this->_plugins as $key => $_plugin) {
+                if ($plugin == get_class($_plugin)) {
+                    unset($this->_plugins[$key]);
+                }
+            }
+        } else {
+            $plugin = strtolower($plugin);
+            if (isset($this->_plugins[$plugin])) {
+                unset($this->_plugins[$plugin]);
+            }
+        }
+        return $this;
+    }
+    
+    /**
+     * Get a registered plugin in the Debug Bar
+     *
+     * @param string $identifier
+     * @return ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+     */
+    public function getPlugin($identifier)
+    {
+        if (isset($this->_plugins[$identifier])) {
+            return $this->_plugins[$identifier];
+        }
+        return false;
     }
     
     /**
