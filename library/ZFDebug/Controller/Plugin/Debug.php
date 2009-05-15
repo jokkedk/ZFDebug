@@ -112,7 +112,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      * Sets options of the Debug Bar
      *
      * @param array $options
-     * @return void
+     * @return ZFDebug_Controller_Plugin_Debug
      */
     public function setOptions(array $options = array())
     {
@@ -131,6 +131,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         if (isset($options['plugins'])) {
         	$this->_options['plugins'] = $options['plugins'];
         }
+        return $this;
     }
 
     /**
