@@ -91,25 +91,34 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
         }
 
         $request = Zend_Controller_Front::getInstance()->getRequest();
-        $module = $request->getModuleName();
-        $controller = $request->getControllerName();
-        $action = $request->getActionName();
+        $this_module = $request->getModuleName();
+        $this_controller = $request->getControllerName();
+        $this_action = $request->getActionName();
 
         $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
-        $timerNamespace->data[$module][$controller][$action][] = $this->_timer['postDispatch'];
+        $timerNamespace->data[$this_module][$this_controller][$this_action][] = $this->_timer['postDispatch'];
 
         $html .= '<h4>Overall Timers</h4>';
 
         foreach($timerNamespace->data as $module => $controller)
         {
+            if ($module == $this_module) {
+                $module = '<strong>'.$module.'</strong>';
+            }
             $html .= $module . '<br />';
             $html .= '<div class="pre">';
             foreach($controller as $con => $action)
             {
+                if ($con == $this_controller) {
+                    $con = '<strong>'.$con.'</strong>';
+                }
                 $html .= '    ' . $con . '<br />';
                 $html .= '<div class="pre">';
                 foreach ($action as $key => $data)
                 {
+                    if ($key == $this_action) {
+                        $key = '<strong>'.$key.'</strong>';
+                    }
                     $html .= '        ' . $key . '<br />';
                     $html .= '<div class="pre">';
                     $html .= '            Avg: ' . $this->_calcAvg($data) . ' ms / '.count($data).' requests<br />';
