@@ -49,7 +49,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
             $this->_db[0] = Zend_Db_Table_Abstract::getDefaultAdapter();
             $this->_db[0]->getProfiler()->setEnabled(true);
         } else if ($options['adapter'] instanceof Zend_Db_Adapter_Abstract ) {
-            $this->_db[0] = $adapters;
+            $this->_db[0] = $options['adapter'];
         	$this->_db[0]->getProfiler()->setEnabled(true);
         } else {
             foreach ($options['adapter'] as $name => $adapter) {
