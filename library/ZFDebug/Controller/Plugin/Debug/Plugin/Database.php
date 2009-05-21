@@ -120,24 +120,23 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
                 $adapter->getProfiler()->setEnabled(false);
                 $html .= '<h4>Adapter '.$name.'</h4><ol>';
                 foreach ($profiles as $profile) {
-                    $html .= '<li><strong>['.round($profile->getElapsedSecs()*1000, 2).' ms]</strong><br />'
-                             .htmlspecialchars($profile->getQuery());
-
+                    $html .= '<li>'.htmlspecialchars($profile->getQuery());
+                    $html .= '<p><strong>Time:</strong> '.round($profile->getElapsedSecs()*1000, 2).' ms<br />';
+                    
                     $supportedAdapter = ($adapter instanceof Zend_Db_Adapter_Mysqli 
                         || $adapter instanceof Zend_Db_Adapter_Pdo_Mysql);
                 
                     # Run explain if enabled, supported adapter and SELECT query
                     if ($this->_explain && $supportedAdapter && Zend_Db_Profiler::SELECT == $profile->getQueryType()) {
                         $explain = $adapter->fetchRow('EXPLAIN '.$profile->getQuery());
-                        $html .= '<p><strong>Type:</strong> '.strtolower($explain['select_type']).', '.$explain['type'].'<br />'
+                        $html .= '<strong>Type:</strong> '.strtolower($explain['select_type']).', '.$explain['type'].'<br />'
                                 .'<strong>Possible Keys:</strong> '.$explain['possible_keys'].'<br />'
                                 .'<strong>Key Used:</strong> '.$explain['key'].'<br />'
                                 .'<strong>Rows:</strong> '.$explain['rows'].'<br />'
-                                .'<strong>Extra:</strong> '.$explain['Extra']
-                                .'</p>';
+                                .'<strong>Extra:</strong> '.$explain['Extra'];
                     }
 
-                    $html .= '</li>';
+                    $html .= '</p></li>';
                 }
                 $html .= '</ol>';
             }
