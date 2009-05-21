@@ -177,6 +177,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     public function getPlugin($identifier)
     {
+        $identifier = strtolower($identifier);
         if (isset($this->_plugins[$identifier])) {
             return $this->_plugins[$identifier];
         }
