@@ -405,7 +405,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 #ZFDebug_toggler { font-weight:bold; background:#BFBFBF; }
                 .ZFDebug_span { border: 1px solid #999; border-right:0px; background:#DFDFDF; padding: 5px 5px; }
                 .ZFDebug_last { border: 1px solid #999; }
-                .ZFDebug_panel { text-align:left; position:absolute;bottom:21px;width:600px; max-height:400px; overflow:auto; display:none; background:#E8E8E8; padding:5px; border: 1px solid #999; }
+                .ZFDebug_panel { text-align:left; position:absolute;bottom:21px;width:800px; max-height:400px; overflow:auto; display:none; background:#E8E8E8; padding:5px; border: 1px solid #999; }
                 .ZFDebug_panel .pre {font: 11px/1.4em Monaco, Lucida Console, monospace; margin:0 0 0 22px}
                 #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
             </style>
