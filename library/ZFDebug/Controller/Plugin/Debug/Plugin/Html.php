@@ -69,17 +69,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Html implements ZFDebug_Controller_
         $panel = '<h4>HTML Information</h4>';
         $panel .= '
         <script type="text/javascript" charset="utf-8">
-            var load = window.onload;
+            var ZFHtmlLoad = window.onload;
             window.onload = function(){
-                if (load) {
-                    load();
+                if (ZFHtmlLoad) {
+                    ZFHtmlLoad();
                 }
                 jQuery("#ZFDebug_Html_Tagcount").html(document.getElementsByTagName("*").length);
                 jQuery("#ZFDebug_Html_Stylecount").html(jQuery("link[rel*=stylesheet]").length);
                 jQuery("#ZFDebug_Html_Scriptcount").html(jQuery("script[src]").length);
                 jQuery("#ZFDebug_Html_Imgcount").html(jQuery("img[src]").length);
             };
-            load = "";
         </script>';
         $panel .= '<span id="ZFDebug_Html_Tagcount"></span> Tags<br />'
                 . 'HTML Size: '.round(strlen($body)/1024, 2).'K<br />'
