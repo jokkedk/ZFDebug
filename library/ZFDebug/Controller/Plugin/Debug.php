@@ -67,7 +67,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @var string
      */
-    protected $_version = '1.5';
+    protected $_version = '1.5.1';
 
     /**
      * Creates a new instance of the Debug Bar
@@ -395,7 +395,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _headerOutput() {
         $collapsed = isset($_COOKIE['ZFDebugCollapsed']) ? $_COOKIE['ZFDebugCollapsed'] : 0;
-        
+
         return ('
             <style type="text/css" media="screen">
                 #ZFDebug_debug { font: 11px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; position:fixed; bottom:5px; left:5px; color:#000; z-index: ' . $this->_options['z-index'] . ';}
@@ -418,15 +418,14 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     head.insertBefore(scriptObj,head.firstChild);
                 }
 
-                var load = window.onload;
+                var ZFDebugLoad = window.onload;
                 window.onload = function(){
-                    if (load) {
-                        load();
+                    if (ZFDebugLoad) {
+                        ZFDebugLoad();
                     }
                     jQuery.noConflict();
                     ZFDebugCollapsed();
                 };
-                load = "";
                 
                 function ZFDebugCollapsed() {
                     if ('.$collapsed.' == 1) {
