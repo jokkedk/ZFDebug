@@ -102,22 +102,22 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
 
         foreach($timerNamespace->data as $module => $controller)
         {
-            if ($module == $this_module) {
-                $module = '<strong>'.$module.'</strong>';
+            if ($module != $this_module) {
+                continue;
             }
             $html .= $module . '<br />';
             $html .= '<div class="pre">';
             foreach($controller as $con => $action)
             {
-                if ($con == $this_controller) {
-                    $con = '<strong>'.$con.'</strong>';
+                if ($con != $this_controller) {
+                    continue;
                 }
                 $html .= '    ' . $con . '<br />';
                 $html .= '<div class="pre">';
                 foreach ($action as $key => $data)
                 {
-                    if ($key == $this_action) {
-                        $key = '<strong>'.$key.'</strong>';
+                    if ($key != $this_action) {
+                        continue;
                     }
                     $html .= '        ' . $key . '<br />';
                     $html .= '<div class="pre">';
