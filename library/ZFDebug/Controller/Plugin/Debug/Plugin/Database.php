@@ -115,12 +115,24 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
             $html .= 'Metadata cache is DISABLED';
         }
 
+        # For adding quotes to query params
+        function add_quotes(&$value, $key) {
+            $value = '`'.$value.'`';
+        }
+
         foreach ($this->_db as $name => $adapter) {
             if ($profiles = $adapter->getProfiler()->getQueryProfiles()) {
                 $adapter->getProfiler()->setEnabled(false);
                 $html .= '<h4>Adapter '.$name.'</h4><ol>';
                 foreach ($profiles as $profile) {
-                    $html .= '<li>'.htmlspecialchars($profile->getQuery());
+                    $params = $profile->getQueryParams();
+                    array_walk($params, 'add_quotes');
+                    $paramCount = count($params);
+                    if ($paramCount) {
+                        $html .= '<li>'.htmlspecialchars(preg_replace(array_fill(0, $paramCount, '/\?/'), $params, $profile->getQuery(), 1));
+                    } else {
+                        $html .= '<li>'.htmlspecialchars($profile->getQuery());
+                    }
                     $html .= '<p><strong>Time:</strong> '.round($profile->getElapsedSecs()*1000, 2).' ms<br />';
                     
                     $supportedAdapter = ($adapter instanceof Zend_Db_Adapter_Mysqli 
