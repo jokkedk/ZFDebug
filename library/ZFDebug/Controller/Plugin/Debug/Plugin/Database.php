@@ -117,7 +117,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
 
         # For adding quotes to query params
         function add_quotes(&$value, $key) {
-            $value = '`'.$value.'`';
+            $value = "'".$value."'";
         }
 
         foreach ($this->_db as $name => $adapter) {
