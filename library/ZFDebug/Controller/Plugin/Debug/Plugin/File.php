@@ -112,17 +112,18 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
         $libraryFiles = array();
         foreach ($this->_library as $key => $value) {
             if ('' != $value) {
-                $libraryFiles[$key] = '<h4>' . $value . ' Library Files</h4>';
+                $libraryFiles[$key] = '<h4>' . $value . ' Files</h4>';
             }
         }
 
         $html .= '<h4>Application Files</h4>';
         foreach ($included as $file) {
             $file = str_replace($this->_basePath, '', $file);
+            $filePaths = explode(DIRECTORY_SEPARATOR, $file);
             $inUserLib = false;
         	foreach ($this->_library as $key => $library)
         	{
-        		if('' != $library && false !== strstr($file, $library)) {
+        		if('' != $library && in_array($library, $filePaths)) {
         			$libraryFiles[$key] .= $file . '<br />';
         			$inUserLib = TRUE;
         		}
