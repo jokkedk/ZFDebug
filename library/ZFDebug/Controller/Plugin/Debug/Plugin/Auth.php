@@ -99,12 +99,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Auth implements ZFDebug_Controller_
 	    if (is_object($identity)) {
     		$username = $this->_auth->getIdentity()->{$this->_user};
     		$role = $this->_auth->getIdentity()->{$this->_role};
-    	} 
+    	}
     	else {
     	    $username = $this->_auth->getIdentity();
     		$role = '';
     	}
-    	return "$username";
+    	return $username . ' (' . $role . ')';
     }
 
     /**
