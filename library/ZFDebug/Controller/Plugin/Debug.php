@@ -67,7 +67,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @var string
      */
-    protected $_version = '1.5.1';
+    protected $_version = '1.5.2';
 
     /**
      * Creates a new instance of the Debug Bar
@@ -76,6 +76,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      * @throws Zend_Controller_Exception
      * @return void
      */
+
+    protected $_closingBracket = null;
+
     public function __construct($options = null)
     {
         if (isset($options)) {
@@ -223,7 +226,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
 
             /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
             $html .= '<span class="ZFDebug_span clickable" onclick="ZFDebugPanel(\'ZFDebug_' . $plugin->getIdentifier() . '\');">';
-            $html .= '<img src="' . $this->_icon($plugin->getIdentifier()) . '" style="vertical-align:middle" alt="' . $plugin->getIdentifier() . '" title="' . $plugin->getIdentifier() . '" /> ';
+            $html .= '<img src="' . $this->_icon($plugin->getIdentifier()) . '" style="vertical-align:middle" alt="' . $plugin->getIdentifier() . '" title="' . $plugin->getIdentifier() . '"'. $this->getClosingBracket() .' ';
             $html .= $tab . '</span>';
         }
 
@@ -284,8 +287,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     protected function _getVersionPanel()
     {
         $panel = '<h4>ZFDebug v'.$this->_version.'</h4>' .
-                 '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a> & <a href="http://www.bangal.de">Andreas Pankratz</a></p>' .
-                 '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a> and released under the BSD License<br />' .
+                 '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a> &amp; <a href="http://www.bangal.de">Andreas Pankratz</a></p>' .
+                 '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a> and released under the BSD License' . $this->getLinebreak() .
                  'Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>';
         // $panel .= '<h4>Zend Framework '.Zend_Version::VERSION.' / PHP '.phpversion().' with extensions:</h4>';
         // $extensions = get_loaded_extensions();
@@ -485,5 +488,30 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         $response = $this->getResponse();
         $response->setBody(preg_replace('/(<head.*>)/i', '$1' . $this->_headerOutput(), $response->getBody()));
         $response->setBody(str_ireplace('</body>', '<div id="ZFDebug_debug">'.$html.'</div></body>', $response->getBody()));
+    }
+    
+    public function getLinebreak()
+    {
+        return '<br'.$this->getClosingBracket();
+    }
+
+    public function getClosingBracket()
+    {
+        if (!$this->_closingBracket) {
+            if ($this->_isXhtml()) {
+                $this->_closingBracket = ' />';
+            } else {
+                $this->_closingBracket = '>';
+            }
+        }
+
+        return $this->_closingBracket;
+    }  
+    
+    protected function _isXhtml()
+    {
+        $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
+        $doctype = $view->doctype();
+        return $doctype->isXhtml();
     }
 }

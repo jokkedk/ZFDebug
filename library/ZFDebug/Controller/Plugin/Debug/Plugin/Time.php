@@ -41,6 +41,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     protected $_timer = array();
 
+    protected $_closingBracket = null;
+
     /**
      * Creating time plugin
      * @return void
@@ -78,10 +80,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     public function getPanel()
     {
         $html = '<h4>Custom Timers</h4>';
-        $html .= 'Controller: ' . round(($this->_timer['postDispatch']-$this->_timer['preDispatch']),2) .' ms<br />';
+        $html .= 'Controller: ' . round(($this->_timer['postDispatch']-$this->_timer['preDispatch']),2) .' ms'.$this->getLinebreak();
         if (isset($this->_timer['user']) && count($this->_timer['user'])) {
             foreach ($this->_timer['user'] as $name => $time) {
-                $html .= ''.$name.': '. round($time,2).' ms<br>';
+                $html .= ''.$name.': '. round($time,2).' ms'.$this->getLinebreak();
             }
         }
 
@@ -105,32 +107,32 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
             if ($module != $this_module) {
                 continue;
             }
-            $html .= $module . '<br />';
+            $html .= $module . $this->getLinebreak();
             $html .= '<div class="pre">';
             foreach($controller as $con => $action)
             {
                 if ($con != $this_controller) {
                     continue;
                 }
-                $html .= '    ' . $con . '<br />';
+                $html .= '    ' . $con . $this->getLinebreak();
                 $html .= '<div class="pre">';
                 foreach ($action as $key => $data)
                 {
                     if ($key != $this_action) {
                         continue;
                     }
-                    $html .= '        ' . $key . '<br />';
+                    $html .= '        ' . $key . $this->getLinebreak();
                     $html .= '<div class="pre">';
-                    $html .= '            Avg: ' . $this->_calcAvg($data) . ' ms / '.count($data).' requests<br />';
-                    $html .= '            Min: ' . round(min($data), 2) . ' ms<br />';
-                    $html .= '            Max: ' . round(max($data), 2) . ' ms<br />';
+                    $html .= '            Avg: ' . $this->_calcAvg($data) . ' ms / '.count($data).' requests'.$this->getLinebreak();
+                    $html .= '            Min: ' . round(min($data), 2) . ' ms'.$this->getLinebreak();
+                    $html .= '            Max: ' . round(max($data), 2) . ' ms'.$this->getLinebreak();
                     $html .= '</div>';
                 }
                 $html .= '</div>';
             }
             $html .= '</div>';
         }
-        $html .= '<br />Reset timers by sending ZFDEBUG_RESET as a GET/POST parameter';
+        $html .= $this->getLinebreak().'Reset timers by sending ZFDEBUG_RESET as a GET/POST parameter';
 
         return $html;
     }
@@ -203,5 +205,30 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
 
         $cuantos=count($array);
         return round(array_sum($array)/$cuantos,$precision);
+    }
+    
+    public function getLinebreak()
+    {
+        return '<br'.$this->getClosingBracket();
+    }
+
+    public function getClosingBracket()
+    {
+        if (!$this->_closingBracket) {
+            if ($this->_isXhtml()) {
+                $this->_closingBracket = ' />';
+            } else {
+                $this->_closingBracket = '>';
+            }
+        }
+
+        return $this->_closingBracket;
+    }  
+    
+    protected function _isXhtml()
+    {
+        $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
+        $doctype = $view->doctype();
+        return $doctype->isXhtml();
     }
 }

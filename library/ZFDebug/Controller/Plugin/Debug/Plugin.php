@@ -19,6 +19,33 @@
  */
 class ZFDebug_Controller_Plugin_Debug_Plugin
 {
+    protected $_closingBracket = null;
+
+    public function getLinebreak()
+    {
+        return '<br'.$this->getClosingBracket();
+    }
+
+    public function getClosingBracket()
+    {
+        if (!$this->_closingBracket) {
+            if ($this->_isXhtml()) {
+                $this->_closingBracket = ' />';
+            } else {
+                $this->_closingBracket = '>';
+            }
+        }
+
+        return $this->_closingBracket;
+    }  
+    
+    protected function _isXhtml()
+    {
+        $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
+        $doctype = $view->doctype();
+        return $doctype->isXhtml();
+    }
+    
     /**
      * Transforms data into readable format
      *
@@ -35,10 +62,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
         {
             $key = htmlspecialchars($key);
             if (is_numeric($value)) {
-                $retVal .= $key.' => '.$value.'<br>';
+                $retVal .= $key.' => '.$value.$this->getLinebreak();
             }
             else if (is_string($value)) {
-                $retVal .= $key.' => \''.htmlspecialchars($value).'\'<br>';
+                $retVal .= $key.' => \''.htmlspecialchars($value).'\''.$this->getLinebreak();
             }
             else if (is_array($value))
             {
@@ -46,11 +73,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
             }
             else if (is_object($value))
             {
-                $retVal .= $key.' => '.get_class($value).' Object()<br>';
+                $retVal .= $key.' => '.get_class($value).' Object()'.$this->getLinebreak();
             }
             else if (is_null($value))
             {
-                $retVal .= $key.' => NULL<br>';
+                $retVal .= $key.' => NULL'.$this->getLinebreak();
             }
         }
         return $retVal.'</div>';

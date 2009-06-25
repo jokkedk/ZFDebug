@@ -31,6 +31,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory extends Zend_Controller_Plug
      */
     protected $_memory = array();
 
+    protected $_closingBracket = null;
+
     /**
      * Creating time plugin
      * @return void
@@ -71,10 +73,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory extends Zend_Controller_Plug
     public function getPanel()
     {
         $panel = '<h4>Memory Usage</h4>';
-        $panel .= 'Controller: ' . round(($this->_memory['postDispatch']-$this->_memory['preDispatch'])/1024,2) .'K<br />';
+        $panel .= 'Controller: ' . round(($this->_memory['postDispatch']-$this->_memory['preDispatch'])/1024,2) .'K'.$this->getLinebreak();
         if (isset($this->_memory['user']) && count($this->_memory['user'])) {
             foreach ($this->_memory['user'] as $key => $value) {
-                $panel .= $key.': '.round($value/1024).'K<br />';
+                $panel .= $key.': '.round($value/1024).'K'.$this->getLinebreak();
             }
         }
         return $panel;
@@ -120,6 +122,31 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory extends Zend_Controller_Plug
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['postDispatch'] = memory_get_peak_usage();
         }
+    }
+    
+    public function getLinebreak()
+    {
+        return '<br'.$this->getClosingBracket();
+    }
+
+    public function getClosingBracket()
+    {
+        if (!$this->_closingBracket) {
+            if ($this->_isXhtml()) {
+                $this->_closingBracket = ' />';
+            } else {
+                $this->_closingBracket = '>';
+            }
+        }
+
+        return $this->_closingBracket;
+    }  
+    
+    protected function _isXhtml()
+    {
+        $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
+        $doctype = $view->doctype();
+        return $doctype->isXhtml();
     }
     
 }

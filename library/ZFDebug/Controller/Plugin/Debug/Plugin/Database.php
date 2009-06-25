@@ -133,7 +133,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
                     } else {
                         $html .= '<li>'.htmlspecialchars($profile->getQuery());
                     }
-                    $html .= '<p><strong>Time:</strong> '.round($profile->getElapsedSecs()*1000, 2).' ms<br />';
+                    $html .= '<p><strong>Time:</strong> '.round($profile->getElapsedSecs()*1000, 2).' ms'.$this->getLinebreak();
                     
                     $supportedAdapter = ($adapter instanceof Zend_Db_Adapter_Mysqli 
                         || $adapter instanceof Zend_Db_Adapter_Pdo_Mysql);
@@ -141,10 +141,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
                     # Run explain if enabled, supported adapter and SELECT query
                     if ($this->_explain && $supportedAdapter && Zend_Db_Profiler::SELECT == $profile->getQueryType()) {
                         $explain = $adapter->fetchRow('EXPLAIN '.$profile->getQuery());
-                        $html .= '<strong>Type:</strong> '.strtolower($explain['select_type']).', '.$explain['type'].'<br />'
-                                .'<strong>Possible Keys:</strong> '.$explain['possible_keys'].'<br />'
-                                .'<strong>Key Used:</strong> '.$explain['key'].'<br />'
-                                .'<strong>Rows:</strong> '.$explain['rows'].'<br />'
+                        $html .= '<strong>Type:</strong> '.strtolower($explain['select_type']).', '.$explain['type'].$this->getLinebreak()
+                                .'<strong>Possible Keys:</strong> '.$explain['possible_keys'].$this->getLinebreak()
+                                .'<strong>Key Used:</strong> '.$explain['key'].$this->getLinebreak()
+                                .'<strong>Rows:</strong> '.$explain['rows'].$this->getLinebreak()
                                 .'<strong>Extra:</strong> '.$explain['Extra'];
                     }
 

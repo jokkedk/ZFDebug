@@ -17,7 +17,7 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plugin_Debug_Plugin implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
@@ -100,14 +100,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
     {
         $included = $this->_getIncludedFiles();
         $html = '<h4>File Information</h4>';
-        $html .= count($included).' Files Included<br />';
+        $html .= count($included).' Files Included'.$this->getLinebreak();
         $size = 0;
         foreach ($included as $file) {
             $size += filesize($file);
         }
-        $html .= 'Total Size: '. round($size/1024, 1).'K<br />';
+        $html .= 'Total Size: '. round($size/1024, 1).'K'.$this->getLinebreak();
         
-        $html .= 'Basepath: ' . $this->_basePath . '<br />';
+        $html .= 'Basepath: ' . $this->_basePath .$this->getLinebreak();
 
         $libraryFiles = array();
         foreach ($this->_library as $key => $value) {
@@ -124,12 +124,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File implements ZFDebug_Controller_
         	foreach ($this->_library as $key => $library)
         	{
         		if('' != $library && in_array($library, $filePaths)) {
-        			$libraryFiles[$key] .= $file . '<br />';
+        			$libraryFiles[$key] .= $file . $this->getLinebreak();
         			$inUserLib = TRUE;
         		}
         	}
         	if (!$inUserLib) {
-    			$html .= $file . '<br />';
+    			$html .= $file .$this->getLinebreak();
         	}
         }
 
