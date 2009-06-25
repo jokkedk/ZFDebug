@@ -193,9 +193,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     public function dispatchLoopShutdown()
     {
         $html = '';
-
-        if ($this->getRequest()->isXmlHttpRequest())
+        if ($this->getRequest()->isXmlHttpRequest() 
+        || Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->getNoRender()) {
             return;
+        }
 
         /**
          * Creating menu tab for all registered plugins
