@@ -68,7 +68,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Html extends ZFDebug_Controller_Plu
         $body = Zend_Controller_Front::getInstance()->getResponse()->getBody();
         $panel = '<h4>HTML Information</h4>';
         $panel .= $this->_isXhtml().'
-        <script type="text/javascript" charset="utf-8">
+        <script type="text/javascript">
             var ZFHtmlLoad = window.onload;
             window.onload = function(){
                 if (ZFHtmlLoad) {
