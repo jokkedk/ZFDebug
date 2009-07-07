@@ -412,7 +412,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 .ZFDebug_panel .pre {font: 11px/1.4em Monaco, Lucida Console, monospace; margin:0 0 0 22px}
                 #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
             </style>
-            <script type="text/javascript" charset="utf-8">
+            <script type="text/javascript">
                 if (typeof jQuery == "undefined") {
                     var scriptObj = document.createElement("script");
                     scriptObj.src = "'.$this->_options['jquery_path'].'";
@@ -486,7 +486,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     protected function _output($html)
     {
         $response = $this->getResponse();
-        $response->setBody(preg_replace('/(<head.*>)/i', '$1' . $this->_headerOutput(), $response->getBody()));
+        $response->setBody(preg_replace('/(<\/head>)/i', $this->_headerOutput() . '$1', $response->getBody()));
         $response->setBody(str_ireplace('</body>', '<div id="ZFDebug_debug">'.$html.'</div></body>', $response->getBody()));
     }
     
@@ -510,8 +510,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     
     protected function _isXhtml()
     {
-        $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
-        $doctype = $view->doctype();
-        return $doctype->isXhtml();
+        if ($view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view) {
+            $doctype = $view->doctype();
+            return $doctype->isXhtml();
+        }
+        return false;
     }
 }
