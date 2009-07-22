@@ -192,10 +192,15 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     public function dispatchLoopShutdown()
     {
-        $html = '';
         if ($this->getRequest()->isXmlHttpRequest()) {
             return;
         }
+        $disable = Zend_Controller_Front::getInstance()->getRequest()->getParam('ZFDEBUG_DISABLE');
+        if (isset($disable)) {
+            return;
+        }
+        
+        $html = '';
 
         /**
          * Creating menu tab for all registered plugins
@@ -289,7 +294,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         $panel = '<h4>ZFDebug v'.$this->_version.'</h4>' .
                  '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a> &amp; <a href="http://www.bangal.de">Andreas Pankratz</a></p>' .
                  '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a> and released under the BSD License' . $this->getLinebreak() .
-                 'Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>';
+                 'Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>'.
+                 '<p>Disable ZFDebug temporarily by sending ZFDEBUG_DISABLE as a GET/POST parameter</p>';
         // $panel .= '<h4>Zend Framework '.Zend_Version::VERSION.' / PHP '.phpversion().' with extensions:</h4>';
         // $extensions = get_loaded_extensions();
         // natcasesort($extensions);
@@ -419,6 +425,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     scriptObj.type = "text/javascript";
                     var head=document.getElementsByTagName("head")[0];
                     head.insertBefore(scriptObj,head.firstChild);
+                    jQuery.noConflict();
                 }
 
                 var ZFDebugLoad = window.onload;
@@ -426,7 +433,6 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     if (ZFDebugLoad) {
                         ZFDebugLoad();
                     }
-                    jQuery.noConflict();
                     ZFDebugCollapsed();
                 };
                 
