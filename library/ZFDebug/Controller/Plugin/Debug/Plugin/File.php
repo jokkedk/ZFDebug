@@ -66,7 +66,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plu
         isset($options['base_path']) || $options['base_path'] = $_SERVER['DOCUMENT_ROOT'];
         isset($options['library']) || $options['library'] = null;
         
-        $this->_basePath = $options['base_path'];
+        $this->_basePath = realpath($options['base_path']);
         is_array($options['library']) || $options['library'] = array($options['library']);
         $this->_library = array_merge($options['library'], array('Zend', 'ZFDebug'));
     }
