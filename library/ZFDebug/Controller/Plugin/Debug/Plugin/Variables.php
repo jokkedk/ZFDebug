@@ -50,6 +50,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
     {
         return $this->_identifier;
     }
+    
+    /**
+     * Returns the base64 encoded icon
+     *
+     * @return string
+     **/
+    public function getIconData()
+    {
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFWSURBVBgZBcE/SFQBAAfg792dppJeEhjZn80MChpqdQ2iscmlscGi1nBPaGkviKKhONSpvSGHcCrBiDDjEhOC0I68sjvf+/V9RQCsLHRu7k0yvtN8MTMPICJieaLVS5IkafVeTkZEFLGy0JndO6vWNGVafPJVh2p8q/lqZl60DpIkaWcpa1nLYtpJkqR1EPVLz+pX4rj47FDbD2NKJ1U+6jTeTRdL/YuNrkLdhhuAZVP6ukqbh7V0TzmtadSEDZXKhhMG7ekZl24jGDLgtwEd6+jbdWAAEY0gKsPO+KPy01+jGgqlUjTK4ZroK/UVKoeOgJ5CpRyq5e2qjhF1laAS8c+Ymk1ZrVXXt2+9+fJBYUwDpZ4RR7Wtf9u9m2tF8Hwi9zJ3/tg5pW2FHVv7eZJHd75TBPD0QuYze7n4Zdv+ch7cfg8UAcDjq7mfwTycew1AEQAAAMB/0x+5JQ3zQMYAAAAASUVORK5CYII=';
+    }
 
     /**
      * Gets menu tab for the Debugbar
@@ -70,7 +80,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
     {
         $this->_request = Zend_Controller_Front::getInstance()->getRequest();
         $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
-        $viewVars = $viewRenderer->view->getVars();
+        if ($viewRenderer->view && method_exists($viewRenderer->view, 'getVars')) {
+            $viewVars = $this->_cleanData($viewRenderer->view->getVars());
+        } else {
+            $viewVars = "No 'getVars()' method in view class";
+        }
         $vars = '';
         if ($this->_request->isPost())
         {
@@ -83,7 +97,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
                . '<h4>Request</h4>'
                . '<div id="ZFDebug_requests">' . $this->_cleanData($this->_request->getParams()) . '</div>'
                . '<h4>View vars</h4>'
-               . '<div id="ZFDebug_vars">' . $this->_cleanData($viewVars) . '</div>';
+               . '<div id="ZFDebug_vars">' . $viewVars . '</div>';
         return $vars;
     }
 
