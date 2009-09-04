@@ -61,6 +61,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     {
         return $this->_identifier;
     }
+    
+    /**
+     * Returns the base64 encoded icon
+     *
+     * @return string
+     **/
+    public function getIconData()
+    {
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAKrSURBVDjLpdPbT9IBAMXx/qR6qNbWUy89WS5rmVtutbZalwcNgyRLLMyuoomaZpRQCt5yNRELL0TkBSXUTBT5hZSXQPwBAvor/fZGazlb6+G8nIfP0znbgG3/kz+Knsbb+xxNV63DLxVLHzqV0vCrfMluzFmw1OW8ePEwf8+WgM1UXDnapVgLePr5Nj9DJBJGFEN8+TzKqL2RzkenV4yl5ws2BXob1WVeZxXhoB+PP0xzt0Bly0fKTePozV5GphYQPA46as+gU5/K+w2w6Ev2Ol/KpNCigM01R2uPgDcQIRSJEYys4JmNoO/y0tbnY9JlxnA9M15bfHZHCnjzVN4x7TLz6fMSJqsPgLAoMvV1niSQBGIbUP3Ki93t57XhItVXjulTQHf9hfk5/xgGyzQTgQjx7xvE4nG0j3UsiiLR1VVaLN3YpkTuNLgZGzRSq8wQUoD16flkOPSF28/cLCYkwqvrrAGXC1UYWtuRX1PR5RhgTJTI1Q4wKwzwWHk4kQI6a04nQ99mUOlczMYkFhPrBMQoN+7eQ35Nhc01SvA7OEMSFzTv8c/0UXc54xfQcj/bNzNmRmNy0zctMpeEQFSio/cdvqUICz9AiEPb+DLK2gE+2MrR5qXPpoAn6mxdr1GBwz1FiclDcAPCEkTXIboByz8guA75eg8WxxDtFZloZIdNKaDu5rnt9UVHE5POep6Zh7llmsQlLBNLSMTiEm5hGXXDJ6qb3zJiLaIiJy1Zpjy587ch1ahOKJ6XHGGiv5KeQSfFun4ulb/josZOYY0di/0tw9YCquX7KZVnFW46Ze2V4wU1ivRYe1UWI1Y1vgkDvo9PGLIoabp7kIrctJXSS8eKtjyTtuDErrK8jIYHuQf8VbK0RJUsLfEg94BfIztkLMvP3v3XN/5rfgIYvAvmgKE6GAAAAABJRU5ErkJggg==';
+    }
 
     /**
      * Gets menu tab for the Debugbar
@@ -69,7 +79,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     public function getTab()
     {
-        return round($this->_timer['postDispatch'],2) . ' ms';
+        return round($this->_timer['dispatchShutdown'],2) .'/'.round($this->_timer['dispatchShutdown']-$this->_timer['dispatchStartup'],2). ' ms';
     }
 
     /**
@@ -80,7 +90,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     public function getPanel()
     {
         $html = '<h4>Custom Timers</h4>';
-        $html .= 'Controller: ' . round(($this->_timer['postDispatch']-$this->_timer['preDispatch']),2) .' ms'.$this->getLinebreak();
+        $html .= 'Dispatch: ' . round(($this->_timer['dispatchShutdown']-$this->_timer['dispatchStartup']),2) .' ms'.$this->getLinebreak();
         if (isset($this->_timer['user']) && count($this->_timer['user'])) {
             foreach ($this->_timer['user'] as $name => $time) {
                 $html .= ''.$name.': '. round($time,2).' ms'.$this->getLinebreak();
@@ -98,7 +108,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
         $this_action = $request->getActionName();
 
         $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
-        $timerNamespace->data[$this_module][$this_controller][$this_action][] = $this->_timer['postDispatch'];
+        $timerNamespace->data[$this_module][$this_controller][$this_action][] = round($this->_timer['dispatchShutdown'],2);
 
         $html .= '<h4>Overall Timers</h4>';
 
@@ -163,7 +173,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      * @param Zend_Controller_Request_Abstract
      * @return void
      */
-    public function preDispatch(Zend_Controller_Request_Abstract $request)
+    public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
         $reset = Zend_Controller_Front::getInstance()->getRequest()->getParam('ZFDEBUG_RESET');
         if (isset($reset)) {
@@ -171,7 +181,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
             $timerNamespace->unsetAll();
         }
         
-        $this->_timer['preDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
+        $this->_timer['dispatchStartup'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
 
     /**
@@ -180,11 +190,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      * @param Zend_Controller_Request_Abstract
      * @return void
      */
-    public function postDispatch(Zend_Controller_Request_Abstract $request)
+    public function dispatchLoopShutdown()
     {
-        $this->_timer['postDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
+        $this->_timer['dispatchShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
-
+    
     /**
      * Calculate average time from $array
      *
