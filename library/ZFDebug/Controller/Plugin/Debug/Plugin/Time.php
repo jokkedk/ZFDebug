@@ -100,8 +100,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
             }
         }
 
-        if(!Zend_Session::isStarted())
-        {
+        if (!Zend_Session::isStarted()){
             Zend_Session::start();
         }
 
@@ -115,14 +114,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
 
         $html .= '<h4>Overall Timers</h4>';
 
-        foreach($timerNamespace->data as $module => $controller)
+        foreach ($timerNamespace->data as $module => $controller)
         {
             if ($module != $this_module) {
                 continue;
             }
             $html .= $module . $this->getLinebreak();
             $html .= '<div class="pre">';
-            foreach($controller as $con => $action)
+            foreach ($controller as $con => $action)
             {
                 if ($con != $this_controller) {
                     continue;
@@ -180,6 +179,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     {
         $reset = Zend_Controller_Front::getInstance()->getRequest()->getParam('ZFDEBUG_RESET');
         if (isset($reset)) {
+            if (!Zend_Session::isStarted()) {
+                Zend_Session::start();
+            }
             $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
             $timerNamespace->unsetAll();
         }
@@ -207,12 +209,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     protected function _calcAvg(array $array, $precision=2)
     {
-        if(!is_array($array)) {
+        if (!is_array($array)) {
             return 'ERROR in method _calcAvg(): this is a not array';
         }
 
-        foreach($array as $value)
-            if(!is_numeric($value)) {
+        foreach ($array as $value)
+            if (!is_numeric($value)) {
                 return 'ERROR in method _calcAvg(): the array contains one or more non-numeric values';
             }
 
