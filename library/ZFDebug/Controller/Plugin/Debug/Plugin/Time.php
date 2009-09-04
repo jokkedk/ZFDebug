@@ -39,7 +39,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     /**
      * @var array
      */
-    protected $_timer = array();
+    protected $_timer = array(
+        'dispatchLoopStartup' => 0,
+        'dispatchLoopShutdown' => 0
+    );
 
     protected $_closingBracket = null;
 
@@ -79,7 +82,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     public function getTab()
     {
-        return round($this->_timer['dispatchShutdown'],2) .'/'.round($this->_timer['dispatchShutdown']-$this->_timer['dispatchStartup'],2). ' ms';
+        return round($this->_timer['dispatchLoopShutdown'],2) .'/'.round($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup'],2). ' ms';
     }
 
     /**
@@ -90,7 +93,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     public function getPanel()
     {
         $html = '<h4>Custom Timers</h4>';
-        $html .= 'Dispatch: ' . round(($this->_timer['dispatchShutdown']-$this->_timer['dispatchStartup']),2) .' ms'.$this->getLinebreak();
+        $html .= 'Dispatch: ' . round(($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup']),2) .' ms'.$this->getLinebreak();
         if (isset($this->_timer['user']) && count($this->_timer['user'])) {
             foreach ($this->_timer['user'] as $name => $time) {
                 $html .= ''.$name.': '. round($time,2).' ms'.$this->getLinebreak();
@@ -108,7 +111,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
         $this_action = $request->getActionName();
 
         $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
-        $timerNamespace->data[$this_module][$this_controller][$this_action][] = round($this->_timer['dispatchShutdown'],2);
+        $timerNamespace->data[$this_module][$this_controller][$this_action][] = round($this->_timer['dispatchLoopShutdown'],2);
 
         $html .= '<h4>Overall Timers</h4>';
 
@@ -181,7 +184,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
             $timerNamespace->unsetAll();
         }
         
-        $this->_timer['dispatchStartup'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
+        $this->_timer['dispatchLoopStartup'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
 
     /**
@@ -192,7 +195,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     public function dispatchLoopShutdown()
     {
-        $this->_timer['dispatchShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
+        $this->_timer['dispatchLoopShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
     
     /**
