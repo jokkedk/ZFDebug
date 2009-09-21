@@ -263,7 +263,19 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     	        $plugin = $options;
     	        $options = array();
     	    }
-    	    $plugin = (string)$plugin;
+    	    
+    	    // Register an instance
+    	    if (is_object($plugin) && in_array('ZFDebug_Controller_Plugin_Debug_Plugin_Interface', class_implements($plugin))) {
+    	        $this->registerPlugin($plugin);
+    	        continue;
+    	    }
+    	    
+    	    if (!is_string($plugin)) {
+    	        throw new Exception("Invalid plugin name", 1);
+    	    }
+    	    $plugin = ucfirst($plugin);
+    	    
+    	    // Register a classname
     	    if (in_array($plugin, ZFDebug_Controller_Plugin_Debug::$standardPlugins)) {
     	        // standard plugin
                 $pluginClass = 'ZFDebug_Controller_Plugin_Debug_Plugin_' . $plugin;
