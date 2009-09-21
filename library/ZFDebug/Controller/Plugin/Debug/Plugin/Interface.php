@@ -39,4 +39,12 @@ interface ZFDebug_Controller_Plugin_Debug_Plugin_Interface
      * @return string
      */
     public function getIdentifier();
+    
+    
+    /**
+     * Return the path to an icon
+     *
+     * @return string
+     */
+    public function getIconData();
 }

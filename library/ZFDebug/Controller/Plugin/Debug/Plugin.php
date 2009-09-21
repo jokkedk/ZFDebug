@@ -25,6 +25,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
     {
         return '<br'.$this->getClosingBracket();
     }
+    
+    public function getIconData()
+    {
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAHhSURBVDjLpZI9SJVxFMZ/r2YFflw/kcQsiJt5b1ije0tDtbQ3GtFQYwVNFbQ1ujRFa1MUJKQ4VhYqd7K4gopK3UIly+57nnMaXjHjqotnOfDnnOd/nt85SURwkDi02+ODqbsldxUlD0mvHw09ubSXQF1t8512nGJ/Uz/5lnxi0tB+E9QI3D//+EfVqhtppGxUNzCzmf0Ekojg4fS9cBeSoyzHQNuZxNyYXp5ZM5Mk1ZkZT688b6thIBenG/N4OB5B4InciYBCVyGnEBHO+/LH3SFKQuF4OEs/51ndXMXC8Ajqknrcg1O5PGa2h4CJUqVES0OO7sYevv2qoFBmJ/4gF4boaOrg6rPLYWaYiVfDo0my8w5uj12PQleB0vcp5I6HsHAUoqUhR29zH+5B4IxNTvDmxljy3x2YCYUwZVlbzXJh9UKeQY6t2m0Lt94Oh5loPdqK3EkjzZi4MM/Y9Db3MTv/mYWVxaqkw9IOATNR7B5ABHPrZQrtg9sb8XDKa1+QOwsri4zeHD9SAzE1wxBTXz9xtvMc5ZU5lirLSKIz18nJnhOZjb22YKkhd4odg5icpcoyL669TAAujlyIvmPHSWXY1ti1AmZ8mJ3ElP1ips1/YM3H300g+W+51nc95YPEX8fEbdA2ReVYAAAAAElFTkSuQmCC';
+    }
 
     public function getClosingBracket()
     {
@@ -54,6 +59,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
      */
     protected function _cleanData($values)
     {
+        $linebreak = $this->getLinebreak();
+        
         if (is_array($values)) {
             ksort($values);
         }
@@ -62,10 +69,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
         {
             $key = htmlspecialchars($key);
             if (is_numeric($value)) {
-                $retVal .= $key.' => '.$value.$this->getLinebreak();
+                $retVal .= $key.' => '.$value.$linebreak;
             }
             else if (is_string($value)) {
-                $retVal .= $key.' => \''.htmlspecialchars($value).'\''.$this->getLinebreak();
+                $retVal .= $key.' => \''.htmlspecialchars($value).'\''.$linebreak;
             }
             else if (is_array($value))
             {
@@ -73,11 +80,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
             }
             else if (is_object($value))
             {
-                $retVal .= $key.' => '.get_class($value).' Object()'.$this->getLinebreak();
+                $retVal .= $key.' => '.get_class($value).' Object()'.$linebreak;
             }
             else if (is_null($value))
             {
-                $retVal .= $key.' => NULL'.$this->getLinebreak();
+                $retVal .= $key.' => NULL'.$linebreak;
             }
         }
         return $retVal.'</div>';
