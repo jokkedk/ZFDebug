@@ -59,7 +59,17 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @var array
      */
-    public static $standardPlugins = array('Cache', 'Html', 'Database', 'Exception', 'File', 'Memory', 'Registry', 'Time', 'Variables');
+    public static $standardPlugins = array(
+        'Cache', 
+        'Html', 
+        'Database', 
+        'Exception', 
+        'File', 
+        'Memory', 
+        'Registry', 
+        'Time', 
+        'Variables'
+        );
 
     /**
      * Debug Bar Version Number
@@ -67,7 +77,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @var string
      */
-    protected $_version = '1.5.4';
+    protected $_version = '1.6';
 
     /**
      * Creates a new instance of the Debug Bar
@@ -133,7 +143,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         }
         
         if (isset($options['plugins'])) {
-        	$this->_options['plugins'] = $options['plugins'];
+            $this->_options['plugins'] = $options['plugins'];
         }
         return $this;
     }
@@ -203,11 +213,43 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         
         $html = '';
 
+        $html .= '<div id="ZFDebug_info">';
+
+        /**
+         * Creating panel content for all registered plugins
+         */
+        foreach ($this->_plugins as $plugin) {
+            $tab = $plugin->getTab();
+            if ($tab == '') {
+                continue;
+            }
+
+            if (null !== $this->_options['image_path'] && 
+                file_exists($this->_options['image_path'] .'/'. $plugin->getIdentifier() .'.png')) {
+                
+                $pluginIcon = $this->_options['image_path'] .'/'. $plugin->getIdentifier() .'.png';
+            } else {
+                $pluginIcon = $plugin->getIconData();
+            }
+
+            /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
+            $html .= '<span id="ZFDebugInfo_'.$plugin->getIdentifier()
+                   . '" class="ZFDebug_span clickable" onclick="ZFDebugPanel(\'ZFDebug_' 
+                   . $plugin->getIdentifier() . '\');">';
+            $html .= '<img src="' . $pluginIcon . '" style="vertical-align:middle" alt="' 
+                   . $plugin->getIdentifier() . '" title="' 
+                   . $plugin->getIdentifier() . '"'. $this->getClosingBracket() .' ';
+            $html .= $tab . '</span>';
+        }
+
+        $html .= '<span class="ZFDebug_span ZFDebug_last clickable" id="ZFDebug_toggler" onclick="ZFDebugSlideBar()">&#171;</span>';
+
+        $html .= '</div>';
+
         /**
          * Creating menu tab for all registered plugins
          */
-        foreach ($this->_plugins as $plugin)
-        {
+        foreach ($this->_plugins as $plugin) {
             $panel = $plugin->getPanel();
             if ($panel == '') {
                 continue;
@@ -218,33 +260,6 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                   . '" class="ZFDebug_panel">' . $panel . '</div>';
         }
 
-        $html .= '<div id="ZFDebug_info">';
-
-        /**
-         * Creating panel content for all registered plugins
-         */
-        foreach ($this->_plugins as $plugin)
-        {
-            $tab = $plugin->getTab();
-            if ($tab == '') {
-                continue;
-            }
-
-            if (null !== $this->_options['image_path'] && file_exists($this->_options['image_path'] .'/'. $plugin->getIdentifier() .'.png')) {
-                $plugin_icon = $this->_options['image_path'] .'/'. $plugin->getIdentifier() .'.png';
-            } else {
-                $plugin_icon = $plugin->getIconData();
-            }
-
-            /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
-            $html .= '<span class="ZFDebug_span clickable" onclick="ZFDebugPanel(\'ZFDebug_' . $plugin->getIdentifier() . '\');">';
-            $html .= '<img src="' . $plugin_icon . '" style="vertical-align:middle" alt="' . $plugin->getIdentifier() . '" title="' . $plugin->getIdentifier() . '"'. $this->getClosingBracket() .' ';
-            $html .= $tab . '</span>';
-        }
-
-        $html .= '<span class="ZFDebug_span ZFDebug_last clickable" id="ZFDebug_toggler" onclick="ZFDebugSlideBar()">&#171;</span>';
-
-        $html .= '</div>';
         $this->_output($html);
     }
 
@@ -257,30 +272,30 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _loadPlugins()
     {
-    	foreach($this->_options['plugins'] as $plugin => $options) {
-    	    if (is_numeric($plugin)) {
-    	        # Plugin passed as array value instead of key
-    	        $plugin = $options;
-    	        $options = array();
-    	    }
-    	    
-    	    // Register an instance
-    	    if (is_object($plugin) && in_array('ZFDebug_Controller_Plugin_Debug_Plugin_Interface', class_implements($plugin))) {
-    	        $this->registerPlugin($plugin);
-    	        continue;
-    	    }
-    	    
-    	    if (!is_string($plugin)) {
-    	        throw new Exception("Invalid plugin name", 1);
-    	    }
-    	    $plugin = ucfirst($plugin);
-    	    
-    	    // Register a classname
-    	    if (in_array($plugin, ZFDebug_Controller_Plugin_Debug::$standardPlugins)) {
-    	        // standard plugin
+        foreach ($this->_options['plugins'] as $plugin => $options) {
+            if (is_numeric($plugin)) {
+                # Plugin passed as array value instead of key
+                $plugin = $options;
+                $options = array();
+            }
+            
+            // Register an instance
+            if (is_object($plugin) && in_array('ZFDebug_Controller_Plugin_Debug_Plugin_Interface', class_implements($plugin))) {
+                $this->registerPlugin($plugin);
+                continue;
+            }
+            
+            if (!is_string($plugin)) {
+                throw new Exception("Invalid plugin name", 1);
+            }
+            $plugin = ucfirst($plugin);
+            
+            // Register a classname
+            if (in_array($plugin, ZFDebug_Controller_Plugin_Debug::$standardPlugins)) {
+                // standard plugin
                 $pluginClass = 'ZFDebug_Controller_Plugin_Debug_Plugin_' . $plugin;
-    	    } else {
-    	        // we use a custom plugin
+            } else {
+                // we use a custom plugin
                 if (!preg_match('~^[\w]+$~D', $plugin)) {
                     throw new Zend_Exception("ZFDebug: Invalid plugin name [$plugin]");
                 }
@@ -289,8 +304,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
 
             require_once str_replace('_', DIRECTORY_SEPARATOR, $pluginClass) . '.php';
             $object = new $pluginClass($options);
-    		$this->registerPlugin($object);
-    	}
+            $this->registerPlugin($object);
+        }
     }
 
     /**
@@ -310,11 +325,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _getVersionPanel()
     {
-        $panel = '<h4>ZFDebug v'.$this->_version.'</h4>' .
-                 '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a> &amp; <a href="http://www.bangal.de">Andreas Pankratz</a></p>' .
-                 '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a> and released under the BSD License' . $this->getLinebreak() .
-                 'Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>'.
-                 '<p>Disable ZFDebug temporarily by sending ZFDEBUG_DISABLE as a GET/POST parameter</p>';
+        $panel = '<h4>ZFDebug v'.$this->_version.'</h4>'
+               . '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a><br>'
+               . 'with contributions by <a href="http://www.bangal.de">Andreas Pankratz</a> and more</p>'
+               . '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a>'
+               . ' and released under the BSD License' . $this->getLinebreak()
+               . 'Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>'
+               . '<p>Disable ZFDebug temporarily by sending ZFDEBUG_DISABLE as a GET/POST parameter</p>';
         // $panel .= '<h4>Zend Framework '.Zend_Version::VERSION.' / PHP '.phpversion().' with extensions:</h4>';
         // $extensions = get_loaded_extensions();
         // natcasesort($extensions);
@@ -338,13 +355,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 break;
             case 'exception':
                 if (null === $this->_options['image_path'])
-    				return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAJPSURBVDjLpZPLS5RhFMYfv9QJlelTQZwRb2OKlKuINuHGLlBEBEOLxAu46oL0F0QQFdWizUCrWnjBaDHgThCMoiKkhUONTqmjmDp2GZ0UnWbmfc/ztrC+GbM2dXbv4ZzfeQ7vefKMMfifyP89IbevNNCYdkN2kawkCZKfSPZTOGTf6Y/m1uflKlC3LvsNTWArr9BT2LAf+W73dn5jHclIBFZyfYWU3or7T4K7AJmbl/yG7EtX1BQXNTVCYgtgbAEAYHlqYHlrsTEVQWr63RZFuqsfDAcdQPrGRR/JF5nKGm9xUxMyr0YBAEXXHgIANq/3ADQobD2J9fAkNiMTMSFb9z8ambMAQER3JC1XttkYGGZXoyZEGyTHRuBuPgBTUu7VSnUAgAUAWutOV2MjZGkehgYUA6O5A0AlkAyRnotiX3MLlFKduYCqAtuGXpyH0XQmOj+TIURt51OzURTYZdBKV2UBSsOIcRp/TVTT4ewK6idECAihtUKOArWcjq/B8tQ6UkUR31+OYXP4sTOdisivrkMyHodWejlXwcC38Fvs8dY5xaIId89VlJy7ACpCNCFCuOp8+BJ6A631gANQSg1mVmOxxGQYRW2nHMha4B5WA3chsv22T5/B13AIicWZmNZ6cMchTXUe81Okzz54pLi0uQWp+TmkZqMwxsBV74Or3od4OISPr0e3SHa3PX0f3HXKofNH/UIG9pZ5PeUth+CyS2EMkEqs4fPEOBJLsyske48/+xD8oxcAYPzs4QaS7RR2kbLTTOTQieczfzfTv8QPldGvTGoF6/8AAAAASUVORK5CYII=';
+                    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAJPSURBVDjLpZPLS5RhFMYfv9QJlelTQZwRb2OKlKuINuHGLlBEBEOLxAu46oL0F0QQFdWizUCrWnjBaDHgThCMoiKkhUONTqmjmDp2GZ0UnWbmfc/ztrC+GbM2dXbv4ZzfeQ7vefKMMfifyP89IbevNNCYdkN2kawkCZKfSPZTOGTf6Y/m1uflKlC3LvsNTWArr9BT2LAf+W73dn5jHclIBFZyfYWU3or7T4K7AJmbl/yG7EtX1BQXNTVCYgtgbAEAYHlqYHlrsTEVQWr63RZFuqsfDAcdQPrGRR/JF5nKGm9xUxMyr0YBAEXXHgIANq/3ADQobD2J9fAkNiMTMSFb9z8ambMAQER3JC1XttkYGGZXoyZEGyTHRuBuPgBTUu7VSnUAgAUAWutOV2MjZGkehgYUA6O5A0AlkAyRnotiX3MLlFKduYCqAtuGXpyH0XQmOj+TIURt51OzURTYZdBKV2UBSsOIcRp/TVTT4ewK6idECAihtUKOArWcjq/B8tQ6UkUR31+OYXP4sTOdisivrkMyHodWejlXwcC38Fvs8dY5xaIId89VlJy7ACpCNCFCuOp8+BJ6A631gANQSg1mVmOxxGQYRW2nHMha4B5WA3chsv22T5/B13AIicWZmNZ6cMchTXUe81Okzz54pLi0uQWp+TmkZqMwxsBV74Or3od4OISPr0e3SHa3PX0f3HXKofNH/UIG9pZ5PeUth+CyS2EMkEqs4fPEOBJLsyske48/+xD8oxcAYPzs4QaS7RR2kbLTTOTQieczfzfTv8QPldGvTGoF6/8AAAAASUVORK5CYII=';
 
                 return $this->_options['image_path'] . '/exception.png';
-                 break;
+                break;
             case 'error':
                 if (null === $this->_options['image_path'])
-    			    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAIsSURBVDjLpVNLSJQBEP7+h6uu62vLVAJDW1KQTMrINQ1vPQzq1GOpa9EppGOHLh0kCEKL7JBEhVCHihAsESyJiE4FWShGRmauu7KYiv6Pma+DGoFrBQ7MzGFmPr5vmDFIYj1mr1WYfrHPovA9VVOqbC7e/1rS9ZlrAVDYHig5WB0oPtBI0TNrUiC5yhP9jeF4X8NPcWfopoY48XT39PjjXeF0vWkZqOjd7LJYrmGasHPCCJbHwhS9/F8M4s8baid764Xi0Ilfp5voorpJfn2wwx/r3l77TwZUvR+qajXVn8PnvocYfXYH6k2ioOaCpaIdf11ivDcayyiMVudsOYqFb60gARJYHG9DbqQFmSVNjaO3K2NpAeK90ZCqtgcrjkP9aUCXp0moetDFEeRXnYCKXhm+uTW0CkBFu4JlxzZkFlbASz4CQGQVBFeEwZm8geyiMuRVntzsL3oXV+YMkvjRsydC1U+lhwZsWXgHb+oWVAEzIwvzyVlk5igsi7DymmHlHsFQR50rjl+981Jy1Fw6Gu0ObTtnU+cgs28AKgDiy+Awpj5OACBAhZ/qh2HOo6i+NeA73jUAML4/qWux8mt6NjW1w599CS9xb0mSEqQBEDAtwqALUmBaG5FV3oYPnTHMjAwetlWksyByaukxQg2wQ9FlccaK/OXA3/uAEUDp3rNIDQ1ctSk6kHh1/jRFoaL4M4snEMeD73gQx4M4PsT1IZ5AfYH68tZY7zv/ApRMY9mnuVMvAAAAAElFTkSuQmCC';
+                    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAIsSURBVDjLpVNLSJQBEP7+h6uu62vLVAJDW1KQTMrINQ1vPQzq1GOpa9EppGOHLh0kCEKL7JBEhVCHihAsESyJiE4FWShGRmauu7KYiv6Pma+DGoFrBQ7MzGFmPr5vmDFIYj1mr1WYfrHPovA9VVOqbC7e/1rS9ZlrAVDYHig5WB0oPtBI0TNrUiC5yhP9jeF4X8NPcWfopoY48XT39PjjXeF0vWkZqOjd7LJYrmGasHPCCJbHwhS9/F8M4s8baid764Xi0Ilfp5voorpJfn2wwx/r3l77TwZUvR+qajXVn8PnvocYfXYH6k2ioOaCpaIdf11ivDcayyiMVudsOYqFb60gARJYHG9DbqQFmSVNjaO3K2NpAeK90ZCqtgcrjkP9aUCXp0moetDFEeRXnYCKXhm+uTW0CkBFu4JlxzZkFlbASz4CQGQVBFeEwZm8geyiMuRVntzsL3oXV+YMkvjRsydC1U+lhwZsWXgHb+oWVAEzIwvzyVlk5igsi7DymmHlHsFQR50rjl+981Jy1Fw6Gu0ObTtnU+cgs28AKgDiy+Awpj5OACBAhZ/qh2HOo6i+NeA73jUAML4/qWux8mt6NjW1w599CS9xb0mSEqQBEDAtwqALUmBaG5FV3oYPnTHMjAwetlWksyByaukxQg2wQ9FlccaK/OXA3/uAEUDp3rNIDQ1ctSk6kHh1/jRFoaL4M4snEMeD73gQx4M4PsT1IZ5AfYH68tZY7zv/ApRMY9mnuVMvAAAAAElFTkSuQmCC';
 
                 return $this->_options['image_path'] . '/error.png';
                 break;
@@ -362,21 +379,35 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @return string
      */
-    protected function _headerOutput() {
+    protected function _headerOutput() 
+    {
         $collapsed = isset($_COOKIE['ZFDebugCollapsed']) ? $_COOKIE['ZFDebugCollapsed'] : 0;
-
+        $pluginWidth = floor(100/count($this->_plugins));
         return ('
             <style type="text/css" media="screen">
-                #ZFDebug_debug { font: 11px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; position:fixed; bottom:5px; left:5px; color:#000; z-index: ' . $this->_options['z-index'] . ';}
-                #ZFDebug_debug ol {margin:10px 0px; padding:0 25px}
+                #ZFDebug_offset {height:50px}
+                #ZFDebug_debug {height:50px; width:100%; background:#262626; 
+                                font: 14px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
+                                position:fixed; bottom:0px; left:0px; color:#FFF; 
+                                z-index: ' . $this->_options['z-index'] . ';}
+                #ZFDebug_debug td {vertical-align:top;}
                 #ZFDebug_debug li {margin:0 0 10px 0;}
                 #ZFDebug_debug .clickable {cursor:pointer}
-                #ZFDebug_toggler { font-weight:bold; background:#BFBFBF; }
-                .ZFDebug_span { border: 1px solid #999; border-right:0px; background:#DFDFDF; padding: 5px 5px; }
-                .ZFDebug_last { border: 1px solid #999; }
-                .ZFDebug_panel { text-align:left; position:absolute;bottom:21px;width:800px; max-height:400px; overflow:auto; display:none; background:#E8E8E8; padding:5px; border: 1px solid #999; }
+                #ZFDebug_toggler { font-weight:bold; background:#BFBFBF; display:none}
+                #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:50px; 
+                               background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
+                .ZFDebug_span {padding:0 15px; line-height:50px; display:block; float:left}
+                .ZFDebug_last { border: 0px }
+                .ZFDebug_panel {background:#1a1a1a; padding:0px 15px 15px 15px; 
+                                font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
+                                text-align:left; height:185px; overflow:auto; display:none; 
+                                border-top:1px solid #333333;}
+                .ZFDebug_active {background:#1a1a1a;}
                 .ZFDebug_panel .pre {font: 11px/1.4em Monaco, Lucida Console, monospace; margin:0 0 0 22px}
                 #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
+
+                .ZFDebug_Memory li {border-bottom:1px solid #1a1a1a;}
+                .ZFDebug_Memory_explain { background:#262626; padding:5px 10px;display:inline-block}
             </style>
             <script type="text/javascript">
                 if (typeof jQuery == "undefined") {
@@ -387,7 +418,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     head.insertBefore(scriptObj,head.firstChild);
                     jQuery.noConflict();
                 }
-
+                
                 var ZFDebugLoad = window.onload;
                 window.onload = function(){
                     if (ZFDebugLoad) {
@@ -404,15 +435,25 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                     }
                 }
                 
+                var ZFDebugCurrent = null;
+                
                 function ZFDebugPanel(name) {
+                    if (ZFDebugCurrent == name) {
+                        jQuery("#ZFDebug_debug").animate({height:"50px"});
+                        jQuery("#ZFDebug_offset").animate({height:"50px"});
+                        ZFDebugCurrent = null;
+                    } else {
+                        jQuery("#ZFDebug_debug").animate({height:"250px"});
+                        jQuery("#ZFDebug_offset").animate({height:"250px"});
+                        ZFDebugCurrent = name;
+                    }
                     jQuery(".ZFDebug_panel").each(function(i){
-                        if(jQuery(this).css("display") == "block") {
-                            jQuery(this).slideUp();
+                        if (jQuery(this).attr("id") == name) {
+                            jQuery("#ZFDebugInfo_"+name.substring(8)).addClass("ZFDebug_active");
+                            jQuery(this).show();
                         } else {
-                            if (jQuery(this).attr("id") == name)
-                                jQuery(this).slideDown();
-                            else
-                                jQuery(this).slideUp();
+                            jQuery("#ZFDebugInfo_"+jQuery(this).attr("id").substring(8)).removeClass("ZFDebug_active");
+                            jQuery(this).hide();
                         }
                     });
                 }
@@ -451,9 +492,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _output($html)
     {
+        $html = '<div id="ZFDebug_offset"></div><div id="ZFDebug_debug">'.$html.'</div></body>';
         $response = $this->getResponse();
         $response->setBody(preg_replace('/(<\/head>)/i', $this->_headerOutput() . '$1', $response->getBody()));
-        $response->setBody(str_ireplace('</body>', '<div id="ZFDebug_debug">'.$html.'</div></body>', $response->getBody()));
+        $response->setBody(str_ireplace('</body>', $html, $response->getBody()));
     }
     
     public function getLinebreak()

@@ -17,7 +17,9 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plugin_Debug_Plugin implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_File 
+    extends ZFDebug_Controller_Plugin_Debug_Plugin 
+    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
@@ -42,9 +44,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plu
     protected $_includedFiles = null;
 
     /**
-     * Stores name of own extension library
+     * Stores names of used extension libraries
      *
-     * @var string
+     * @var array
      */
     protected $_library;
 
@@ -131,19 +133,18 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plu
             $file = str_replace($this->_basePath, '', $file);
             $filePaths = explode(DIRECTORY_SEPARATOR, $file);
             $inUserLib = false;
-        	foreach ($this->_library as $key => $library)
-        	{
-        		if('' != $library && in_array($library, $filePaths)) {
-        			$libraryFiles[$key] .= $file . $this->getLinebreak();
-        			$inUserLib = TRUE;
-        		}
-        	}
-        	if (!$inUserLib) {
-    			$html .= $file .$this->getLinebreak();
-        	}
+            foreach ($this->_library as $key => $library) {
+                if ('' != $library && in_array($library, $filePaths)) {
+                    $libraryFiles[$key] .= $file . $this->getLinebreak();
+                    $inUserLib = TRUE;
+                }
+            }
+            if (!$inUserLib) {
+                $html .= $file .$this->getLinebreak();
+            }
         }
 
-    	$html .= implode('', $libraryFiles);
+        $html .= implode('', $libraryFiles);
 
         return $html;
     }

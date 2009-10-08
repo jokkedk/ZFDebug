@@ -100,7 +100,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
         $html = '';
 
         foreach ($response->getException() as $e) {
-            $html .= '<h4>' . get_class($e) . ': ' . $e->getMessage() . '</h4><p>thrown in ' . $e->getFile() . ' on line ' . $e->getLine() . '</p>';
+            $html .= '<h4>' . get_class($e) . ': ' . $e->getMessage() 
+                   . '</h4><p>thrown in ' . $e->getFile() 
+                   . ' on line ' . $e->getLine() . '</p>';
             $html .= '<h4>Call Stack</h4><ol>';
             foreach ($e->getTrace() as $t) {
                 $func = $t['function'] . '()';
@@ -110,7 +112,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
                     $t['file'] = 'unknown';
                 if (! isset($t['line']))
                     $t['line'] = 'n/a';
-                $html .= '<li>' . $func . '<br>in ' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $t['file']) . ' on line ' . $t['line'] . '</li>';
+                $html .= '<li>' . $func . '<br>in ' 
+                       . str_replace($_SERVER['DOCUMENT_ROOT'], '', $t['file']) 
+                       . ' on line ' . $t['line'] . '</li>';
             }
             $html .= '</ol>';
         }
@@ -118,7 +122,15 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
         if ($errorCount) {
             $html .= '<h4>Errors</h4><ol>';
             foreach (self::$errors as $error) {
-                $html .= '<li>' . sprintf("%s: %s in %s on line %d", $error['type'], $error['message'], str_replace($_SERVER['DOCUMENT_ROOT'], '', $error['file']), $error['line']) . '</li>';
+                $message = sprintf(
+                    "%s: %s in %s on line %d", 
+                    $error['type'], 
+                    $error['message'], 
+                    str_replace($_SERVER['DOCUMENT_ROOT'], '', $error['file']),
+                    $error['line']
+                );
+                
+                $html .= '<li>' . $message . '</li>';
             }
             $html .= '</ol>';
         }

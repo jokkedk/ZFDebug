@@ -27,7 +27,9 @@ require_once 'Zend/Session/Namespace.php';
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin_Abstract implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_Time 
+    extends Zend_Controller_Plugin_Abstract 
+    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
@@ -112,6 +114,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
         $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
         $timerNamespace->data[$this_module][$this_controller][$this_action][] = round($this->_timer['dispatchLoopShutdown'],2);
 
+        // Limit to last 10 requests
+        if (10 < count($timerNamespace->data[$this_module][$this_controller][$this_action])) {
+            array_shift($timerNamespace->data[$this_module][$this_controller][$this_action]);
+        }
         $html .= '<h4>Overall Timers</h4>';
 
         foreach ($timerNamespace->data as $module => $controller)
@@ -135,7 +141,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
                     }
                     $html .= '        ' . $key . $this->getLinebreak();
                     $html .= '<div class="pre">';
-                    $html .= '            Avg: ' . $this->_calcAvg($data) . ' ms / '.count($data).' requests'.$this->getLinebreak();
+                    $html .= '            Avg: ' . $this->_calcAvg($data) . 'ms over '.count($data).' requests'.$this->getLinebreak();
                     $html .= '            Min: ' . round(min($data), 2) . ' ms'.$this->getLinebreak();
                     $html .= '            Max: ' . round(max($data), 2) . ' ms'.$this->getLinebreak();
                     $html .= '</div>';
