@@ -149,7 +149,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
         $timerNamespace->data[$this_module][$this_controller][$this_action][] = round($this->_timer['dispatchLoopShutdown'],2);
 
         // Limit to last 10 requests
-        if (10 < count($timerNamespace->data[$this_module][$this_controller][$this_action])) {
+        while (10 < count($timerNamespace->data[$this_module][$this_controller][$this_action])) {
             array_shift($timerNamespace->data[$this_module][$this_controller][$this_action]);
         }
         foreach ($timerNamespace->data as $module => $controller)
