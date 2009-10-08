@@ -129,12 +129,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
         }
         $html .= '</h4>';
 
-        # For adding quotes to query params
-        function add_quotes(&$value, $key) 
-        {
-            $value = "'" . $value . "'";
-        }
-
         foreach ($this->_db as $name => $adapter) {
             if ($profiles = $adapter->getProfiler()->getQueryProfiles()) {
                 $adapter->getProfiler()->setEnabled(false);
@@ -146,7 +140,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                     $html .= '<tr><td nowrap>' . round($profile->getElapsedSecs()*1000, 2) 
                            . ' ms</td><td>';
                     $params = $profile->getQueryParams();
-                    array_walk($params, 'add_quotes');
+                    array_walk($params, array($this, '_addQuotes'));
                     $paramCount = count($params);
                     if ($paramCount) {
                         $html .= htmlspecialchars(preg_replace(array_fill(0, $paramCount, '/\?/'), $params, $profile->getQuery(), 1));
@@ -184,4 +178,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
         return $html;
     }
 
+    // For adding quotes to query params
+    protected function _addQuotes(&$value, $key) 
+    {
+        $value = "'" . $value . "'";
+    }
 }

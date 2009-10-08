@@ -19,6 +19,8 @@
  */
 class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
+    protected static $_logger;
+    
     /**
      * Contains plugin identifier name
      *
@@ -32,6 +34,20 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      * @var param array
      */
     static $errors = array();
+
+    /**
+     * Get the ZFDebug logger
+     *
+     * @return Zend_Log
+     */
+    public static function getLogger()
+    {
+        if (!self::$_logger) {
+            self::$_logger = Zend_Controller_Front::getInstance()
+                ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log')->logger();
+        }
+        return self::$_logger;
+    }
 
     /**
      * Gets identifier for this plugin
@@ -70,6 +86,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      */
     public function getTab ()
     {
+        return '';
+        
         $response = Zend_Controller_Front::getInstance()->getResponse();
         $errorCount = count(self::$errors);
         if (! $response->isException() && ! $errorCount)
@@ -117,6 +135,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
                        . ' on line ' . $t['line'] . '</li>';
             }
             $html .= '</ol>';
+            
+            $exception = get_class($e) . ': ' . $e->getMessage() 
+                       . ' thrown in ' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $e->getFile())
+                       . ' on line ' . $e->getLine();
+            self::getLogger()->crit($exception);
         }
 
         if ($errorCount) {
@@ -134,7 +157,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
             }
             $html .= '</ol>';
         }
-        return $html;
+        // return $html;
+        return '';
     }
 
     /**
@@ -153,21 +177,34 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
         switch ($level) {
             case E_NOTICE:
             case E_USER_NOTICE:
+                $method = 'notice';
                 $type = 'Notice';
                 break;
             case E_WARNING:
             case E_USER_WARNING:
+                $method = 'warn';
                 $type = 'Warning';
                 break;
             case E_ERROR:
             case E_USER_ERROR:
+                $method = 'crit';
                 $type = 'Fatal Error';
                 break;
             default:
+                $method = 'err';
                 $type = 'Unknown, ' . $level;
                 break;
         }
         self::$errors[] = array('type' => $type , 'message' => $message , 'file' => $file , 'line' => $line);
+
+        $message = sprintf(
+            "%s in %s on line %d", 
+            $message, 
+            str_replace($_SERVER['DOCUMENT_ROOT'], '', $file),
+            $line
+        );
+        self::getLogger()->$method($message);
+        
         if (ini_get('log_errors'))
             error_log(sprintf("%s: %s in %s on line %d", $type, $message, $file, $line));
         return true;

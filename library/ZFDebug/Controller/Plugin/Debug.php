@@ -120,6 +120,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
          * Loading aready defined plugins
          */
         $this->_loadPlugins();
+
+        /**
+         * Creating the log tab
+         */
+        $logger = new ZFDebug_Controller_Plugin_Debug_Plugin_Log();
+        // Zend_Controller_Front::getInstance()->registerPlugin($logger);
+        $this->registerPlugin($logger);
     }
     
     /**
@@ -233,9 +240,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             }
 
             /* @var $plugin ZFDebug_Controller_Plugin_Debug_Plugin_Interface */
+            $showPanel = ($plugin->getPanel() == '') ? 'log' : $plugin->getIdentifier();
             $html .= '<span id="ZFDebugInfo_'.$plugin->getIdentifier()
                    . '" class="ZFDebug_span clickable" onclick="ZFDebugPanel(\'ZFDebug_' 
-                   . $plugin->getIdentifier() . '\');">';
+                   . $showPanel . '\');">';
             $html .= '<img src="' . $pluginIcon . '" style="vertical-align:middle" alt="' 
                    . $plugin->getIdentifier() . '" title="' 
                    . $plugin->getIdentifier() . '"'. $this->getClosingBracket() .' ';
@@ -390,6 +398,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                                 font: 14px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
                                 position:fixed; bottom:0px; left:0px; color:#FFF; 
                                 z-index: ' . $this->_options['z-index'] . ';}
+                #ZFDebug_debug a {color:#FFFFFF}
                 #ZFDebug_debug td {vertical-align:top;}
                 #ZFDebug_debug li {margin:0 0 10px 0;}
                 #ZFDebug_debug .clickable {cursor:pointer}
