@@ -157,7 +157,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                         Zend_Db_Profiler::SELECT == $profile->getQueryType()) {
                         
                         $explain = $adapter->fetchRow('EXPLAIN '.$profile->getQuery());
-                        $html .= '</td><td style="color:#7F7F7F"><strong>Type:</strong> ' 
+                        $html .= '</td><td style="color:#7F7F7F;width:150px"><strong>Type:</strong> ' 
                                 . strtolower($explain['select_type']) . ', ' 
                                 . $explain['type'] . '<br>'
                                 .'<strong>Rows:</strong> ' . $explain['rows'] . '<br>'

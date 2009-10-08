@@ -399,24 +399,22 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                                 position:fixed; bottom:0px; left:0px; color:#FFF; 
                                 z-index: ' . $this->_options['z-index'] . ';}
                 #ZFDebug_debug a {color:#FFFFFF}
-                #ZFDebug_debug td {vertical-align:top;}
+                #ZFDebug_debug * {background:transparent;}
+                #ZFDebug_debug td {vertical-align:top; border:0px}
                 #ZFDebug_debug li {margin:0 0 10px 0;}
                 #ZFDebug_debug .clickable {cursor:pointer}
-                #ZFDebug_toggler { font-weight:bold; background:#BFBFBF; display:none}
+                #ZFDebug_debug #ZFDebug_toggler { font-weight:bold; background:#BFBFBF; display:none}
                 #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:50px; 
                                background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
-                .ZFDebug_span {padding:0 15px; line-height:50px; display:block; float:left}
-                .ZFDebug_last { border: 0px }
-                .ZFDebug_panel {background:#1a1a1a; padding:0px 15px 15px 15px; 
+                #ZFDebug_debug .ZFDebug_span {padding:0 15px; line-height:50px; display:block; float:left}
+                #ZFDebug_debug .ZFDebug_last { border: 0px }
+                #ZFDebug_debug .ZFDebug_panel {background:#1a1a1a; padding:0px 15px 15px 15px; 
                                 font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
                                 text-align:left; height:185px; overflow:auto; display:none; 
                                 border-top:1px solid #333333;}
-                .ZFDebug_active {background:#1a1a1a;}
-                .ZFDebug_panel .pre {font: 11px/1.4em Monaco, Lucida Console, monospace; margin:0 0 0 22px}
+                #ZFDebug_debug .ZFDebug_active {background:#1a1a1a;}
+                #ZFDebug_debug .ZFDebug_panel .pre {font: 11px/1.4em Monaco, Lucida Console, monospace; margin:0 0 0 22px}
                 #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
-
-                .ZFDebug_Memory li {border-bottom:1px solid #1a1a1a;}
-                .ZFDebug_Memory_explain { background:#262626; padding:5px 10px;display:inline-block}
             </style>
             <script type="text/javascript">
                 if (typeof jQuery == "undefined") {
