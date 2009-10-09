@@ -230,11 +230,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
         }
     }
     
-    public function getLinebreak()
-    {
-        return '<br'.$this->getClosingBracket();
-    }
-
     public function getClosingBracket()
     {
         if (!$this->_closingBracket) {

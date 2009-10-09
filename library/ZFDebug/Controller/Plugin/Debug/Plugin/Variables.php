@@ -85,10 +85,17 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
         } else {
             $viewVars = "No 'getVars()' method in view class";
         }
-        $vars = '<h4>View variables</h4>'
+        $vars = '<div style="width:50%;float:left;">';
+        $vars .= '<h4>View variables</h4>'
               . '<div id="ZFDebug_vars">' . $viewVars . '</div>'
               . '<h4>Request parameters</h4>'
               . '<div id="ZFDebug_requests">' . $this->_cleanData($this->_request->getParams()) . '</div>';
+        $vars .= '</div><div style="width:45%;float:left;">';
+        $registry = Zend_Registry::getInstance();
+        $vars .= '<h4>Zend Registry</h4>';
+        $registry->ksort();
+        $vars .= '<div id="ZFDebug_registry">' . $this->_cleanData($registry) . '</div>';
+        
         if ($this->_request->isPost())
         {
             $vars .= '<h4>Post variables</h4>'
@@ -97,6 +104,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
         $cookies = $this->_request->getCookie();
         $vars .= '<h4>Cookies</h4>'
                . '<div id="ZFDebug_cookie">' . $this->_cleanData($cookies) . '</div>';
+        
+        $vars .= '</div><div style="clear:both">&nbsp;</div>';
         return $vars;
     }
 

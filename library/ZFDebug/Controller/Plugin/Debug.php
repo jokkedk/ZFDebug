@@ -68,7 +68,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         'Memory', 
         'Registry', 
         'Time', 
-        'Variables'
+        'Variables',
+        'Log'
         );
 
     /**
@@ -113,22 +114,32 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         $version->setPanel($this->_getVersionPanel())
                 ->setTab($this->_getVersionTab())
                 ->setIdentifier('copyright')
-                ->setIconData('data:image/gif;base64,R0lGODlhEAAQAPcAAPb7/ef2+VepAGKzAIC8SavSiYS9Stvt0uTx4fX6+ur1632+QMLgrGOuApDIZO738drs0Ofz5t7v2MfjtPP6+t7v12SzAcvnyX2+PaPRhH2+Qmy3H3K5LPP6+cXkwIHAR2+4JHi7NePz8YC/Rc3ozfH49XK5KXq9OrzdpNzu1YrEUqrVkdzw5uTw4d/v2dDow5zOeO3279Hq0m+4JqrUhpnMbeHw3N3w6Mflwm22HmazBODy7tfu3un06r7gsuXy4sTisIzGXvH59ny9PdPr1rXZpMzlu36/Q5bLb+Pw3tDnxNHr1Lfbm+b199/x62q1Fp3NcdjszqTPh/L599vt04/GWmazCPb7/LHZnW63I3W6MXa7MmGuAt/y7Gq1E2m0Eb7cp9frzZLJaO/489bu3HW3N7rerN/v2q7WjIjEVuLx343FVrDXj9nt0cTjvW2zIoPBSNjv4OT09IXDUpvLeeHw3dPqyNLpxs/nwHe8OIvFWrPaoGe0C5zMb83mvHm8Oen06a3Xl9XqyoC/Qr/htWe0DofDU4nFWbPYk7ndqZ/PfYPBTMPhrqHRgoLBSujz55PKadHpxfX6+6LNeqPQfNXt2pPIYH2+O7vcoHi4OOf2+PL5+NTs2N3u1mi1E7XZl4zEVJjLaZHGauby5KTShmSzBO/38s/oz3i7MtbrzMHiuYTCT4fDTtXqye327uDv3JDHXu328JnMcu738LLanvD49ZTJYpPKauX19tvv44jBWo7GWpfKZ+Dv27XcpcrluXu8ONTs16zXleT08qfUjKzUlc7pzm63HaTRfZXKZuj06HG4KavViGe0EcDfqcjmxaDQgZrNdOHz77/ep4/HYL3esnW6LobCS3S5K57OctDp0JXKbez17N7x6cbkwLTZlbXXmLrcnrvdodHr06PQe8jkt5jIa93v13m8OI7CW3O6L3a7Nb7gs6nUjmu2GqjTgZjKaKLQeZnMc4LAReL08rTbopbLbuTx4KDOdtbry7DYmrvfrrPaoXK5K5zOegAAACH5BAEAAAAALAAAAAAQABAAAAhMAAEIHEiwoMGDCBMOlCKgoUMuHghInEiggEOHAC5eJNhQ4UAuAjwIJLCR4AEBDQS2uHiAYLGOHjNqlCmgYAONApQ0jBGzp8+fQH8GBAA7');
+                ->setIconData('');
+                // ->setIconData('data:image/gif;base64,R0lGODlhEAAQAPcAAPb7/ef2+VepAGKzAIC8SavSiYS9Stvt0uTx4fX6+ur1632+QMLgrGOuApDIZO738drs0Ofz5t7v2MfjtPP6+t7v12SzAcvnyX2+PaPRhH2+Qmy3H3K5LPP6+cXkwIHAR2+4JHi7NePz8YC/Rc3ozfH49XK5KXq9OrzdpNzu1YrEUqrVkdzw5uTw4d/v2dDow5zOeO3279Hq0m+4JqrUhpnMbeHw3N3w6Mflwm22HmazBODy7tfu3un06r7gsuXy4sTisIzGXvH59ny9PdPr1rXZpMzlu36/Q5bLb+Pw3tDnxNHr1Lfbm+b199/x62q1Fp3NcdjszqTPh/L599vt04/GWmazCPb7/LHZnW63I3W6MXa7MmGuAt/y7Gq1E2m0Eb7cp9frzZLJaO/489bu3HW3N7rerN/v2q7WjIjEVuLx343FVrDXj9nt0cTjvW2zIoPBSNjv4OT09IXDUpvLeeHw3dPqyNLpxs/nwHe8OIvFWrPaoGe0C5zMb83mvHm8Oen06a3Xl9XqyoC/Qr/htWe0DofDU4nFWbPYk7ndqZ/PfYPBTMPhrqHRgoLBSujz55PKadHpxfX6+6LNeqPQfNXt2pPIYH2+O7vcoHi4OOf2+PL5+NTs2N3u1mi1E7XZl4zEVJjLaZHGauby5KTShmSzBO/38s/oz3i7MtbrzMHiuYTCT4fDTtXqye327uDv3JDHXu328JnMcu738LLanvD49ZTJYpPKauX19tvv44jBWo7GWpfKZ+Dv27XcpcrluXu8ONTs16zXleT08qfUjKzUlc7pzm63HaTRfZXKZuj06HG4KavViGe0EcDfqcjmxaDQgZrNdOHz77/ep4/HYL3esnW6LobCS3S5K57OctDp0JXKbez17N7x6cbkwLTZlbXXmLrcnrvdodHr06PQe8jkt5jIa93v13m8OI7CW3O6L3a7Nb7gs6nUjmu2GqjTgZjKaKLQeZnMc4LAReL08rTbopbLbuTx4KDOdtbry7DYmrvfrrPaoXK5K5zOegAAACH5BAEAAAAALAAAAAAQABAAAAhMAAEIHEiwoMGDCBMOlCKgoUMuHghInEiggEOHAC5eJNhQ4UAuAjwIJLCR4AEBDQS2uHiAYLGOHjNqlCmgYAONApQ0jBGzp8+fQH8GBAA7');
         $this->registerPlugin($version);
-
-        /**
-         * Loading aready defined plugins
-         */
-        $this->_loadPlugins();
 
         /**
          * Creating the log tab
          */
         $logger = new ZFDebug_Controller_Plugin_Debug_Plugin_Log();
-        // Zend_Controller_Front::getInstance()->registerPlugin($logger);
         $this->registerPlugin($logger);
+
+        /**
+         * Loading aready defined plugins
+         */
+        $this->_loadPlugins();
     }
     
+    /**
+     * Get the ZFDebug logger
+     *
+     * @return Zend_Log
+     */
+    public function getLogger()
+    {
+        return $this->getPlugin('Log')->logger();
+    }
+
     /**
      * Sets options of the Debug Bar
      *
@@ -244,9 +255,11 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             $html .= '<span id="ZFDebugInfo_'.$plugin->getIdentifier()
                    . '" class="ZFDebug_span clickable" onclick="ZFDebugPanel(\'ZFDebug_' 
                    . $showPanel . '\');">';
-            $html .= '<img src="' . $pluginIcon . '" style="vertical-align:middle" alt="' 
-                   . $plugin->getIdentifier() . '" title="' 
-                   . $plugin->getIdentifier() . '"'. $this->getClosingBracket() .' ';
+            if ($pluginIcon) {
+                $html .= '<img src="' . $pluginIcon . '" style="vertical-align:middle" alt="' 
+                       . $plugin->getIdentifier() . '" title="' 
+                       . $plugin->getIdentifier() . '"'. $this->getClosingBracket() .' ';
+            }
             $html .= $tab . '</span>';
         }
 
@@ -323,7 +336,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _getVersionTab()
     {
-        return ' ' . Zend_Version::VERSION . '/'.phpversion();
+        return '<strong>ZFDebug</strong>';
+        // return ' ' . Zend_Version::VERSION . '/'.phpversion();
     }
 
     /**
@@ -333,7 +347,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _getVersionPanel()
     {
-        $panel = '<h4>ZFDebug v'.$this->_version.'</h4>'
+        $panel = '<h4>ZFDebug v'.$this->_version.' in Zend Framework ' 
+               . Zend_Version::VERSION . ' on PHP ' . phpversion().'</h4>'
                . '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a><br>'
                . 'with contributions by <a href="http://www.bangal.de">Andreas Pankratz</a> and more</p>'
                . '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a>'
@@ -455,7 +470,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                         ZFDebugCurrent = name;
                     }
                     jQuery(".ZFDebug_panel").each(function(i){
-                        if (jQuery(this).attr("id") == name) {
+                        if (ZFDebugCurrent && jQuery(this).attr("id") == name) {
                             jQuery("#ZFDebugInfo_"+name.substring(8)).addClass("ZFDebug_active");
                             jQuery(this).show();
                         } else {

@@ -110,16 +110,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File
      */
     public function getPanel()
     {
+        $linebreak = $this->getLinebreak();
         $included = $this->_getIncludedFiles();
-        $html = '<h4>File Information</h4>';
-        $html .= count($included).' Files Included'.$this->getLinebreak();
+        $html = '<h4>' . count($included).' files included at ';
         $size = 0;
         foreach ($included as $file) {
             $size += filesize($file);
         }
-        $html .= 'Total Size: '. round($size/1024, 1).'K'.$this->getLinebreak();
+        $html .= round($size/1024, 1).'K</h4>';
         
-        $html .= 'Basepath: ' . $this->_basePath .$this->getLinebreak();
+        // $html .= 'Basepath: ' . $this->_basePath .$linebreak;
 
         $libraryFiles = array();
         foreach ($this->_library as $key => $value) {
@@ -135,12 +135,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File
             $inUserLib = false;
             foreach ($this->_library as $key => $library) {
                 if ('' != $library && in_array($library, $filePaths)) {
-                    $libraryFiles[$key] .= $file . $this->getLinebreak();
+                    $libraryFiles[$key] .= $file . $linebreak;
                     $inUserLib = TRUE;
                 }
             }
             if (!$inUserLib) {
-                $html .= $file .$this->getLinebreak();
+                $html .= $file .$linebreak;
             }
         }
 

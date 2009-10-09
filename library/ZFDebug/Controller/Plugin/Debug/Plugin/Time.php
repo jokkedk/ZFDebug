@@ -101,7 +101,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
      */
     public function getTab()
     {
-        return round($this->_timer['dispatchLoopShutdown'],2) .'/'.round($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup'],2). ' ms';
+        return round($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup'],2). 'ms';
     }
 
     /**
@@ -168,8 +168,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
                         continue;
                     }
                     $stats = ' – avg ' . $this->_calcAvg($data) . 'ms/'.count($data).' requests';
-                    $html = 'Min: ' . round(min($data), 2) . ' ms'.$this->getLinebreak();
-                    $html .= 'Max: ' . round(max($data), 2) . ' ms'.$this->getLinebreak();
+                    // $html = 'Min: ' . round(min($data), 2) . ' ms'.$this->getLinebreak();
+                    // $html .= 'Max: ' . round(max($data), 2) . ' ms'.$this->getLinebreak();
                 }
             }
         }

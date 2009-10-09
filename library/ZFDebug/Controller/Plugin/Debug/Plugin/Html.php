@@ -90,11 +90,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Html extends ZFDebug_Controller_Plu
                 jQuery("#ZFDebug_Html_Imgcount").html(jQuery("img[src]").length);
             };
         </script>';
-        $panel .= '<span id="ZFDebug_Html_Tagcount"></span> Tags'.$this->getLinebreak()
-                . 'HTML Size: '.round(strlen($body)/1024, 2).'K'.$this->getLinebreak()
-                . '<span id="ZFDebug_Html_Stylecount"></span> Stylesheet Files'.$this->getLinebreak()
-                . '<span id="ZFDebug_Html_Scriptcount"></span> Javascript Files'.$this->getLinebreak()
-                . '<span id="ZFDebug_Html_Imgcount"></span> Images'.$this->getLinebreak()
+        $linebreak = $this->getLinebreak();
+        $panel .= '<span id="ZFDebug_Html_Tagcount"></span> Tags'.$linebreak
+                . 'HTML Size: '.round(strlen($body)/1024, 2).'K'.$linebreak
+                . '<span id="ZFDebug_Html_Stylecount"></span> Stylesheet Files'.$linebreak
+                . '<span id="ZFDebug_Html_Scriptcount"></span> Javascript Files'.$linebreak
+                . '<span id="ZFDebug_Html_Imgcount"></span> Images'.$linebreak
                 . '<form method="post" action="http://validator.w3.org/check"><p><input type="hidden" name="fragment" value="'.htmlentities($body).'"'.$this->getClosingBracket().'<input type="submit" value="Validate With W3C"'.$this->getClosingBracket().'</p></form>';
         return $panel;
     }

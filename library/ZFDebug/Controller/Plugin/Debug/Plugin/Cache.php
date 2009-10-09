@@ -90,6 +90,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
     public function getPanel()
     {
         $panel = '';
+        
+        $linebreak = $this->getLinebreak();
 
         # Support for APC
         if (function_exists('apc_sma_info') && ini_get('apc.enabled')) {
@@ -102,12 +104,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
             
             $panel .= '<h4>APC '.phpversion('apc').' Enabled</h4>';
             $panel .= round($memAvail/1024/1024, 1) . 'M available, ' 
-                    . round($memUsed/1024/1024, 1) . 'M used' . $this->getLinebreak()
+                    . round($memUsed/1024/1024, 1) . 'M used' . $linebreak
                     . $cache['num_entries'].' Files cached (' 
-                    . round($cache['mem_size']/1024/1024, 1) . 'M)' . $this->getLinebreak()
+                    . round($cache['mem_size']/1024/1024, 1) . 'M)' . $linebreak
                     . $cache['num_hits'] . ' Hits (' 
                     . round($cache['num_hits'] * 100 / ($cache['num_hits'] + $cache['num_misses']), 1) . '%)' 
-                    . $this->getLinebreak()
+                    . $linebreak
                     . $cache['expunges'] . ' Expunges (cache full count)'; 
         }
 
@@ -117,8 +119,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
             
             # Print full class name, backends might be custom
             $panel .= '<h4>Cache '.$name.' ('.get_class($backend).')</h4>';
-            $panel .= count($ids).' Entr'.(count($ids)>1?'ies':'y').''.$this->getLinebreak()
-                    . 'Filling Percentage: '.$backend->getFillingPercentage().'%'.$this->getLinebreak();
+            $panel .= count($ids).' Entr'.(count($ids)>1?'ies':'y').''.$linebreak
+                    . 'Filling Percentage: '.$backend->getFillingPercentage().'%'.$linebreak;
             
             $cacheSize = 0;
             foreach ($ids as $id) {
