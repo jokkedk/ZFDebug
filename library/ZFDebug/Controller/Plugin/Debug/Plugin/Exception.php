@@ -54,7 +54,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      *
      * @return string
      */
-    public function getIdentifier ()
+    public function getIdentifier()
     {
         return $this->_identifier;
     }
@@ -74,7 +74,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      *
      * @return void
      */
-    public function __construct ()
+    public function __construct()
     {
         set_error_handler(array($this , 'errorHandler'));
     }
@@ -84,8 +84,30 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      *
      * @return string
      */
-    public function getTab ()
+    public function getTab()
     {
+        $response = Zend_Controller_Front::getInstance()->getResponse();
+        foreach ($response->getException() as $e) {
+            $exception = get_class($e) . ': ' . $e->getMessage() 
+                       . ' thrown in ' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $e->getFile())
+                       . ' on line ' . $e->getLine();
+            $exception .= '<ol>';
+            foreach ($e->getTrace() as $t) {
+                $func = $t['function'] . '()';
+                if (isset($t['class']))
+                    $func = $t['class'] . $t['type'] . $func;
+                if (! isset($t['file']))
+                    $t['file'] = 'unknown';
+                if (! isset($t['line']))
+                    $t['line'] = 'n/a';
+                $exception .= '<li>' . $func . ' in ' 
+                       . str_replace($_SERVER['DOCUMENT_ROOT'], '', $t['file']) 
+                       . ' on line ' . $t['line'] . '</li>';
+            }
+            $exception .= '</ol>';
+            self::getLogger()->crit($exception);
+        }
+        
         return '';
         
         $response = Zend_Controller_Front::getInstance()->getResponse();
@@ -109,7 +131,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      *
      * @return string
      */
-    public function getPanel ()
+    public function getPanel()
     {
         $response = Zend_Controller_Front::getInstance()->getResponse();
         $errorCount = count(self::$errors);
@@ -170,7 +192,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      * @param string $line
      * @return bool
      */
-    public static function errorHandler ($level, $message, $file, $line)
+    public static function errorHandler($level, $message, $file, $line)
     {
         if (! ($level & error_reporting()))
             return false;

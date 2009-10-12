@@ -42,7 +42,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
      */
     public function getTab()
     {
-        return " Log ($this->_errors)";
+        $tab = " Log";
+        if (count($this->_errors)) {
+            $tab .= " ($this->_errors)";
+        }
+        return $tab;
     }
 
     /**
@@ -63,7 +67,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
         $action = $request->getActionName();
         
         $panel = "<h4>Event log for {$controller}Controller->{$action}Action() {$module}</h4>";
-        $panel .= implode('<br>', $this->_messages);
+        $panel .= implode('', $this->_messages);
         return $panel;
     }
 
@@ -98,12 +102,18 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
      */
     protected function _write($event)
     {
-        $output = '<span style="color:%color%;"><span style="width:75px;display:inline-block">%priorityName%</span>: %message%</span>'; // (%priority%)
+        $output = '<div style="overflow:auto;color:%color%;">';
+        $output .= '<div style="width:8em;float:left">%priorityName%</div>';
+        // $output .= '<div style="width:4em;float:left">%measure%</div>';
+        $output .= '<div style="float:left">%message%</div></div>'; // (%priority%)
         $event['color'] = '';
         // Count errors
         if ($event['priority'] < 6) {
-            $event['color'] = 'red';
+            $event['color'] = 'orange';
             $this->_errors++;
+        } 
+        if ($event['priority'] < 5) {
+            $event['color'] = 'red';
         }
         
         foreach ($event as $name => $value) {
