@@ -127,7 +127,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     public function mark($name) {
         if (isset($this->_timer['user'][$name])) {
             $this->_timer['user'][$name] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000-$this->_timer['user'][$name];
-            $this->getLogger()->time("$name completed in ".$this->format($this->_timer['user'][$name]));
+            $this->getLogger()->time(array($this->format($this->_timer['user'][$name]), "$name"));
         } else {
             $this->_timer['user'][$name] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
             // $this->getLogger()->time("$name: ".$this->format($this->_timer['user'][$name]));
@@ -197,11 +197,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     {
         $this->_timer['routeShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
         
-        $this->getLogger()->time(
-            "Route completed in " . $this->format(
-                $this->_timer['routeShutdown'] - $this->_timer['routeStartup']
-            )
-        );
+        // $this->getLogger()->time(
+        //     array(
+        //         $this->format(
+        //             $this->_timer['routeShutdown'] - $this->_timer['routeStartup']
+        //         ), 
+        //         "Route: ".($this->_timer['routeShutdown'] - $this->_timer['routeStartup'])
+        //     )
+        // );
     }
     
     /**
@@ -225,11 +228,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     {
         $this->_timer['postDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
         
-        $this->getLogger()->time(
-            "Controller completed in " . $this->format(
-                $this->_timer['postDispatch'] - $this->_timer['preDispatch']
-            )
-        );
+        // $this->getLogger()->time(
+        //     array($this->format(
+        //         $this->_timer['postDispatch'] - $this->_timer['preDispatch']
+        //     ),
+        //     "Controller")
+        // );
     }    
     /**
      * Defined by Zend_Controller_Plugin_Abstract
@@ -260,13 +264,13 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     public function dispatchLoopShutdown()
     {
         $this->_timer['dispatchLoopShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-        $this->getLogger()->time(
-            "Dispatch completed in " . $this->format(
-                $this->_timer['dispatchLoopShutdown'] - $this->_timer['dispatchLoopStartup']
-            ) . " (" . $this->format(
-                $this->_timer['dispatchLoopShutdown']
-            ) . " total) " . $this->getDispatchStatistics()
-        );
+        // $this->getLogger()->time(
+        //     array($this->format(
+        //         $this->_timer['dispatchLoopShutdown'] - $this->_timer['dispatchLoopStartup']
+        //     ), "Dispatch" . " (" . $this->format(
+        //         $this->_timer['dispatchLoopShutdown']
+        //     ) . " total) " . $this->getDispatchStatistics())
+        // );
     }
     
     /**

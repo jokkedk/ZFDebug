@@ -59,8 +59,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
     {
         if (!$this->_logger) {
             $this->_logger = Zend_Controller_Front::getInstance()
-                ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log')->logger();
-            $this->_logger->addPriority('Memory', 8);
+                ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log');
+            $this->_logger->logger()->addPriority('Memory', 8);
         }
         return $this->_logger;
     }
@@ -125,7 +125,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
 
         if (isset($this->_memory['user'][$name])) {
             $this->_memory['user'][$name] = memory_get_peak_usage()-$this->_memory['user'][$name];
-            $this->getLogger()->memory("$name completed in ".$this->format($this->_memory['user'][$name]));
+            $this->getLogger()->logger()->memory("$name completed in ".$this->format($this->_memory['user'][$name]));
         } else {
             $this->_memory['user'][$name] = memory_get_peak_usage();
             // $this->getLogger()->memory("$name: ".$this->format($this->_memory['user'][$name]));
@@ -142,6 +142,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
     {
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['routeStartup'] = memory_get_peak_usage();
+            $this->getLogger()->mark('route');
         }
     }
 
@@ -156,11 +157,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['routeShutdown'] = memory_get_peak_usage();
             
-            $this->getLogger()->memory(
-                "Route completed in " . $this->format(
-                    $this->_memory['routeShutdown'] - $this->_memory['routeStartup']
-                )
-            );
+            $this->getLogger()->mark('route');
+            // $this->getLogger()->memory(
+            //     array($this->format(
+            //         $this->_memory['routeShutdown'] - $this->_memory['routeStartup']
+            //     ), "Route")
+            // );
         }
     }
     
@@ -172,6 +174,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
+        $this->getLogger()->mark('controller');
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['preDispatch'] = memory_get_peak_usage();            
         }
@@ -185,14 +188,15 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
      */
     public function postDispatch(Zend_Controller_Request_Abstract $request)
     {
+        $this->getLogger()->mark('controller');
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['postDispatch'] = memory_get_peak_usage();
             
-            $this->getLogger()->memory(
-                "Controller completed in " . $this->format(
-                    $this->_memory['postDispatch'] - $this->_memory['preDispatch']
-                )
-            );
+            // $this->getLogger()->logger()->zflog(
+            //     "Controller completed in " . $this->format(
+            //         $this->_memory['postDispatch'] - $this->_memory['preDispatch']
+            //     )
+            // );
         }
     }
     
@@ -204,6 +208,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
      */
     public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
+        $this->getLogger()->mark('dispatch');
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['dispatchLoopStartup'] = memory_get_peak_usage();
         }
@@ -217,16 +222,17 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
      */
     public function dispatchLoopShutdown()
     {
+        $this->getLogger()->mark('dispatch');
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['dispatchLoopShutdown'] = memory_get_peak_usage();
             
-            $this->getLogger()->memory(
-                "Dispatch completed in " . $this->format(
-                    $this->_memory['dispatchLoopShutdown'] - $this->_memory['dispatchLoopStartup']
-                ) . " (" . $this->format(
-                    $this->_memory['dispatchLoopShutdown']
-                ) . ' total)'
-            );
+            // $this->getLogger()->logger()->memory(
+            //     "Dispatch completed in " . $this->format(
+            //         $this->_memory['dispatchLoopShutdown'] - $this->_memory['dispatchLoopStartup']
+            //     ) . " (" . $this->format(
+            //         $this->_memory['dispatchLoopShutdown']
+            //     ) . ' total)'
+            // );
         }
     }
     

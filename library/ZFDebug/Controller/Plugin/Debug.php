@@ -123,6 +123,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
          */
         $logger = new ZFDebug_Controller_Plugin_Debug_Plugin_Log();
         $this->registerPlugin($logger);
+        $logger->mark('Startup', true);
 
         /**
          * Loading aready defined plugins
@@ -268,6 +269,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         /**
          * Creating menu tab for all registered plugins
          */
+        $this->getPlugin('log')->mark('Shutdown', true);
         foreach ($this->_plugins as $plugin) {
             $panel = $plugin->getPanel();
             if ($panel == '') {
