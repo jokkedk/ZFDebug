@@ -31,17 +31,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
     protected $_logger;
 
     /**
-     * @var array
-     */
-    protected $_memory = array(
-        'dispatchLoopShutdown' => 0, 
-        'dispatchLoopStartup' => 0
-    );
-
-    protected $_closingBracket = null;
-
-    /**
-     * Creating time plugin
+     * Creating memory plugin
      * 
      * @return void
      */
@@ -60,7 +50,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
         if (!$this->_logger) {
             $this->_logger = Zend_Controller_Front::getInstance()
                 ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log');
-            $this->_logger->logger()->addPriority('Memory', 8);
+            $this->_logger->getLog()->addPriority('Memory', 8);
         }
         return $this->_logger;
     }
@@ -108,152 +98,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
         return '';
     }
     
-    public function format($value)
-    {
-        return round($value/1024).'K';
-    }
-    
     /**
      * Sets a memory mark identified with $name
      *
      * @param string $name
+     * @deprecated Use ZFDebug_Controller_Plugin_Debug_Plugin_Log 
      */
     public function mark($name) {
-        if (!function_exists('memory_get_peak_usage')) {
-            return;
-        }
-
-        if (isset($this->_memory['user'][$name])) {
-            $this->_memory['user'][$name] = memory_get_peak_usage()-$this->_memory['user'][$name];
-            $this->getLogger()->logger()->memory("$name completed in ".$this->format($this->_memory['user'][$name]));
-        } else {
-            $this->_memory['user'][$name] = memory_get_peak_usage();
-            // $this->getLogger()->memory("$name: ".$this->format($this->_memory['user'][$name]));
-        }
+        $this->getLogger()->mark("$name");
+        trigger_error("ZFDebug Memory plugin is deprecated, use the Log plugin");
     }
-    
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function routeStartup(Zend_Controller_Request_Abstract $request)
-    {
-        if (function_exists('memory_get_peak_usage')) {
-            $this->_memory['routeStartup'] = memory_get_peak_usage();
-            $this->getLogger()->mark('route');
-        }
-    }
-
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function routeShutdown(Zend_Controller_Request_Abstract $request)
-    {
-        if (function_exists('memory_get_peak_usage')) {
-            $this->_memory['routeShutdown'] = memory_get_peak_usage();
-            
-            $this->getLogger()->mark('route');
-            // $this->getLogger()->memory(
-            //     array($this->format(
-            //         $this->_memory['routeShutdown'] - $this->_memory['routeStartup']
-            //     ), "Route")
-            // );
-        }
-    }
-    
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function preDispatch(Zend_Controller_Request_Abstract $request)
-    {
-        $this->getLogger()->mark($request->getControllerName() . ' controller');
-        if (function_exists('memory_get_peak_usage')) {
-            $this->_memory['preDispatch'] = memory_get_peak_usage();            
-        }
-    }
-    
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function postDispatch(Zend_Controller_Request_Abstract $request)
-    {
-        $this->getLogger()->mark($request->getControllerName() . ' controller');
-        if (function_exists('memory_get_peak_usage')) {
-            $this->_memory['postDispatch'] = memory_get_peak_usage();
-            
-            // $this->getLogger()->logger()->zflog(
-            //     "Controller completed in " . $this->format(
-            //         $this->_memory['postDispatch'] - $this->_memory['preDispatch']
-            //     )
-            // );
-        }
-    }
-    
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
-    {
-        $this->getLogger()->mark('dispatch');
-        if (function_exists('memory_get_peak_usage')) {
-            $this->_memory['dispatchLoopStartup'] = memory_get_peak_usage();
-        }
-    }
-
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function dispatchLoopShutdown()
-    {
-        $this->getLogger()->mark('dispatch');
-        if (function_exists('memory_get_peak_usage')) {
-            $this->_memory['dispatchLoopShutdown'] = memory_get_peak_usage();
-            
-            // $this->getLogger()->logger()->memory(
-            //     "Dispatch completed in " . $this->format(
-            //         $this->_memory['dispatchLoopShutdown'] - $this->_memory['dispatchLoopStartup']
-            //     ) . " (" . $this->format(
-            //         $this->_memory['dispatchLoopShutdown']
-            //     ) . ' total)'
-            // );
-        }
-    }
-    
-    public function getClosingBracket()
-    {
-        if (!$this->_closingBracket) {
-            if ($this->_isXhtml()) {
-                $this->_closingBracket = ' />';
-            } else {
-                $this->_closingBracket = '>';
-            }
-        }
-
-        return $this->_closingBracket;
-    }  
-    
-    protected function _isXhtml()
-    {
-        $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
-        $doctype = $view->doctype();
-        return $doctype->isXhtml();
-    }
-    
 }

@@ -123,10 +123,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
          */
         $logger = new ZFDebug_Controller_Plugin_Debug_Plugin_Log();
         $this->registerPlugin($logger);
-        $logger->mark('Startup', true);
+        $logger->mark('Startup - ZFDebug construct()', true);
 
         /**
-         * Loading aready defined plugins
+         * Loading already defined plugins
          */
         $this->_loadPlugins();
     }

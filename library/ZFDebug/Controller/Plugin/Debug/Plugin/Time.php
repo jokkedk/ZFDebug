@@ -68,7 +68,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     {
         if (!$this->_logger) {
             $this->_logger = Zend_Controller_Front::getInstance()
-                ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log')->logger();
+                ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log')->getLog();
             $this->_logger->addPriority('Time', 9);
         }
         return $this->_logger;
@@ -123,15 +123,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
      * Sets a time mark identified with $name
      *
      * @param string $name
+     * @deprecated Use ZFDebug_Controller_Plugin_Debug_Plugin_Log
      */
     public function mark($name) {
-        if (isset($this->_timer['user'][$name])) {
-            $this->_timer['user'][$name] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000-$this->_timer['user'][$name];
-            $this->getLogger()->time(array($this->format($this->_timer['user'][$name]), "$name"));
-        } else {
-            $this->_timer['user'][$name] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-            // $this->getLogger()->time("$name: ".$this->format($this->_timer['user'][$name]));
-        }
+        $this->getLogger()->mark("$name");
+        trigger_error("ZFDebug Time plugin is deprecated, use the Log plugin");
     }
 
     public function getDispatchStatistics()
@@ -182,76 +178,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
      * @param Zend_Controller_Request_Abstract
      * @return void
      */
-    public function routeStartup(Zend_Controller_Request_Abstract $request)
-    {
-        $this->_timer['routeStartup'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-    }
-
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function routeShutdown(Zend_Controller_Request_Abstract $request)
-    {
-        $this->_timer['routeShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-        
-        // $this->getLogger()->time(
-        //     array(
-        //         $this->format(
-        //             $this->_timer['routeShutdown'] - $this->_timer['routeStartup']
-        //         ), 
-        //         "Route: ".($this->_timer['routeShutdown'] - $this->_timer['routeStartup'])
-        //     )
-        // );
-    }
-    
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function preDispatch(Zend_Controller_Request_Abstract $request)
-    {
-        $this->_timer['preDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-    }
-    
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
-    public function postDispatch(Zend_Controller_Request_Abstract $request)
-    {
-        $this->_timer['postDispatch'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-        
-        // $this->getLogger()->time(
-        //     array($this->format(
-        //         $this->_timer['postDispatch'] - $this->_timer['preDispatch']
-        //     ),
-        //     "Controller")
-        // );
-    }    
-    /**
-     * Defined by Zend_Controller_Plugin_Abstract
-     *
-     * @param Zend_Controller_Request_Abstract
-     * @return void
-     */
     public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
-        $reset = Zend_Controller_Front::getInstance()->getRequest()->getParam('ZFDEBUG_RESET');
-        if (isset($reset)) {
-            if (!Zend_Session::isStarted()) {
-                Zend_Session::start();
-            }
-            $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
-            $timerNamespace->unsetAll();
-        }
-        
         $this->_timer['dispatchLoopStartup'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
 
@@ -264,13 +192,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     public function dispatchLoopShutdown()
     {
         $this->_timer['dispatchLoopShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-        // $this->getLogger()->time(
-        //     array($this->format(
-        //         $this->_timer['dispatchLoopShutdown'] - $this->_timer['dispatchLoopStartup']
-        //     ), "Dispatch" . " (" . $this->format(
-        //         $this->_timer['dispatchLoopShutdown']
-        //     ) . " total) " . $this->getDispatchStatistics())
-        // );
     }
     
     /**

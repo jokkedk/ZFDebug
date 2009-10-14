@@ -18,24 +18,30 @@
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
 class ZFDebug_Controller_Plugin_Debug_Plugin_Log
-    extends Zend_Log_Writer_Abstract
+    extends Zend_Controller_Plugin_Abstract 
     implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     const ZFLOG = 10;
     
     protected $_logger;
-    protected $_messages = array();
-    protected $_errors = 0;
+    protected $_writer;
     
     protected $_marks = array();
     
     public function __construct()
     {
-        $this->_logger = new Zend_Log($this);
+        Zend_Controller_Front::getInstance()->registerPlugin($this);
+        $this->_writer = new ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer();
+        $this->_logger = new Zend_Log($this->_writer);
         $this->_logger->addPriority('ZFLOG', self::ZFLOG);
     }
     
-    public function logger()
+    public function __call($method, $params)
+    {
+        $this->_logger->$method(array_shift($params));
+    }
+    
+    public function getLog()
     {
         return $this->_logger;
     }
@@ -49,8 +55,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
     {
         // $this->_logger->zflog('test');
         $tab = " Log";
-        if (count($this->_errors)) {
-            $tab .= " ($this->_errors)";
+        if ($this->_writer->getErrorCount()) {
+            $tab .= " (".$this->_writer->getErrorCount().")";
         }
         return $tab;
     }
@@ -73,7 +79,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
         $action = $request->getActionName();
         
         $panel = "<h4>Event log for {$controller}Controller->{$action}Action() {$module}</h4>";
-        $panel .= '<table cellpadding="0" cellspacing="0">'.implode('', $this->_messages).'</table>';
+        $panel .= '<table cellpadding="0" cellspacing="0">'.implode('', $this->_writer->getMessages()).'</table>';
         return $panel;
     }
 
@@ -106,7 +112,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
     public function mark($name, $logFirst = false) {
         if (isset($this->_marks[$name])) {
             $this->_marks[$name]['time'] = round((microtime(true)-$_SERVER['REQUEST_TIME'])*1000-$this->_marks[$name]['time']).'ms';
-            $this->_marks[$name]['memory'] = round((memory_get_peak_usage()-$this->_marks[$name]['memory'])/1024) . 'K';
+            if (function_exists('memory_get_peak_usage')) {
+                $this->_marks[$name]['memory'] = round((memory_get_peak_usage()-$this->_marks[$name]['memory'])/1024) . 'K';
+            } else {
+                $this->_marks[$name]['memory'] = '0K';
+            }
             $this->_logger->zflog(
                 array('time' => $this->_marks[$name]['time'], 
                       'memory' => $this->_marks[$name]['memory'],
@@ -115,7 +125,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
             );
         } else {
             $this->_marks[$name]['time'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-            $this->_marks[$name]['memory'] = memory_get_peak_usage();
+            if (function_exists('memory_get_peak_usage')) {
+                $this->_marks[$name]['memory'] = memory_get_peak_usage();
+            } else {
+                $this->_marks[$name]['memory'] = '0K';
+            }
             if ($logFirst) {
                 $this->_logger->zflog(
                     array('time' => round($this->_marks[$name]['time']).'ms', 
@@ -127,57 +141,75 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
         }
     }
     
-    // Logging
-    
     /**
-     * Write a message to the log.
+     * Defined by Zend_Controller_Plugin_Abstract
      *
-     * @param  array  $event  event data
+     * @param Zend_Controller_Request_Abstract
      * @return void
      */
-    protected function _write($event)
+    public function routeStartup(Zend_Controller_Request_Abstract $request)
     {
-        // $output = '<table cellspacing="10">';
-        $output = '<tr style="color:%color%;">';
-        $output .= '<td style="text-align:right;padding-right:1em">%priorityName%</td>';
-        $output .= '<td style="text-align:right;padding-right:1em">%memory%</td>';
-        $output .= '<td>%message%</td></tr>'; // (%priority%)
-        $event['color'] = 'lightgrey';
-        // Count errors
-        if ($event['priority'] < 7) {
-            $event['color'] = 'green';
-            $this->_errors++;
-        }
-        if ($event['priority'] < 6) {
-            $event['color'] = 'orange';
-            $this->_errors++;
-        } 
-        if ($event['priority'] < 5) {
-            $event['color'] = 'red';
-        }
+        $this->mark('Route');
+    }
 
-        if ($event['priority'] == self::ZFLOG) {
-            $event['priorityName'] = $event['message']['time'];
-            $event['memory'] = $event['message']['memory'];
-            $event['message'] = $event['message']['message'];
-        } else {
-            // self::$_lastEvent = null;
-            $event['message'] = $event['priorityName'] .': '. $event['message'];
-            $event['priorityName'] = '&nbsp;';
-            $event['memory'] = '&nbsp;';
-        }
-        foreach ($event as $name => $value) {
-            if ('message' == $name) {
-                $measure = '&nbsp;';
-                if ((is_object($value) && !method_exists($value,'__toString'))) {
-                    $value = gettype($value);
-                } elseif (is_array($value)) {
-                    $measure = $value[0];
-                    $value = $value[1];
-                }
-            }
-            $output = str_replace("%$name%", ucfirst(strtolower($value)), $output);
-        }
-        $this->_messages[] = $output;
+    /**
+     * Defined by Zend_Controller_Plugin_Abstract
+     *
+     * @param Zend_Controller_Request_Abstract
+     * @return void
+     */
+    public function routeShutdown(Zend_Controller_Request_Abstract $request)
+    {
+        $this->mark('Route');
+    }
+    
+    /**
+     * Defined by Zend_Controller_Plugin_Abstract
+     *
+     * @param Zend_Controller_Request_Abstract
+     * @return void
+     */
+    public function preDispatch(Zend_Controller_Request_Abstract $request)
+    {
+        $this->mark(
+            $request->getControllerName() . 'Controller::'.
+            $request->getActionName() .'Action'
+        );
+    }
+    
+    /**
+     * Defined by Zend_Controller_Plugin_Abstract
+     *
+     * @param Zend_Controller_Request_Abstract
+     * @return void
+     */
+    public function postDispatch(Zend_Controller_Request_Abstract $request)
+    {
+        $this->mark(
+            $request->getControllerName() . 'Controller::'.
+            $request->getActionName() .'Action'
+        );
+    }
+    
+    /**
+     * Defined by Zend_Controller_Plugin_Abstract
+     *
+     * @param Zend_Controller_Request_Abstract
+     * @return void
+     */
+    public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
+    {
+        $this->mark('Dispatch');
+    }
+
+    /**
+     * Defined by Zend_Controller_Plugin_Abstract
+     *
+     * @param Zend_Controller_Request_Abstract
+     * @return void
+     */
+    public function dispatchLoopShutdown()
+    {
+        $this->mark('Dispatch');
     }
 }
