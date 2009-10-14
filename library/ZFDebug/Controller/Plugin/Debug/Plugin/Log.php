@@ -73,7 +73,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
         $action = $request->getActionName();
         
         $panel = "<h4>Event log for {$controller}Controller->{$action}Action() {$module}</h4>";
-        $panel .= implode('', $this->_messages);
+        $panel .= '<table cellpadding="0" cellspacing="0">'.implode('', $this->_messages).'</table>';
         return $panel;
     }
 
@@ -137,10 +137,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
      */
     protected function _write($event)
     {
-        $output = '<div style="overflow:auto;color:%color%;">';
-        $output .= '<div style="width:6em;float:left;text-align:right;margin-right:1em;">%priorityName%</div>';
-        $output .= '<div style="width:6em;float:left;text-align:right; margin-right:1em;">%memory%</div>';
-        $output .= '<div style="float:left">%message%</div></div>'; // (%priority%)
+        // $output = '<table cellspacing="10">';
+        $output = '<tr style="color:%color%;">';
+        $output .= '<td style="text-align:right;padding-right:1em">%priorityName%</td>';
+        $output .= '<td style="text-align:right;padding-right:1em">%memory%</td>';
+        $output .= '<td>%message%</td></tr>'; // (%priority%)
         $event['color'] = 'lightgrey';
         // Count errors
         if ($event['priority'] < 7) {

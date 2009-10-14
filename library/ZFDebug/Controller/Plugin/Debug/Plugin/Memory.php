@@ -174,7 +174,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
      */
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
-        $this->getLogger()->mark('controller');
+        $this->getLogger()->mark($request->getControllerName() . ' controller');
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['preDispatch'] = memory_get_peak_usage();            
         }
@@ -188,7 +188,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Memory
      */
     public function postDispatch(Zend_Controller_Request_Abstract $request)
     {
-        $this->getLogger()->mark('controller');
+        $this->getLogger()->mark($request->getControllerName() . ' controller');
         if (function_exists('memory_get_peak_usage')) {
             $this->_memory['postDispatch'] = memory_get_peak_usage();
             
