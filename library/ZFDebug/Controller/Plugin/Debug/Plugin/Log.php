@@ -46,6 +46,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
         return $this->_logger;
     }
     
+    public function getWriter()
+    {
+        return $this->_writer;
+    }
+    
     /**
      * Has to return html code for the menu tab
      *
