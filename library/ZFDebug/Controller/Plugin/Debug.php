@@ -405,12 +405,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     protected function _headerOutput() 
     {
         $collapsed = isset($_COOKIE['ZFDebugCollapsed']) ? $_COOKIE['ZFDebugCollapsed'] : '';
-        $boxheight = $collapsed ? '240px' : '40px';
+        $boxheight = $collapsed ? '240px' : '32px';
         return ('
             <style type="text/css" media="screen">
                 #ZFDebug_offset {height:'.$boxheight.'}
                 #ZFDebug_debug {height:'.$boxheight.'; width:100%; background:#262626; 
-                                font: 14px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
+                                font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
                                 position:fixed; bottom:0px; left:0px; color:#FFF; 
                                 z-index: ' . $this->_options['z-index'] . ';}
                 #ZFDebug_debug a {color:#FFFFFF}
@@ -419,16 +419,16 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 #ZFDebug_debug ol {margin:1em 0 0 0; padding:0; list-style-position: inside;}
                 #ZFDebug_debug li {margin:0;}
                 #ZFDebug_debug .clickable {cursor:pointer}
-                #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:40px; 
+                #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:32px; 
                                background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
-                #ZFDebug_debug .ZFDebug_span {padding:0 15px; line-height:40px; display:block; float:left}
+                #ZFDebug_debug .ZFDebug_span {padding:0 15px; line-height:32px; display:block; float:left}
                 #ZFDebug_debug .ZFDebug_last { border: 0px }
                 #ZFDebug_debug .ZFDebug_panel {background:#1a1a1a; padding:0px 15px 15px 15px; 
-                                font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
+                                font: 11px/1.4em Menlo, Monaco, Lucida Console, monospace;
                                 text-align:left; height:185px; overflow:auto; display:none; 
                                 border-top:1px solid #333333;}
                 #ZFDebug_debug .ZFDebug_active {background:#1a1a1a;}
-                #ZFDebug_debug .ZFDebug_panel .pre {font: 11px/1.4em Monaco, Lucida Console, monospace; margin:0 0 0 22px}
+                #ZFDebug_debug .ZFDebug_panel .pre {margin:0 0 0 22px}
                 #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
             </style>
                 <script src="http://www.google.com/jsapi"></script>
@@ -458,8 +458,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 
                 function ZFDebugPanel(name) {
                     if (ZFDebugCurrent == name) {
-                        jQuery("#ZFDebug_debug").animate({height:"40px"});
-                        jQuery("#ZFDebug_offset").animate({height:"40px"});
+                        jQuery("#ZFDebug_debug").animate({height:"32px"});
+                        jQuery("#ZFDebug_offset").animate({height:"32px"});
                         ZFDebugCurrent = null;
                         document.cookie = "ZFDebugCollapsed=;expires=;path=/";
                     } else {
