@@ -112,7 +112,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File
     {
         $linebreak = $this->getLinebreak();
         $included = $this->_getIncludedFiles();
-        $html = '<h4>' . count($included).' files included at ';
+        $html = '<h4>' . count($included).' files included worth ';
         $size = 0;
         foreach ($included as $file) {
             $size += filesize($file);

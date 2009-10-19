@@ -259,10 +259,15 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             if ($pluginIcon) {
                 $html .= '<img src="' . $pluginIcon . '" style="vertical-align:middle" alt="' 
                        . $plugin->getIdentifier() . '" title="' 
-                       . $plugin->getIdentifier() . '"'. $this->getClosingBracket() .' ';
+                       . $plugin->getIdentifier() . '"> ';
             }
             $html .= $tab . '</span>';
         }
+        
+        $html .= '<span id="ZFDebugInfo_Request" class="ZFDebug_span">'
+               . round(memory_get_peak_usage()/1024) . 'K in '
+               . round((microtime(true)-$_SERVER['REQUEST_TIME'])*1000) . 'ms'
+               . '</span>';
 
         $html .= '</div>';
 
@@ -349,7 +354,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     {
         $panel = '<h4>ZFDebug v'.$this->_version.' in Zend Framework ' 
                . Zend_Version::VERSION . ' on PHP ' . phpversion().'</h4>'
-               . '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a><br>'
+               . '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a>' . $this->getLinebreak()
                . 'with contributions by <a href="http://www.bangal.de">Andreas Pankratz</a> and more</p>'
                . '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a>'
                . ' and released under the BSD License' . $this->getLinebreak()
@@ -422,8 +427,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:32px; 
                                background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
                 #ZFDebug_debug .ZFDebug_span {padding:0 15px; line-height:32px; display:block; float:left}
-                #ZFDebug_debug .ZFDebug_last { border: 0px }
-                #ZFDebug_debug .ZFDebug_panel {background:#1a1a1a; padding:0px 15px 15px 15px; 
+                #ZFDebug_debug .ZFDebug_last { border-left:1px solid #1a1a1a }
+                #ZFDebug_debug .ZFDebug_panel {padding:0px 15px 15px 15px; 
                                 font: 11px/1.4em Menlo, Monaco, Lucida Console, monospace;
                                 text-align:left; height:185px; overflow:auto; display:none; 
                                 border-top:1px solid #333333;}

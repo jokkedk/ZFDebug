@@ -101,7 +101,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
      */
     public function getTab()
     {
-        return round($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup'],2). 'ms';
+        // return round($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup'],2). 'ms';
     }
 
     /**
