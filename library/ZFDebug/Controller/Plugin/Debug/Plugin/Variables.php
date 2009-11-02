@@ -87,7 +87,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
         }
         $vars = '<div style="width:50%;float:left;">';
         $vars .= '<h4>View variables</h4>'
-              . '<div id="ZFDebug_vars">' . $viewVars . '</div>'
+              . '<div id="ZFDebug_vars" style="color:#C9C9C9">' . $viewVars . '</div>'
               . '<h4>Request parameters</h4>'
               . '<div id="ZFDebug_requests">' . $this->_cleanData($this->_request->getParams()) . '</div>';
         $vars .= '</div><div style="width:45%;float:left;">';

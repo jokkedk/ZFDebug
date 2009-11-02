@@ -352,10 +352,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _getVersionPanel()
     {
-        $panel = '<h4>ZFDebug v'.$this->_version.' in Zend Framework ' 
+        $panel = '<h4>ZFDebug '.$this->_version.' – Zend Framework ' 
                . Zend_Version::VERSION . ' on PHP ' . phpversion().'</h4>'
                . '<p>©2008-2009 <a href="http://jokke.dk">Joakim Nygård</a>' . $this->getLinebreak()
-               . 'with contributions by <a href="http://www.bangal.de">Andreas Pankratz</a> and more</p>'
+               . 'with contributions by <a href="http://www.bangal.de">Andreas Pankratz</a> and others</p>'
                . '<p>The project is hosted at <a href="http://code.google.com/p/zfdebug/">http://zfdebug.googlecode.com</a>'
                . ' and released under the BSD License' . $this->getLinebreak()
                . 'Includes images from the <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon set</a> by Mark James</p>'
@@ -412,89 +412,87 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         $collapsed = isset($_COOKIE['ZFDebugCollapsed']) ? $_COOKIE['ZFDebugCollapsed'] : '';
         $boxheight = $collapsed ? '240px' : '32px';
         return ('
-            <style type="text/css" media="screen">
-                #ZFDebug_offset {height:'.$boxheight.'}
-                #ZFDebug_debug {height:'.$boxheight.'; width:100%; background:#262626; 
-                                font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
-                                position:fixed; bottom:0px; left:0px; color:#FFF; 
-                                z-index: ' . $this->_options['z-index'] . ';}
-                #ZFDebug_debug a {color:#FFFFFF}
-                #ZFDebug_debug * {background:transparent;}
-                #ZFDebug_debug td {vertical-align:top; border:0px}
-                #ZFDebug_debug ol {margin:1em 0 0 0; padding:0; list-style-position: inside;}
-                #ZFDebug_debug li {margin:0;}
-                #ZFDebug_debug .clickable {cursor:pointer}
-                #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:32px; 
-                               background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
-                #ZFDebug_debug .ZFDebug_span {padding:0 15px; line-height:32px; display:block; float:left}
-                #ZFDebug_debug .ZFDebug_last { border-left:1px solid #1a1a1a }
-                #ZFDebug_debug .ZFDebug_panel {padding:0px 15px 15px 15px; 
-                                font: 11px/1.4em Menlo, Monaco, Lucida Console, monospace;
-                                text-align:left; height:185px; overflow:auto; display:none; 
-                                border-top:1px solid #333333;}
-                #ZFDebug_debug .ZFDebug_active {background:#1a1a1a;}
-                #ZFDebug_debug .ZFDebug_panel .pre {margin:0 0 0 22px}
-                #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
-            </style>
-                <script src="http://www.google.com/jsapi"></script>
-                <script type="text/javascript">
-                if (typeof jQuery == "undefined") {
-                    // Load jQuery
-                    google.load("jquery", "1");
-                    // var scriptObj = document.createElement("script");
-                    // scriptObj.src = "'.$this->_options['jquery_path'].'";
-                    // scriptObj.type = "text/javascript";
-                    // var head=document.getElementsByTagName("head")[0];
-                    // head.insertBefore(scriptObj,head.firstChild);
-                    // jQuery.noConflict();
-                }
+    <style type="text/css" media="screen">
+        #ZFDebug_offset {height:'.$boxheight.'}
+        #ZFDebug_debug {height:'.$boxheight.'; width:100%; background:#262626; 
+                        font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
+                        position:fixed; bottom:0px; left:0px; color:#FFF; 
+                        z-index: ' . $this->_options['z-index'] . ';}
+        #ZFDebug_debug a {color:#FFFFFF}
+        #ZFDebug_debug * {background:transparent;}
+        #ZFDebug_debug tr {color:#C9C9C9}
+        #ZFDebug_debug td {vertical-align:top; border:0px; color:#C9C9C9}
+        #ZFDebug_debug ol {margin:1em 0 0 0; padding:0; list-style-position: inside;}
+        #ZFDebug_debug li {margin:0;}
+        #ZFDebug_debug .clickable {cursor:pointer}
+        #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:32px; 
+                       background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
+        #ZFDebug_debug .ZFDebug_span {padding:0 15px; line-height:32px; display:block; float:left}
+        #ZFDebug_debug .ZFDebug_last { border-left:1px solid #1a1a1a }
+        #ZFDebug_debug .ZFDebug_panel {padding:0px 15px 15px 15px; 
+                        font: 11px/1.4em Menlo, Monaco, Lucida Console, monospace;
+                        text-align:left; height:185px; overflow:auto; display:none; 
+                        border-top:1px solid #333333;}
+        #ZFDebug_debug .ZFDebug_active {background:#1a1a1a;}
+        #ZFDebug_debug .ZFDebug_panel .pre {margin:0 0 0 22px}
+        #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
+    </style>
+        <script src="http://www.google.com/jsapi"></script>
+        <script type="text/javascript" charset="utf-8">
+        if (typeof jQuery == "undefined") {
+            // Load jQuery
+            google.load("jquery", "1");
+        }
+        </script>
+        <script type="text/javascript">
+        jQuery.noConflict();
 
-                var ZFDebugLoad = window.onload;
-                window.onload = function(){
-                    if (ZFDebugLoad) {
-                        ZFDebugLoad();
-                    }
-                    if ("'.$collapsed.'" != "") {
-                        ZFDebugPanel("' . $collapsed . '");
-                    }
-                };
-                
-                var ZFDebugCurrent = null;
-                
-                function ZFDebugPanel(name) {
-                    if (ZFDebugCurrent == name) {
-                        jQuery("#ZFDebug_debug").animate({height:"32px"});
-                        jQuery("#ZFDebug_offset").animate({height:"32px"});
-                        ZFDebugCurrent = null;
-                        document.cookie = "ZFDebugCollapsed=;expires=;path=/";
-                    } else {
-                        jQuery("#ZFDebug_debug").animate({height:"240px"});
-                        jQuery("#ZFDebug_offset").animate({height:"240px"});
-                        ZFDebugCurrent = name;
-                        document.cookie = "ZFDebugCollapsed="+name+";expires=;path=/";
-                    }
-                    jQuery(".ZFDebug_panel").each(function(i){
-                        if (ZFDebugCurrent && jQuery(this).attr("id") == name) {
-                            jQuery("#ZFDebugInfo_"+name.substring(8)).addClass("ZFDebug_active");
-                            jQuery(this).show();
-                        } else {
-                            jQuery("#ZFDebugInfo_"+jQuery(this).attr("id").substring(8)).removeClass("ZFDebug_active");
-                            jQuery(this).hide();
-                        }
-                    });
+        var ZFDebugLoad = window.onload;
+        window.onload = function(){
+            if (ZFDebugLoad) {
+                ZFDebugLoad();
+            }
+            if ("'.$collapsed.'" != "") {
+                ZFDebugPanel("' . $collapsed . '");
+            }
+        };
+    
+        var ZFDebugCurrent = null;
+    
+        function ZFDebugPanel(name) {
+            if (ZFDebugCurrent == name) {
+                jQuery("#ZFDebug_debug").animate({height:"32px"});
+                jQuery("#ZFDebug_offset").animate({height:"32px"});
+                ZFDebugCurrent = null;
+                document.cookie = "ZFDebugCollapsed=;expires=;path=/";
+            } else {
+                jQuery("#ZFDebug_debug").animate({height:"240px"});
+                jQuery("#ZFDebug_offset").animate({height:"240px"});
+                ZFDebugCurrent = name;
+                document.cookie = "ZFDebugCollapsed="+name+";expires=;path=/";
+            }
+            jQuery(".ZFDebug_panel").each(function(i){
+                if (ZFDebugCurrent && jQuery(this).attr("id") == name) {
+                    jQuery("#ZFDebugInfo_"+name.substring(8)).addClass("ZFDebug_active");
+                    jQuery(this).show();
+                } else {
+                    jQuery("#ZFDebugInfo_"+jQuery(this).attr("id").substring(8)).removeClass("ZFDebug_active");
+                    jQuery(this).hide();
                 }
+            });
+        }
 
-                function ZFDebugToggleElement(name, whenHidden, whenVisible){
-                    if(jQuery(name).css("display")=="none"){
-                        jQuery(whenVisible).show();
-                        jQuery(whenHidden).hide();
-                    } else {
-                        jQuery(whenVisible).hide();
-                        jQuery(whenHidden).show();
-                    }
-                    jQuery(name).slideToggle();
-                }
-            </script>');
+        function ZFDebugToggleElement(name, whenHidden, whenVisible){
+            if(jQuery(name).css("display")=="none"){
+                jQuery(whenVisible).show();
+                jQuery(whenHidden).hide();
+            } else {
+                jQuery(whenVisible).hide();
+                jQuery(whenHidden).show();
+            }
+            jQuery(name).slideToggle();
+        }
+    </script>');
     }
 
     /**

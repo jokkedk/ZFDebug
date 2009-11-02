@@ -135,10 +135,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                 if (1 < count($this->_db)) {
                     $html .= '<h4>Adapter '.$name.'</h4>';
                 }
-                $html .='<table cellspacing="10">';
+                $html .='<table cellspacing="0" cellpadding="0" width="100%">';
                 foreach ($profiles as $profile) {
-                    $html .= '<tr><td nowrap>' . round($profile->getElapsedSecs()*1000, 2) 
-                           . ' ms</td><td>';
+                    $html .= '<tr><td style="text-align:right;padding-right:2em" nowrap>' . sprintf('%0.2f', $profile->getElapsedSecs()*1000) 
+                           . 'ms</td><td>';
                     $params = $profile->getQueryParams();
                     array_walk($params, array($this, '_addQuotes'));
                     $paramCount = count($params);
