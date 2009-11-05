@@ -137,8 +137,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                 }
                 $html .='<table cellspacing="0" cellpadding="0" width="100%">';
                 foreach ($profiles as $profile) {
-                    $html .= '<tr><td style="text-align:right;padding-right:2em" nowrap>' . sprintf('%0.2f', $profile->getElapsedSecs()*1000) 
-                           . 'ms</td><td>';
+                    $html .= "<tr>\n<td style='text-align:right;padding-right:2em;' nowrap>\n" 
+                           . sprintf('%0.2f', $profile->getElapsedSecs()*1000) 
+                           . "ms</td>\n<td>";
                     $params = $profile->getQueryParams();
                     array_walk($params, array($this, '_addQuotes'));
                     $paramCount = count($params);
@@ -157,21 +158,30 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                         Zend_Db_Profiler::SELECT == $profile->getQueryType()) {
                         
                         $explain = $adapter->fetchRow('EXPLAIN '.$profile->getQuery());
-                        $html .= '</td><td style="color:#7F7F7F;width:150px"><strong>Type:</strong> ' 
-                                . strtolower($explain['select_type']) . ', ' 
-                                . $explain['type'] . '<br>'
-                                .'<strong>Rows:</strong> ' . $explain['rows'] . '<br>'
-                                .'<strong>Possible Keys:</strong> ' 
-                                . str_replace(',', ', ', $explain['possible_keys']) . '<br>'
-                                .'<strong>Key Used:</strong> ' . $explain['key'];
+                        $explainData = array(
+                            'Possible keys' => str_replace(',', ', ', $explain['possible_keys']),
+                            'Key used' => $explain['key'],
+                            'Type' => $explain['select_type'] . ', ' . $explain['type']
+                        );
                         if ($explain['Extra']) {
-                            $html .= '<br><strong>Extra:</strong> ' . $explain['Extra'];
+                            $explainData['Extra'] = $explain['Extra'];
                         }
+                        $explainData['Rows'] = $explain['rows'];
+                        
+                        $html .= "<div style='color:#7F7F7F;padding-top:2px'>";
+                        $explainEnd = end($explainData);
+                        foreach ($explainData as $key => $value) {
+                            $html .= "$key: <span style='color:#ffb13e'>$value</span>";
+                            if ($value != $explainEnd) {
+                                $html .= " · \n";
+                            }
+                        }
+                        $html .= "</div>";
                     }
 
-                    $html .= '</td></tr>';
+                    $html .= "</td>\n</tr>\n";
                 }
-                $html .= '</table>';
+                $html .= "</table>\n";
             }
         }
 

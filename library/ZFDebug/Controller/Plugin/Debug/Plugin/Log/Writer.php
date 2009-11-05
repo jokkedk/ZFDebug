@@ -51,7 +51,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer extends Zend_Log_Writer_
             $event['color'] = 'green';
         }
         if ($event['priority'] < 6) {
-            $event['color'] = 'orange';
+            $event['color'] = '#fd9600';
         } 
         if ($event['priority'] < 5) {
             $event['color'] = 'red';
