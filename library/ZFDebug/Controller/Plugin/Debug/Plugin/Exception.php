@@ -35,6 +35,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      */
     static $errors = array();
 
+    protected $_rendered = false;
+
     /**
      * Get the ZFDebug logger
      *
@@ -43,8 +45,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
     public static function getLogger()
     {
         if (!self::$_logger) {
-            self::$_logger = Zend_Controller_Front::getInstance()
-                ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log')->getLog();
+            if ($zfdebug = Zend_Controller_Front::getInstance()->getPlugin('ZFDebug_Controller_Plugin_Debug')) {
+                self::$_logger = $zfdebug->getPlugin('Log')->getLog();
+            } else {
+                return false;
+            }
         }
         return self::$_logger;
     }
@@ -105,7 +110,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
                        . ' on line ' . $t['line'] . '</li>';
             }
             $exception .= '</ol>';
-            self::getLogger()->crit($exception);
+            if ($logger = self::getLogger())
+                $logger->crit($exception);
         }
         return '';
     }
@@ -117,7 +123,36 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      */
     public function getPanel()
     {
+        $this->_rendered = true;
         return '';
+    }
+    
+    public function __destruct()
+    {
+        if (!$this->_rendered) {
+            echo '<pre>';
+            foreach(self::$errors as $error) {
+                echo sprintf("%s: %s in %s on line %d", 
+                             $error['type'], 
+                             $error['message'], 
+                             $error['file'], 
+                             $error['line']
+                );
+                echo "\n";
+                array_shift($error['trace']);
+                array_shift($error['trace']);
+                foreach ($error['trace'] as $call => $details) {
+                    echo sprintf("&nbsp;&nbsp;%s->%s in %s on line %d\n", 
+                                 $details['class'], 
+                                 $details['function'], 
+                                 $details['file'], 
+                                 $details['line']
+                    );
+                }
+                echo "\n";
+            }
+            echo '</pre>';
+        }
     }
 
     /**
@@ -154,7 +189,13 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
                 $type = 'Unknown, ' . $level;
                 break;
         }
-        self::$errors[] = array('type' => $type , 'message' => $message , 'file' => $file , 'line' => $line);
+        self::$errors[] = array(
+            'type' => $type , 
+            'message' => $message , 
+            'file' => $file , 
+            'line' => $line,
+            'trace' => debug_backtrace()
+        );
 
         $message = sprintf(
             "%s in %s on line %d", 
@@ -162,10 +203,13 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
             str_replace($_SERVER['DOCUMENT_ROOT'], '', $file),
             $line
         );
-        self::getLogger()->$method($message);
-        
         if (ini_get('log_errors'))
             error_log(sprintf("%s: %s in %s on line %d", $type, $message, $file, $line));
-        return true;
+
+        if (($logger = self::getLogger())) {
+            $logger->$method($message);
+            return true;
+        }
+        return false;
     }
 }
