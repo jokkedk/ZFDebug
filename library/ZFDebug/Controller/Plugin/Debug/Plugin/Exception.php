@@ -204,7 +204,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
             $line
         );
         if (ini_get('log_errors'))
-            error_log(sprintf("%s: %s in %s on line %d", $type, $message, $file, $line));
+            error_log(sprintf("%s: %s", $type, $message));
 
         if (($logger = self::getLogger())) {
             $logger->$method($message);
