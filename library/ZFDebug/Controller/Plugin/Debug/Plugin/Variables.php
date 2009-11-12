@@ -87,24 +87,24 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
         }
         $vars = '<div style="width:50%;float:left;">';
         $vars .= '<h4>View variables</h4>'
-              . '<div id="ZFDebug_vars" style="color:#C9C9C9">' . $viewVars . '</div>'
+              . '<div id="ZFDebug_vars" style="margin-left:-22px">' . $viewVars . '</div>'
               . '<h4>Request parameters</h4>'
-              . '<div id="ZFDebug_requests">' . $this->_cleanData($this->_request->getParams()) . '</div>';
+              . '<div id="ZFDebug_requests" style="margin-left:-22px">' . $this->_cleanData($this->_request->getParams()) . '</div>';
         $vars .= '</div><div style="width:45%;float:left;">';
         if ($this->_request->isPost())
         {
             $vars .= '<h4>Post variables</h4>'
-                   . '<div id="ZFDebug_post">' . $this->_cleanData($this->_request->getPost()) . '</div>';
+                   . '<div id="ZFDebug_post" style="margin-left:-22px">' . $this->_cleanData($this->_request->getPost()) . '</div>';
         }
 
         $registry = Zend_Registry::getInstance();
         $vars .= '<h4>Zend Registry</h4>';
         $registry->ksort();
-        $vars .= '<div id="ZFDebug_registry">' . $this->_cleanData($registry) . '</div>';
+        $vars .= '<div id="ZFDebug_registry" style="margin-left:-22px">' . $this->_cleanData($registry) . '</div>';
         
         $cookies = $this->_request->getCookie();
         $vars .= '<h4>Cookies</h4>'
-               . '<div id="ZFDebug_cookie">' . $this->_cleanData($cookies) . '</div>';
+               . '<div id="ZFDebug_cookie" style="margin-left:-22px">' . $this->_cleanData($cookies) . '</div>';
         
         $vars .= '</div><div style="clear:both">&nbsp;</div>';
         return $vars;

@@ -421,7 +421,6 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                         position:fixed; bottom:0px; left:0px; color:#FFF; 
                         z-index: ' . $this->_options['z-index'] . ';}
         #ZFDebug_debug a {color:#FFFFFF}
-        #ZFDebug_debug * {background:transparent;}
         #ZFDebug_debug tr {color:#FFFFFF;}
         #ZFDebug_debug td {vertical-align:top; padding-bottom:1em}
         #ZFDebug_debug ol {margin:1em 0 0 0; padding:0; list-style-position: inside;}
@@ -434,7 +433,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                         font: 11px/1.4em Menlo, Monaco, Lucida Console, monospace;
                         text-align:left; height:208px; overflow:auto; display:none; 
                         border-top:1px solid #333333; background:#000000}
-        #ZFDebug_debug .ZFDebug_panel h4 {font:bold 12px/1.4em Menlo, Monaco, Lucida Console, monospace; margin-bottom:1em;}
+        #ZFDebug_debug h4 {font:bold 12px/1.4em Menlo, Monaco, Lucida Console, monospace; margin-bottom:1em;}
         #ZFDebug_debug .ZFDebug_active {background:#1a1a1a;}
         #ZFDebug_debug .ZFDebug_panel .pre {margin:0 0 0 22px}
         #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
