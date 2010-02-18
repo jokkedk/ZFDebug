@@ -22,6 +22,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer extends Zend_Log_Writer_
     protected $_messages = array();
     protected $_errors = 0;
     
+    public static function factory($config)
+    {
+        return new self();
+    }
+    
     public function getMessages()
     {
         return $this->_messages;
@@ -44,7 +49,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer extends Zend_Log_Writer_
         $output = '<tr style="color:%color%;">';
         $output .= '<td style="text-align:right;padding-right:1em">%priorityName%</td>';
         $output .= '<td style="text-align:right;padding-right:1em">%memory%</td>';
-        $output .= '<td>%message%</td></tr>'; // (%priority%)
+        $output .= '<td style="width:90%;">%message%</td></tr>'; // (%priority%)
         $event['color'] = '#C9C9C9';
         // Count errors
         if ($event['priority'] < 7) {

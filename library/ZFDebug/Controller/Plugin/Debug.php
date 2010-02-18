@@ -229,7 +229,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
 
         $html .= "<div id='ZFDebug_info'>\n";
         $html .= "\t<span class='ZFDebug_span' style='padding-right:0px;' onclick='ZFDebugPanel(ZFDebugCurrent);'>
-            <img style='vertical-align:middle;' src='".$this->_icon('close')."'>
+            <img style='vertical-align:middle;' src='".$this->_icon('close')."'>&nbsp;
         </span>\n";
 
         /**
@@ -415,27 +415,38 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         $boxheight = $collapsed ? '240px' : '32px';
         return ('
     <style type="text/css" media="screen">
+        #ZFDebug, #ZFDebug div, #ZFDebug span, #ZFDebug h1, #ZFDebug h2, #ZFDebug h3, #ZFDebug h4, #ZFDebug h5, #ZFDebug h6, #ZFDebug p, #ZFDebug blockquote, #ZFDebug pre, #ZFDebug a, #ZFDebug code, #ZFDebug em, #ZFDebug img, #ZFDebug strong, #ZFDebug dl, #ZFDebug dt, #ZFDebug dd, #ZFDebug ol, #ZFDebug ul, #ZFDebug li, #ZFDebug table, #ZFDebug tbody, #ZFDebug tfoot, #ZFDebug thead, #ZFDebug tr, #ZFDebug th, #ZFDebug td {
+        	margin: 0;
+        	padding: 0;
+        	border: 0;
+        	outline: 0;
+        	font-size: 100%;
+        	vertical-align: baseline;
+        	background: transparent;
+        	}
+        
         #ZFDebug_offset {height:'.$boxheight.'}
-        #ZFDebug_debug {height:'.$boxheight.'; width:100%; background:#262626; 
+        #ZFDebug {height:'.$boxheight.'; width:100%; background:#262626; 
                         font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
                         position:fixed; bottom:0px; left:0px; color:#FFF; 
                         z-index: ' . $this->_options['z-index'] . ';}
-        #ZFDebug_debug a {color:#FFFFFF}
-        #ZFDebug_debug tr {color:#FFFFFF;}
-        #ZFDebug_debug td {vertical-align:top; padding-bottom:1em}
-        #ZFDebug_debug ol {margin:1em 0 0 0; padding:0; list-style-position: inside;}
-        #ZFDebug_debug li {margin:0;}
-        #ZFDebug_debug .clickable {cursor:pointer}
-        #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:32px; 
+        #ZFDebug p {margin:1em 0}
+        #ZFDebug a {color:#FFFFFF}
+        #ZFDebug tr {color:#FFFFFF;}
+        #ZFDebug td {vertical-align:top; padding-bottom:1em}
+        #ZFDebug ol {margin:1em 0 0 0; padding:0; list-style-position: inside;}
+        #ZFDebug li {margin:0;}
+        #ZFDebug .clickable {cursor:pointer}
+        #ZFDebug #ZFDebug_info {display:block; border-bottom:1px solid #1a1a1a; height:32px; 
                        background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
-        #ZFDebug_debug .ZFDebug_span {padding:0 15px; line-height:32px; display:block; float:left}
-        #ZFDebug_debug .ZFDebug_panel {padding:0px 15px 15px 15px; 
+        #ZFDebug .ZFDebug_span {padding:0 15px; line-height:32px; display:block; float:left}
+        #ZFDebug .ZFDebug_panel {padding:0px 15px 15px 15px; 
                         font: 11px/1.4em Menlo, Monaco, Lucida Console, monospace;
                         text-align:left; height:208px; overflow:auto; display:none; 
                         border-top:1px solid #333333; background:#000000}
-        #ZFDebug_debug h4 {font:bold 12px/1.4em Menlo, Monaco, Lucida Console, monospace; margin-bottom:1em;}
-        #ZFDebug_debug .ZFDebug_active {background:#1a1a1a;}
-        #ZFDebug_debug .ZFDebug_panel .pre {margin:0 0 0 22px}
+        #ZFDebug h4 {font:bold 12px/1.4em Menlo, Monaco, Lucida Console, monospace; margin:1em 0;}
+        #ZFDebug .ZFDebug_active {background:#1a1a1a;}
+        #ZFDebug .ZFDebug_panel .pre {margin:0 0 0 22px}
         #ZFDebug_exception { border:1px solid #CD0A0A;display: block; }
     </style>
     <script type="text/javascript" charset="utf-8">
@@ -533,12 +544,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     
         function ZFDebugPanel(name) {
             if (ZFDebugCurrent == name) {
-                document.getElementById("ZFDebug_debug").style.height = "32px";
+                document.getElementById("ZFDebug").style.height = "32px";
                 document.getElementById("ZFDebug_offset").style.height = "32px";
                 ZFDebugCurrent = null;
                 document.cookie = "ZFDebugCollapsed=;expires=;path=/";
             } else {
-                document.getElementById("ZFDebug_debug").style.height = "240px";
+                document.getElementById("ZFDebug").style.height = "240px";
                 document.getElementById("ZFDebug_offset").style.height = "240px";
                 ZFDebugCurrent = name;
                 document.cookie = "ZFDebugCollapsed="+name+";expires=;path=/";
@@ -567,7 +578,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     protected function _output($html)
     {
-        $html = "<div id='ZFDebug_offset'></div>\n<div id='ZFDebug_debug'>\n$html\n</div>\n</body>";
+        $html = "<div id='ZFDebug_offset'></div>\n<div id='ZFDebug'>\n$html\n</div>\n</body>";
         $response = $this->getResponse();
         // $response->setBody(preg_replace('/(<\/head>)/i', $this->_headerOutput() . '$1', $response->getBody()));
         $response->setBody(str_ireplace('</body>', $this->_headerOutput() . $html, $response->getBody()));
