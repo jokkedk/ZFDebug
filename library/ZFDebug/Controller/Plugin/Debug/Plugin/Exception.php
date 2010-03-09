@@ -127,34 +127,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
         return '';
     }
     
-    public function __destruct()
-    {
-        if (!$this->_rendered) {
-            echo '<pre>';
-            foreach(self::$errors as $error) {
-                echo sprintf("%s: %s in %s on line %d", 
-                             $error['type'], 
-                             $error['message'], 
-                             $error['file'], 
-                             $error['line']
-                );
-                echo "\n";
-                array_shift($error['trace']);
-                array_shift($error['trace']);
-                foreach ($error['trace'] as $call => $details) {
-                    echo sprintf("&nbsp;&nbsp;%s->%s in %s on line %d\n", 
-                                 $details['class'], 
-                                 $details['function'], 
-                                 $details['file'], 
-                                 $details['line']
-                    );
-                }
-                echo "\n";
-            }
-            echo '</pre>';
-        }
-    }
-
     /**
      * Debug Bar php error handler
      *
