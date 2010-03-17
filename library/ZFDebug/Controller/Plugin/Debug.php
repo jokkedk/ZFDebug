@@ -49,7 +49,6 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             'Variables' => null,
             'Time' => null,
             'Memory' => null),
-        'z-index'           => 255,
         'image_path'        => null
     );
     
@@ -148,10 +147,6 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     public function setOptions(array $options = array())
     {
-        if (isset($options['z-index'])) {
-            $this->_options['z-index'] = $options['z-index'];
-        }
-
         if (isset($options['image_path'])) {
             $this->_options['image_path'] = $options['image_path'];
         }
@@ -414,12 +409,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     {
         $collapsed = isset($_COOKIE['ZFDebugCollapsed']) ? $_COOKIE['ZFDebugCollapsed'] : '';
         if ($collapsed) {
-            $boxheight = isset($_COOKIE['ZFDebugHeight']) ? $_COOKIE['ZFDebugHeight'] : '240px';
+            $boxheight = isset($_COOKIE['ZFDebugHeight']) ? $_COOKIE['ZFDebugHeight'] : '240';
         } else {
-            $boxheight = '32px';
+            $boxheight = '32';
         }
         return ('
     <style type="text/css" media="screen">
+        html,body {height:100%}
         #ZFDebug, #ZFDebug div, #ZFDebug span, #ZFDebug h1, #ZFDebug h2, #ZFDebug h3, #ZFDebug h4, #ZFDebug h5, #ZFDebug h6, #ZFDebug p, #ZFDebug blockquote, #ZFDebug pre, #ZFDebug a, #ZFDebug code, #ZFDebug em, #ZFDebug img, #ZFDebug strong, #ZFDebug dl, #ZFDebug dt, #ZFDebug dd, #ZFDebug ol, #ZFDebug ul, #ZFDebug li, #ZFDebug table, #ZFDebug tbody, #ZFDebug tfoot, #ZFDebug thead, #ZFDebug tr, #ZFDebug th, #ZFDebug td {
         	margin: 0;
         	padding: 0;
@@ -430,11 +426,11 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         	background: transparent;
         	}
         
-        #ZFDebug_offset {height:'.$boxheight.'}
-        #ZFDebug {height:'.$boxheight.'; width:100%; background:#262626; 
+        #ZFDebug_offset {height:'.$boxheight.'px}
+        #ZFDebug {height:'.$boxheight.'px; width:100%; background:#262626; 
                         font: 12px/1.4em Lucida Grande, Lucida Sans Unicode, sans-serif; 
-                        position:fixed; bottom:0px; left:0px; color:#FFF; 
-                        z-index: ' . $this->_options['z-index'] . ';}
+                        position:fixed; bottom:0px; left:0px; color:#FFF; background:#000000;
+                        z-index:2718281828459045;}
         #ZFDebug p {margin:1em 0}
         #ZFDebug a {color:#FFFFFF}
         #ZFDebug tr {color:#FFFFFF;}
@@ -442,14 +438,13 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         #ZFDebug ol {margin:1em 0 0 0; padding:0; list-style-position: inside;}
         #ZFDebug li {margin:0;}
         #ZFDebug .clickable {cursor:pointer}
-        #ZFDebug #ZFDebug_info {display:block; height:32px; 
+        #ZFDebug #ZFDebug_info {display:block; height:32px;
                        background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAyCAMAAABSxbpPAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACFQTFRFFhYWIyMjGhoaHBwcJSUlExMTFBQUHx8fISEhGBgYJiYmWIZXxwAAAC5JREFUeNrsxskNACAMwLBAucr+A/OLWAEJv0wXQ1xSVBFiiiWKaGLr96EeAQYA2KMRY8RL/qEAAAAASUVORK5CYII=) }
         #ZFDebug #ZFDebugResize {cursor:row-resize; height:1px; border-top:1px solid #1a1a1a;border-bottom:1px solid #333333; }
         #ZFDebug .ZFDebug_span {padding:0 15px; line-height:32px; display:block; float:left}
-        #ZFDebug .ZFDebug_panel {padding:0px 15px 15px 15px; 
+        #ZFDebug .ZFDebug_panel {padding:0px 15px 15px 15px;
                         font: 11px/1.4em Menlo, Monaco, Lucida Console, monospace;
-                        text-align:left; height:100%; overflow:auto; display:none; 
-                        background:#000000}
+                        text-align:left; height:'.($boxheight-50).'px; overflow:auto; display:none; }
         #ZFDebug h4 {font:bold 12px/1.4em Menlo, Monaco, Lucida Console, monospace; margin:1em 0;}
         #ZFDebug .ZFDebug_active {background:#1a1a1a;}
         #ZFDebug .ZFDebug_panel .pre {margin:0 0 0 22px}
@@ -463,12 +458,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             }
             if ("'.$collapsed.'" != "") {
                 ZFDebugPanel("' . $collapsed . '");
-                window.zfdebugHeight = "'.$boxheight.'px";
+                window.zfdebugHeight = "'.$boxheight.'";
             }
             
             document.onmousemove = function(e) {
                 var event = e || window.event;
-                window.zfdebugMouse = Math.min(window.innerHeight, -1*(event.clientY-window.innerHeight-32))+"px";
+                window.zfdebugMouse = Math.min(window.innerHeight, -1*(event.clientY-window.innerHeight-32));
             }
             
             var ZFDebugResizeTimer = null;
@@ -486,8 +481,16 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         {
             window.zfdebugHeight = window.zfdebugMouse;
             document.cookie = "ZFDebugHeight="+window.zfdebugHeight+";expires=;path=/";
-            document.getElementById("ZFDebug").style.height = window.zfdebugHeight;
-            document.getElementById("ZFDebug_offset").style.height = window.zfdebugHeight;
+            document.getElementById("ZFDebug").style.height = window.zfdebugHeight+"px";
+            document.getElementById("ZFDebug_offset").style.height = window.zfdebugHeight+"px";
+            
+            var panels = document.getElementById("ZFDebug").children;
+            for (var i=0; i < document.getElementById("ZFDebug").childElementCount; i++) {
+                if (panels[i].className.indexOf("ZFDebug_panel") == -1)
+                    continue;
+                
+                panels[i].style.height = window.zfdebugHeight-50+"px";
+            }
         }
     
         var ZFDebugCurrent = null;
@@ -499,12 +502,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 ZFDebugCurrent = null;
                 document.cookie = "ZFDebugCollapsed=;expires=;path=/";
             } else {
-                document.getElementById("ZFDebug").style.height = window.zfdebugHeight;
-                document.getElementById("ZFDebug_offset").style.height = window.zfdebugHeight;
+                document.getElementById("ZFDebug").style.height = window.zfdebugHeight+"px";
+                document.getElementById("ZFDebug_offset").style.height = window.zfdebugHeight+"px";
                 ZFDebugCurrent = name;
                 document.cookie = "ZFDebugCollapsed="+name+";expires=;path=/";
             }
-            // var panels = getElementsByClassName("ZFDebug_panel");
+
             var panels = document.getElementById("ZFDebug").children;
             for (var i=0; i < document.getElementById("ZFDebug").childElementCount; i++) {
                 if (panels[i].className.indexOf("ZFDebug_panel") == -1)
