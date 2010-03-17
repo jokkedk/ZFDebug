@@ -413,7 +413,11 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     protected function _headerOutput() 
     {
         $collapsed = isset($_COOKIE['ZFDebugCollapsed']) ? $_COOKIE['ZFDebugCollapsed'] : '';
-        $boxheight = $collapsed ? '240px' : '32px';
+        if ($collapsed) {
+            $boxheight = isset($_COOKIE['ZFDebugHeight']) ? $_COOKIE['ZFDebugHeight'] : '240px';
+        } else {
+            $boxheight = '32px';
+        }
         return ('
     <style type="text/css" media="screen">
         #ZFDebug, #ZFDebug div, #ZFDebug span, #ZFDebug h1, #ZFDebug h2, #ZFDebug h3, #ZFDebug h4, #ZFDebug h5, #ZFDebug h6, #ZFDebug p, #ZFDebug blockquote, #ZFDebug pre, #ZFDebug a, #ZFDebug code, #ZFDebug em, #ZFDebug img, #ZFDebug strong, #ZFDebug dl, #ZFDebug dt, #ZFDebug dd, #ZFDebug ol, #ZFDebug ul, #ZFDebug li, #ZFDebug table, #ZFDebug tbody, #ZFDebug tfoot, #ZFDebug thead, #ZFDebug tr, #ZFDebug th, #ZFDebug td {
@@ -481,6 +485,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         function ZFDebugResize()
         {
             window.zfdebugHeight = window.zfdebugMouse;
+            document.cookie = "ZFDebugHeight="+window.zfdebugHeight+";expires=;path=/";
             document.getElementById("ZFDebug").style.height = window.zfdebugHeight;
             document.getElementById("ZFDebug_offset").style.height = window.zfdebugHeight;
         }
