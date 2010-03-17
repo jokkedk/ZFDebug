@@ -122,6 +122,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
             return '';
 
         $html = '<h4>Database queries';
+        
+        // @TODO: This is always on?
         if (Zend_Db_Table_Abstract::getDefaultMetadataCache()) {
             $html .= ' – Metadata cache ENABLED';
         } else {
@@ -129,63 +131,66 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
         }
         $html .= '</h4>';
 
+        return $html . $this->getProfile();
+    }
+    
+    public function getProfile()
+    {
+        $queries = '';
         foreach ($this->_db as $name => $adapter) {
             if ($profiles = $adapter->getProfiler()->getQueryProfiles()) {
                 $adapter->getProfiler()->setEnabled(false);
                 if (1 < count($this->_db)) {
                     $html .= '<h4>Adapter '.$name.'</h4>';
                 }
-                $html .='<table cellspacing="0" cellpadding="0" width="100%">';
+                $queries .='<table cellspacing="0" cellpadding="0" width="100%">';
                 foreach ($profiles as $profile) {
-                    $html .= "<tr>\n<td style='text-align:right;padding-right:2em;' nowrap>\n" 
+                    $queries .= "<tr>\n<td style='text-align:right;padding-right:2em;' nowrap>\n" 
                            . sprintf('%0.2f', $profile->getElapsedSecs()*1000) 
                            . "ms</td>\n<td>";
                     $params = $profile->getQueryParams();
                     array_walk($params, array($this, '_addQuotes'));
                     $paramCount = count($params);
                     if ($paramCount) {
-                        $html .= htmlspecialchars(preg_replace(array_fill(0, $paramCount, '/\?/'), $params, $profile->getQuery(), 1));
+                        $queries .= htmlspecialchars(preg_replace(array_fill(0, $paramCount, '/\?/'), $params, $profile->getQuery(), 1));
                     } else {
-                        $html .= htmlspecialchars($profile->getQuery());
+                        $queries .= htmlspecialchars($profile->getQuery());
                     }
                     
                     $supportedAdapter = ($adapter instanceof Zend_Db_Adapter_Mysqli || 
                                          $adapter instanceof Zend_Db_Adapter_Pdo_Mysql);
                 
                     # Run explain if enabled, supported adapter and SELECT query
-                    if ($this->_explain && 
-                        $supportedAdapter && 
-                        Zend_Db_Profiler::SELECT == $profile->getQueryType()) {
+                    if ($this->_explain && $supportedAdapter) {
+                        $queries .= "</td><td style='color:#7F7F7F;padding-left:2em;' nowrap>";
                         
-                        $explain = $adapter->fetchRow('EXPLAIN '.$profile->getQuery());
-                        $explainData = array(
-                            'Possible keys' => str_replace(',', ', ', $explain['possible_keys']),
-                            'Key used' => $explain['key'],
-                            'Type' => $explain['select_type'] . ', ' . $explain['type']
-                        );
-                        if ($explain['Extra']) {
-                            $explainData['Extra'] = $explain['Extra'];
-                        }
-                        $explainData['Rows'] = $explain['rows'];
-                        
-                        $html .= "<div style='color:#7F7F7F;padding-top:2px'>";
-                        $explainEnd = end($explainData);
-                        foreach ($explainData as $key => $value) {
-                            $html .= "$key: <span style='color:#ffb13e'>$value</span>";
-                            if ($value != $explainEnd) {
-                                $html .= " · \n";
+                        foreach ($adapter->fetchAll('EXPLAIN '.$profile->getQuery()) as $explain) {
+                            $queries .= "<div style='padding-bottom:0.5em'>";
+                            $explainData = array(
+                                'Type' => $explain['select_type'] . ', ' . $explain['type'],
+                                'Table' => $explain['table'], 
+                                'Possible keys' => str_replace(',', ', ', $explain['possible_keys']),
+                                'Key used' => $explain['key'],
+                            );
+                            if ($explain['Extra']) {
+                                $explainData['Extra'] = $explain['Extra'];
                             }
+                            $explainData['Rows'] = $explain['rows'];
+                        
+                            $explainEnd = end($explainData);
+                            foreach ($explainData as $key => $value) {
+                                $queries .= "$key: <span style='color:#ffb13e'>$value</span><br>\n";
+                            }
+                            $queries .= "</div>";
                         }
-                        $html .= "</div>";
                     }
 
-                    $html .= "</td>\n</tr>\n";
+                    $queries .= "</td>\n</tr>\n";
                 }
-                $html .= "</table>\n";
+                $queries .= "</table>\n";
             }
         }
-
-        return $html;
+        return $queries;
     }
 
     // For adding quotes to query params
