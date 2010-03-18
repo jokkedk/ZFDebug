@@ -458,8 +458,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             }
             if ("'.$collapsed.'" != "") {
                 ZFDebugPanel("' . $collapsed . '");
-                window.zfdebugHeight = "'.$boxheight.'";
             }
+            window.zfdebugHeight = "'.(isset($_COOKIE['ZFDebugHeight']) ? $_COOKIE['ZFDebugHeight'] : '240').'";
             
             document.onmousemove = function(e) {
                 var event = e || window.event;
