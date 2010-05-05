@@ -81,6 +81,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      */
     public function __construct()
     {
+        ini_set('display_errors', 0);
         set_error_handler(array($this , 'errorHandler'));
     }
 
@@ -175,12 +176,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
             str_replace($_SERVER['DOCUMENT_ROOT'], '', $file),
             $line
         );
-        if (ini_get('log_errors'))
-            error_log(sprintf("%s: %s", $type, $message));
+        // if (ini_get('log_errors'))
+        //     error_log(sprintf("%s: %s", $type, $message));
 
         if (($logger = self::getLogger())) {
             $logger->$method($message);
-            return true;
         }
         return false;
     }
