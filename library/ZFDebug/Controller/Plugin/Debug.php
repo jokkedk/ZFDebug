@@ -463,7 +463,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             
             document.onmousemove = function(e) {
                 var event = e || window.event;
-                window.zfdebugMouse = Math.min(window.innerHeight, -1*(event.clientY-window.innerHeight-32));
+                window.zfdebugMouse = Math.max(40, Math.min(window.innerHeight, -1*(event.clientY-window.innerHeight-32)));
             }
             
             var ZFDebugResizeTimer = null;
