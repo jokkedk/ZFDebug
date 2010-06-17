@@ -17,7 +17,9 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Html extends ZFDebug_Controller_Plugin_Debug_Plugin implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_Html 
+    extends ZFDebug_Controller_Plugin_Debug_Plugin 
+    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
@@ -76,26 +78,15 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Html extends ZFDebug_Controller_Plu
     public function getPanel()
     {
         $body = Zend_Controller_Front::getInstance()->getResponse()->getBody();
+        $dom = new DOMDocument();
+        $dom->loadHtml($body);
         $panel = '<h4>HTML Information</h4>';
-        $panel .= $this->_isXhtml().'
-        <script type="text/javascript">
-            var ZFHtmlLoad = window.onload;
-            window.onload = function(){
-                if (ZFHtmlLoad) {
-                    ZFHtmlLoad();
-                }
-                jQuery("#ZFDebug_Html_Tagcount").html(document.getElementsByTagName("*").length);
-                jQuery("#ZFDebug_Html_Stylecount").html(jQuery("link[rel*=stylesheet]").length);
-                jQuery("#ZFDebug_Html_Scriptcount").html(jQuery("script[src]").length);
-                jQuery("#ZFDebug_Html_Imgcount").html(jQuery("img[src]").length);
-            };
-        </script>';
+        $panel .= $this->_isXhtml();
         $linebreak = $this->getLinebreak();
-        $panel .= '<span id="ZFDebug_Html_Tagcount"></span> Tags'.$linebreak
-                . 'HTML Size: '.round(strlen($body)/1024, 2).'K'.$linebreak
-                . '<span id="ZFDebug_Html_Stylecount"></span> Stylesheet Files'.$linebreak
-                . '<span id="ZFDebug_Html_Scriptcount"></span> Javascript Files'.$linebreak
-                . '<span id="ZFDebug_Html_Imgcount"></span> Images'.$linebreak
+        $panel .= $dom->getElementsByTagName('*')->length.' Tags in ' . round(strlen($body)/1024, 2).'K'.$linebreak
+                . $dom->getElementsByTagName('link')->length.' Link Tags'.$linebreak
+                . $dom->getElementsByTagName('script')->length.' Script Tags'.$linebreak
+                . $dom->getElementsByTagName('img')->length.' Images'.$linebreak
                 . '<form method="post" action="http://validator.w3.org/check"><p><input type="hidden" name="fragment" value="'.htmlentities($body).'"'.$this->getClosingBracket().'<input type="submit" value="Validate With W3C"'.$this->getClosingBracket().'</p></form>';
         return $panel;
     }
