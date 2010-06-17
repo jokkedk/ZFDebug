@@ -117,23 +117,23 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
     public function mark($name, $logFirst = false) {
         if (isset($this->_marks[$name])) {
             $this->_marks[$name]['time'] = round((microtime(true)-$_SERVER['REQUEST_TIME'])*1000-$this->_marks[$name]['time']).'ms';
-            if (function_exists('memory_get_peak_usage')) {
-                $this->_marks[$name]['memory'] = round((memory_get_peak_usage()-$this->_marks[$name]['memory'])/1024) . 'K';
+            if (function_exists('memory_get_usage')) {
+                $this->_marks[$name]['memory'] = round((memory_get_usage()-$this->_marks[$name]['memory'])/1024) . 'K';
             } else {
-                $this->_marks[$name]['memory'] = '0K';
+                $this->_marks[$name]['memory'] = 'N/A';
             }
             $this->_logger->zflog(
                 array('time' => $this->_marks[$name]['time'], 
                       'memory' => $this->_marks[$name]['memory'],
-                      'message' => $name . " completed"
+                      'message' => $name
                 )
             );
         } else {
             $this->_marks[$name]['time'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-            if (function_exists('memory_get_peak_usage')) {
-                $this->_marks[$name]['memory'] = memory_get_peak_usage();
+            if (function_exists('memory_get_usage')) {
+                $this->_marks[$name]['memory'] = memory_get_usage();
             } else {
-                $this->_marks[$name]['memory'] = '0K';
+                $this->_marks[$name]['memory'] = 'N/A';
             }
             if ($logFirst) {
                 $this->_logger->zflog(
