@@ -81,7 +81,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception implements ZFDebug_Contro
      */
     public function __construct()
     {
-        ini_set('display_errors', 0);
         set_error_handler(array($this , 'errorHandler'));
     }
 
