@@ -27,7 +27,9 @@ require_once 'Zend/Session/Namespace.php';
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin_Abstract implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_Time 
+    extends Zend_Controller_Plugin_Abstract 
+    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
@@ -35,6 +37,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      * @var string
      */
     protected $_identifier = 'time';
+    
+    protected $_logger;
 
     /**
      * @var array
@@ -53,6 +57,21 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
     public function __construct()
     {
         Zend_Controller_Front::getInstance()->registerPlugin($this);
+    }
+    
+    /**
+     * Get the ZFDebug logger
+     *
+     * @return Zend_Log
+     */
+    public function getLogger()
+    {
+        if (!$this->_logger) {
+            $this->_logger = Zend_Controller_Front::getInstance()
+                ->getPlugin('ZFDebug_Controller_Plugin_Debug')->getPlugin('Log')->getLog();
+            $this->_logger->addPriority('Time', 9);
+        }
+        return $this->_logger;
     }
 
     /**
@@ -82,7 +101,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     public function getTab()
     {
-        return round($this->_timer['dispatchLoopShutdown'],2) .'/'.round($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup'],2). ' ms';
+        // return round($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup'],2). 'ms';
     }
 
     /**
@@ -92,14 +111,27 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     public function getPanel()
     {
-        $html = '<h4>Custom Timers</h4>';
-        $html .= 'Dispatch: ' . round(($this->_timer['dispatchLoopShutdown']-$this->_timer['dispatchLoopStartup']),2) .' ms'.$this->getLinebreak();
-        if (isset($this->_timer['user']) && count($this->_timer['user'])) {
-            foreach ($this->_timer['user'] as $name => $time) {
-                $html .= ''.$name.': '. round($time,2).' ms'.$this->getLinebreak();
-            }
-        }
+        return '';
+    }
+    
+    public function format($value)
+    {
+        return round($value, 2).'ms';
+    }
 
+    /**
+     * Sets a time mark identified with $name
+     *
+     * @param string $name
+     * @deprecated Use ZFDebug_Controller_Plugin_Debug_Plugin_Log
+     */
+    public function mark($name) {
+        $this->getLogger()->mark("$name");
+        trigger_error("ZFDebug Time plugin is deprecated, use the Log plugin");
+    }
+
+    public function getDispatchStatistics()
+    {
         if (!Zend_Session::isStarted()){
             Zend_Session::start();
         }
@@ -112,62 +144,33 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
         $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
         $timerNamespace->data[$this_module][$this_controller][$this_action][] = round($this->_timer['dispatchLoopShutdown'],2);
 
-        $html .= '<h4>Overall Timers</h4>';
-
+        // Limit to last 10 requests
+        while (10 < count($timerNamespace->data[$this_module][$this_controller][$this_action])) {
+            array_shift($timerNamespace->data[$this_module][$this_controller][$this_action]);
+        }
         foreach ($timerNamespace->data as $module => $controller)
         {
             if ($module != $this_module) {
                 continue;
             }
-            $html .= $module . $this->getLinebreak();
-            $html .= '<div class="pre">';
             foreach ($controller as $con => $action)
             {
                 if ($con != $this_controller) {
                     continue;
                 }
-                $html .= '    ' . $con . $this->getLinebreak();
-                $html .= '<div class="pre">';
                 foreach ($action as $key => $data)
                 {
                     if ($key != $this_action) {
                         continue;
                     }
-                    $html .= '        ' . $key . $this->getLinebreak();
-                    $html .= '<div class="pre">';
-                    $html .= '            Avg: ' . $this->_calcAvg($data) . ' ms / '.count($data).' requests'.$this->getLinebreak();
-                    $html .= '            Min: ' . round(min($data), 2) . ' ms'.$this->getLinebreak();
-                    $html .= '            Max: ' . round(max($data), 2) . ' ms'.$this->getLinebreak();
-                    $html .= '</div>';
+                    $stats = ' – avg ' . $this->_calcAvg($data) . 'ms/'.count($data).' requests';
+                    // $html = 'Min: ' . round(min($data), 2) . ' ms'.$this->getLinebreak();
+                    // $html .= 'Max: ' . round(max($data), 2) . ' ms'.$this->getLinebreak();
                 }
-                $html .= '</div>';
             }
-            $html .= '</div>';
         }
-        $html .= $this->getLinebreak().'Reset timers by sending ZFDEBUG_RESET as a GET/POST parameter';
-
-        return $html;
+        return $stats;
     }
-
-    /**
-     * Sets a time mark identified with $name
-     *
-     * @param string $name
-     */
-    public function mark($name) {
-        if (isset($this->_timer['user'][$name]))
-            $this->_timer['user'][$name] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000-$this->_timer['user'][$name];
-        else
-            $this->_timer['user'][$name] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-    }
-
-    #public function routeStartup(Zend_Controller_Request_Abstract $request) {
-    #     $this->timer['routeStartup'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-    #}
-
-    #public function routeShutdown(Zend_Controller_Request_Abstract $request) {
-    #     $this->timer['routeShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
-    #}
 
     /**
      * Defined by Zend_Controller_Plugin_Abstract
@@ -177,15 +180,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
      */
     public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
-        $reset = Zend_Controller_Front::getInstance()->getRequest()->getParam('ZFDEBUG_RESET');
-        if (isset($reset)) {
-            if (!Zend_Session::isStarted()) {
-                Zend_Session::start();
-            }
-            $timerNamespace = new Zend_Session_Namespace('ZFDebug_Time',false);
-            $timerNamespace->unsetAll();
-        }
-        
         $this->_timer['dispatchLoopStartup'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
 
@@ -215,11 +209,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time extends Zend_Controller_Plugin
 
         foreach ($array as $value)
             if (!is_numeric($value)) {
-                return 'ERROR in method _calcAvg(): the array contains one or more non-numeric values';
+                return 'N/A';
             }
 
-        $cuantos=count($array);
-        return round(array_sum($array)/$cuantos,$precision);
+        $cuantos = count($array);
+        return round(array_sum($array) / $cuantos, $precision);
     }
     
     public function getLinebreak()

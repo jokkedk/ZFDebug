@@ -17,7 +17,9 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plugin_Debug_Plugin implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_File 
+    extends ZFDebug_Controller_Plugin_Debug_Plugin 
+    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
@@ -42,9 +44,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plu
     protected $_includedFiles = null;
 
     /**
-     * Stores name of own extension library
+     * Stores names of used extension libraries
      *
-     * @var string
+     * @var array
      */
     protected $_library;
 
@@ -108,16 +110,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plu
      */
     public function getPanel()
     {
+        $linebreak = $this->getLinebreak();
         $included = $this->_getIncludedFiles();
-        $html = '<h4>File Information</h4>';
-        $html .= count($included).' Files Included'.$this->getLinebreak();
+        $html = '<h4>' . count($included).' files included worth ';
         $size = 0;
         foreach ($included as $file) {
             $size += filesize($file);
         }
-        $html .= 'Total Size: '. round($size/1024, 1).'K'.$this->getLinebreak();
+        $html .= round($size/1024, 1).'K</h4>';
         
-        $html .= 'Basepath: ' . $this->_basePath .$this->getLinebreak();
+        // $html .= 'Basepath: ' . $this->_basePath .$linebreak;
 
         $libraryFiles = array();
         foreach ($this->_library as $key => $value) {
@@ -131,19 +133,18 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File extends ZFDebug_Controller_Plu
             $file = str_replace($this->_basePath, '', $file);
             $filePaths = explode(DIRECTORY_SEPARATOR, $file);
             $inUserLib = false;
-        	foreach ($this->_library as $key => $library)
-        	{
-        		if('' != $library && in_array($library, $filePaths)) {
-        			$libraryFiles[$key] .= $file . $this->getLinebreak();
-        			$inUserLib = TRUE;
-        		}
-        	}
-        	if (!$inUserLib) {
-    			$html .= $file .$this->getLinebreak();
-        	}
+            foreach ($this->_library as $key => $library) {
+                if ('' != $library && in_array($library, $filePaths)) {
+                    $libraryFiles[$key] .= $file . $linebreak;
+                    $inUserLib = TRUE;
+                }
+            }
+            if (!$inUserLib) {
+                $html .= $file .$linebreak;
+            }
         }
 
-    	$html .= implode('', $libraryFiles);
+        $html .= implode('', $libraryFiles);
 
         return $html;
     }
