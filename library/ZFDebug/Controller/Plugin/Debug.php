@@ -516,6 +516,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
                 if (ZFDebugCurrent && panels[i].id == name) {
                     document.getElementById("ZFDebugInfo_"+name.substring(8)).className += " ZFDebug_active";
                     panels[i].style.display = "block";
+                    panels[i].style.height = (window.zfdebugHeight-50)+"px";
                 } else {
                     var element = document.getElementById("ZFDebugInfo_"+panels[i].id.substring(8));
                     element.className = element.className.replace("ZFDebug_active", "");
