@@ -53,10 +53,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Text implements ZFDebug_Controller_
     public function __construct(array $options = array())
     {
         if (isset($options['tab'])) {
-            $this->setTab($tab);
+            $this->setTab($options['tab']);
         }
         if (isset($options['panel'])) {
-            $this->setPanel($panel);
+            $this->setPanel($options['panel']);
         }
     }
 
