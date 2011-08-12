@@ -30,9 +30,6 @@ folder. Then add the following method to your bootstrap class (in ZF1.8+):
 	        'plugins' => array('Variables', 
 	                           'Database' => array('adapter' => $db), 
 	                           'File' => array('basePath' => '/path/to/project'),
-	                           'Memory', 
-	                           'Time', 
-	                           'Registry', 
 	                           'Cache' => array('backend' => $cache->getBackend()), 
 	                           'Exception')
 	    );
