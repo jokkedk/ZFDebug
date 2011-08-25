@@ -62,6 +62,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
         $tab = " Log";
         if ($this->_writer->getErrorCount()) {
             $tab .= " (".$this->_writer->getErrorCount().")";
+            $_COOKIE['ZFDebugCollapsed'] = 'ZFDebug_'.$this->getIdentifier();
         }
         return $tab;
     }
