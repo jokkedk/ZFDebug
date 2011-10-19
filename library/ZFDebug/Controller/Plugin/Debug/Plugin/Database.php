@@ -101,6 +101,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
         if (!$this->_db)
             return 'No adapter';
 
+        $adapterInfo = array();
         foreach ($this->_db as $adapter) {
             $profiler = $adapter->getProfiler();
             $adapterInfo[] = $profiler->getTotalNumQueries() . ' in ' 
@@ -141,7 +142,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
             if ($profiles = $adapter->getProfiler()->getQueryProfiles()) {
                 $adapter->getProfiler()->setEnabled(false);
                 if (1 < count($this->_db)) {
-                    $html .= '<h4>Adapter '.$name.'</h4>';
+                    $queries .= '<h4>Adapter '.$name.'</h4>';
                 }
                 $queries .='<table cellspacing="0" cellpadding="0" width="100%">';
                 foreach ($profiles as $profile) {
