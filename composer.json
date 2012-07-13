@@ -8,5 +8,8 @@
         "psr-0": {
             "ZFDebug": "library/"
         }
-    }
+    },
+    "include-path": [
+        "library/"
+    ]
 }
