@@ -21,22 +21,22 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer extends Zend_Log_Writer_
 {
     protected $_messages = array();
     protected $_errors = 0;
-    
+
     public static function factory($config)
     {
         return new self();
     }
-    
+
     public function getMessages()
     {
         return $this->_messages;
     }
-    
+
     public function getErrorCount()
     {
         return $this->_errors;
     }
-    
+
     /**
      * Write a message to the log.
      *
@@ -57,7 +57,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer extends Zend_Log_Writer_
         }
         if ($event['priority'] < 6) {
             $event['color'] = '#fd9600';
-        } 
+        }
         if ($event['priority'] < 5) {
             $event['color'] = 'red';
             $this->_errors++;

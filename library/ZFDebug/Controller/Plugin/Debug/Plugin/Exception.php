@@ -17,12 +17,12 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Exception 
-    extends Zend_Controller_Plugin_Abstract 
+class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
+    extends Zend_Controller_Plugin_Abstract
     implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     protected static $_logger;
-    
+
     /**
      * Contains plugin identifier name
      *
@@ -65,7 +65,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
     {
         return $this->_identifier;
     }
-    
+
     /**
      * Returns the base64 encoded icon
      *
@@ -84,7 +84,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
     public function __construct()
     {
         Zend_Controller_Front::getInstance()->registerPlugin($this);
-        
+
         set_error_handler(array($this , 'errorHandler'));
     }
 
@@ -108,7 +108,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
         $this->_rendered = true;
         return '';
     }
-    
+
     /**
      * Debug Bar php error handler
      *
@@ -144,16 +144,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
                 break;
         }
         self::$errors[] = array(
-            'type' => $type , 
-            'message' => $message , 
-            'file' => $file , 
+            'type' => $type ,
+            'message' => $message ,
+            'file' => $file ,
             'line' => $line,
             'trace' => debug_backtrace()
         );
 
         $message = sprintf(
-            "%s in %s on line %d", 
-            $message, 
+            "%s in %s on line %d",
+            $message,
             str_replace($_SERVER['DOCUMENT_ROOT'], '', $file),
             $line
         );
@@ -165,8 +165,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
         }
         return false;
     }
-    
-    
+
+
     /**
      * Defined by Zend_Controller_Plugin_Abstract
      *
@@ -186,7 +186,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
     public function routeShutdown(Zend_Controller_Request_Abstract $request)
     {
     }
-    
+
     /**
      * Defined by Zend_Controller_Plugin_Abstract
      *
@@ -196,7 +196,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
     }
-    
+
     /**
      * Defined by Zend_Controller_Plugin_Abstract
      *
@@ -206,7 +206,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
     public function postDispatch(Zend_Controller_Request_Abstract $request)
     {
     }
-    
+
     /**
      * Defined by Zend_Controller_Plugin_Abstract
      *
@@ -227,7 +227,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
     {
         $response = Zend_Controller_Front::getInstance()->getResponse();
         foreach ($response->getException() as $e) {
-            $exception = get_class($e) . ': ' . $e->getMessage() 
+            $exception = get_class($e) . ': ' . $e->getMessage()
                        . ' thrown in ' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $e->getFile())
                        . ' on line ' . $e->getLine();
             $exception .= '<ol>';
@@ -239,8 +239,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
                     $t['file'] = 'unknown';
                 if (! isset($t['line']))
                     $t['line'] = 'n/a';
-                $exception .= '<li>' . $func . ' in ' 
-                       . str_replace($_SERVER['DOCUMENT_ROOT'], '', $t['file']) 
+                $exception .= '<li>' . $func . ' in '
+                       . str_replace($_SERVER['DOCUMENT_ROOT'], '', $t['file'])
                        . ' on line ' . $t['line'] . '</li>';
             }
             $exception .= '</ol>';
