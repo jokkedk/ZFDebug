@@ -27,8 +27,8 @@ require_once 'Zend/Session/Namespace.php';
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Time 
-    extends Zend_Controller_Plugin_Abstract 
+class ZFDebug_Controller_Plugin_Debug_Plugin_Time
+    extends Zend_Controller_Plugin_Abstract
     implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
@@ -37,7 +37,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
      * @var string
      */
     protected $_identifier = 'time';
-    
+
     protected $_logger;
 
     /**
@@ -58,7 +58,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     {
         Zend_Controller_Front::getInstance()->registerPlugin($this);
     }
-    
+
     /**
      * Get the ZFDebug logger
      *
@@ -83,7 +83,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     {
         return $this->_identifier;
     }
-    
+
     /**
      * Returns the base64 encoded icon
      *
@@ -113,7 +113,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     {
         return '';
     }
-    
+
     public function format($value)
     {
         return round($value, 2).'ms';
@@ -193,7 +193,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
     {
         $this->_timer['dispatchLoopShutdown'] = (microtime(true)-$_SERVER['REQUEST_TIME'])*1000;
     }
-    
+
     /**
      * Calculate average time from $array
      *
@@ -215,7 +215,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
         $cuantos = count($array);
         return round(array_sum($array) / $cuantos, $precision);
     }
-    
+
     public function getLinebreak()
     {
         return '<br'.$this->getClosingBracket();
@@ -232,8 +232,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Time
         }
 
         return $this->_closingBracket;
-    }  
-    
+    }
+
     protected function _isXhtml()
     {
         $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;

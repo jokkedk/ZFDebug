@@ -50,7 +50,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
     {
         return $this->_identifier;
     }
-    
+
     /**
      * Returns the base64 encoded icon
      *
@@ -101,11 +101,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
         $vars .= '<h4>Zend Registry</h4>';
         $registry->ksort();
         $vars .= '<div id="ZFDebug_registry" style="margin-left:-22px">' . $this->_cleanData($registry) . '</div>';
-        
+
         $cookies = $this->_request->getCookie();
         $vars .= '<h4>Cookies</h4>'
                . '<div id="ZFDebug_cookie" style="margin-left:-22px">' . $this->_cleanData($cookies) . '</div>';
-        
+
         $vars .= '</div><div style="clear:both">&nbsp;</div>';
         return $vars;
     }
