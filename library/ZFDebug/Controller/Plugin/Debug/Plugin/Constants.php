@@ -94,7 +94,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Constants extends ZFDebug_Controlle
 
         $vars = '<div style="width:50%;float:left;">';
         $vars .= '<h4>Constants</h4>';
-        $vars .= '<div id="ZFDebug_Constantss" style="margin-left:-22px">';
+        $vars .= '<div id="ZFDebug_Constants" style="margin-left:-22px">';
         $vars .= '<div class="pre">';
 
         foreach($this->_userConstants as $constant => $value) {
@@ -102,8 +102,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Constants extends ZFDebug_Controlle
             $vars .= '<br />';
         }
 
-        $vars .= '</div>';
-        $vars .= '</div><div style="width:45%;float:left;">';
+        $vars .= '</div></div>';
         $vars .= '</div><div style="clear:both">&nbsp;</div>';
 
         return $vars;
