@@ -7,14 +7,15 @@
 
 $options = array(
     // 'jquery_path' => 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js',
-    'plugins' => array('Variables', 
-                       'Html', 
-                       'Database' => array('adapter' => array('standard' => $db)), 
-                       'File' => array('basePath' => 'path/to/application/root'), 
-                       'Memory', 
-                       'Time', 
-                       'Registry', 
-                       'Cache' => array('backend' => $cache->getBackend()), 
+    'plugins' => array('Variables',
+                       'Constants',
+                       'Html',
+                       'Database' => array('adapter' => array('standard' => $db)),
+                       'File' => array('basePath' => 'path/to/application/root'),
+                       'Memory',
+                       'Time',
+                       'Registry',
+                       'Cache' => array('backend' => $cache->getBackend()),
                        'Exception')
 );
 
