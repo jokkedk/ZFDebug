@@ -81,7 +81,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Auth implements ZFDebug_Controller_
     {
         return $this->_identifier;
     }
-    
+
     /**
      * Returns the base64 encoded icon
      *

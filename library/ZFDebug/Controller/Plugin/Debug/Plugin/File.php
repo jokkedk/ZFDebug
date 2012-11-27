@@ -17,8 +17,8 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_File 
-    extends ZFDebug_Controller_Plugin_Debug_Plugin 
+class ZFDebug_Controller_Plugin_Debug_Plugin_File
+    extends ZFDebug_Controller_Plugin_Debug_Plugin
     implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
@@ -67,7 +67,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File
     {
         isset($options['base_path']) || $options['base_path'] = $_SERVER['DOCUMENT_ROOT'];
         isset($options['library']) || $options['library'] = null;
-        
+
         $this->_basePath = realpath($options['base_path']);
         is_array($options['library']) || $options['library'] = array($options['library']);
         $this->_library = array_merge($options['library'], array('Zend', 'ZFDebug'));
@@ -82,7 +82,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File
     {
         return $this->_identifier;
     }
-    
+
     /**
      * Returns the base64 encoded icon
      *
@@ -118,7 +118,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_File
             $size += filesize($file);
         }
         $html .= round($size/1024, 1).'K</h4>';
-        
+
         // $html .= 'Basepath: ' . $this->_basePath .$linebreak;
 
         $libraryFiles = array();

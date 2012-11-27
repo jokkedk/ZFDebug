@@ -22,8 +22,8 @@ require_once 'Zend/Db/Table/Abstract.php';
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Database 
-    extends ZFDebug_Controller_Plugin_Debug_Plugin 
+class ZFDebug_Controller_Plugin_Debug_Plugin_Database
+    extends ZFDebug_Controller_Plugin_Debug_Plugin
     implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
 
@@ -38,7 +38,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
      * @var array
      */
     protected $_db = array();
-    
+
     protected $_explain = false;
 
     /**
@@ -65,8 +65,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                 }
             }
         }
-        
-        if (isset($options['explain'])) {            
+
+        if (isset($options['explain'])) {
             $this->_explain = (bool)$options['explain'];
         }
     }
@@ -80,7 +80,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
     {
         return $this->_identifier;
     }
-    
+
     /**
      * Returns the base64 encoded icon
      *
@@ -103,7 +103,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
 
         foreach ($this->_db as $adapter) {
             $profiler = $adapter->getProfiler();
-            $adapterInfo[] = $profiler->getTotalNumQueries() . ' in ' 
+            $adapterInfo[] = $profiler->getTotalNumQueries() . ' in '
                            . round($profiler->getTotalElapsedSecs()*1000, 2) . ' ms';
         }
         $html = implode(' / ', $adapterInfo);
@@ -122,7 +122,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
             return '';
 
         $html = '<h4>Database queries';
-        
+
         // @TODO: This is always on?
         if (Zend_Db_Table_Abstract::getDefaultMetadataCache()) {
             $html .= ' – Metadata cache ENABLED';
@@ -133,7 +133,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
 
         return $html . $this->getProfile();
     }
-    
+
     public function getProfile()
     {
         $queries = '';
@@ -141,12 +141,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
             if ($profiles = $adapter->getProfiler()->getQueryProfiles()) {
                 $adapter->getProfiler()->setEnabled(false);
                 if (1 < count($this->_db)) {
-                    $html .= '<h4>Adapter '.$name.'</h4>';
+                    $queries .= '<h4>Adapter '.$name.'</h4>';
                 }
                 $queries .='<table cellspacing="0" cellpadding="0" width="100%">';
                 foreach ($profiles as $profile) {
-                    $queries .= "<tr>\n<td style='text-align:right;padding-right:2em;' nowrap>\n" 
-                           . sprintf('%0.2f', $profile->getElapsedSecs()*1000) 
+                    $queries .= "<tr>\n<td style='text-align:right;padding-right:2em;' nowrap>\n"
+                           . sprintf('%0.2f', $profile->getElapsedSecs()*1000)
                            . "ms</td>\n<td>";
                     $params = $profile->getQueryParams();
                     array_walk($params, array($this, '_addQuotes'));
@@ -156,19 +156,19 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                     } else {
                         $queries .= htmlspecialchars($profile->getQuery());
                     }
-                    
-                    $supportedAdapter = ($adapter instanceof Zend_Db_Adapter_Mysqli || 
+
+                    $supportedAdapter = ($adapter instanceof Zend_Db_Adapter_Mysqli ||
                                          $adapter instanceof Zend_Db_Adapter_Pdo_Mysql);
-                
+
                     # Run explain if enabled, supported adapter and SELECT query
                     if ($this->_explain && $supportedAdapter) {
                         $queries .= "</td><td style='color:#7F7F7F;padding-left:2em;' nowrap>";
-                        
+
                         foreach ($adapter->fetchAll('EXPLAIN '.$profile->getQuery()) as $explain) {
                             $queries .= "<div style='padding-bottom:0.5em'>";
                             $explainData = array(
                                 'Type' => $explain['select_type'] . ', ' . $explain['type'],
-                                'Table' => $explain['table'], 
+                                'Table' => $explain['table'],
                                 'Possible keys' => str_replace(',', ', ', $explain['possible_keys']),
                                 'Key used' => $explain['key'],
                             );
@@ -176,7 +176,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                                 $explainData['Extra'] = $explain['Extra'];
                             }
                             $explainData['Rows'] = $explain['rows'];
-                        
+
                             $explainEnd = end($explainData);
                             foreach ($explainData as $key => $value) {
                                 $queries .= "$key: <span style='color:#ffb13e'>$value</span><br>\n";
@@ -194,7 +194,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
     }
 
     // For adding quotes to query params
-    protected function _addQuotes(&$value, $key) 
+    protected function _addQuotes(&$value, $key)
     {
         $value = "'" . $value . "'";
     }

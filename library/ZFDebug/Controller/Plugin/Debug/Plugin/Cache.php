@@ -17,8 +17,8 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Cache 
-    extends ZFDebug_Controller_Plugin_Debug_Plugin 
+class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
+    extends ZFDebug_Controller_Plugin_Debug_Plugin
     implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
@@ -61,7 +61,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
     {
         return $this->_identifier;
     }
-    
+
     /**
      * Returns the base64 encoded icon
      *
@@ -90,7 +90,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
     public function getPanel()
     {
         $panel = '';
-        
+
         $linebreak = $this->getLinebreak();
 
         # Support for APC
@@ -99,29 +99,29 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
             $memSize = $mem['num_seg'] * $mem['seg_size'];
             $memAvail = $mem['avail_mem'];
             $memUsed = $memSize - $memAvail;
-            
+
             $cache = apc_cache_info();
-            
+
             $panel .= '<h4>APC '.phpversion('apc').' Enabled</h4>';
-            $panel .= round($memAvail/1024/1024, 1) . 'M available, ' 
+            $panel .= round($memAvail/1024/1024, 1) . 'M available, '
                     . round($memUsed/1024/1024, 1) . 'M used' . $linebreak
-                    . $cache['num_entries'].' Files cached (' 
+                    . $cache['num_entries'].' Files cached ('
                     . round($cache['mem_size']/1024/1024, 1) . 'M)' . $linebreak
-                    . $cache['num_hits'] . ' Hits (' 
-                    . round($cache['num_hits'] * 100 / ($cache['num_hits'] + $cache['num_misses']), 1) . '%)' 
+                    . $cache['num_hits'] . ' Hits ('
+                    . round($cache['num_hits'] * 100 / ($cache['num_hits'] + $cache['num_misses']), 1) . '%)'
                     . $linebreak
-                    . $cache['expunges'] . ' Expunges (cache full count)'; 
+                    . $cache['expunges'] . ' Expunges (cache full count)';
         }
 
         foreach ($this->_cacheBackends as $name => $backend) {
             $fillingPercentage = $backend->getFillingPercentage();
             $ids = $backend->getIds();
-            
+
             # Print full class name, backends might be custom
             $panel .= '<h4>Cache '.$name.' ('.get_class($backend).')</h4>';
             $panel .= count($ids).' Entr'.(count($ids)>1?'ies':'y').''.$linebreak
                     . 'Filling Percentage: '.$backend->getFillingPercentage().'%'.$linebreak;
-            
+
             $cacheSize = 0;
             foreach ($ids as $id) {
                 # Calculate valid cache size
@@ -130,7 +130,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
                     $memPost = memory_get_usage();
                     $cacheSize += $memPost - $memPre;
                     unset($cached);
-                }                
+                }
             }
             $panel .= 'Valid Cache Size: ' . round($cacheSize/1024, 1) . 'K';
         }
