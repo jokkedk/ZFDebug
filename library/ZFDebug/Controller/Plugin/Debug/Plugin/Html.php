@@ -32,7 +32,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Html
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Html
      *
      * @param string $tab
-     * @paran string $panel
+     * @param string $panel
      * @return void
      */
     public function __construct()
