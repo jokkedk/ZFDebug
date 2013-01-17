@@ -47,7 +47,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Text implements ZFDebug_Controller_
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Text
      *
      * @param string $tab
-     * @paran string $panel
+     * @param string $panel
      * @return void
      */
     public function __construct(array $options = array())
