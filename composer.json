@@ -2,7 +2,7 @@
     "name": "aur1mas/zfdebug",
     "description": "Debug for Zend Framework 1",
     "require": {
-        "zendframework/zendframework1": "1.11.*"
+        "zendframework/zendframework1": "1.*"
     },
     "autoload": {
         "psr-0": {
