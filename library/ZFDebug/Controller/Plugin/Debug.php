@@ -49,7 +49,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             'Variables' => null,
             'Time' => null,
             'Memory' => null),
-        'image_path'        => null
+        'image_path'        => null,
+        'exclude_modules'   => array()
     );
 
     /**
@@ -155,6 +156,10 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         if (isset($options['plugins'])) {
             $this->_options['plugins'] = $options['plugins'];
         }
+        
+        if (isset($options['exclude_modules'])) {
+            $this->_options['exclude_modules'] = $options['exclude_modules'];
+        }
         return $this;
     }
 
@@ -213,7 +218,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      */
     public function dispatchLoopShutdown()
     {
-        if ($this->getRequest()->isXmlHttpRequest()) {
+    	if (in_array($this->getRequest()->getModuleName(), $this->_options['exclude_modules'])
+            || $this->getRequest()->isXmlHttpRequest()
+        ) {
             return;
         }
 
