@@ -78,6 +78,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Constants extends ZFDebug_Controlle
         $constants = get_defined_constants(true);
         $this->_userConstants = $constants['user'];
 
+        ksort($this->_userConstants);
+
         $count = count($this->_userConstants);
         return "Constants ($count)";
     }
