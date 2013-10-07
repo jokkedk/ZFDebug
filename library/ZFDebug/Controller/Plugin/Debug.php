@@ -77,7 +77,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @var string
      */
-    protected $_version = '1.6';
+    protected $_version = '1.6.1';
 
     /**
      * Creates a new instance of the Debug Bar
@@ -356,9 +356,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
     {
         $panel = "<h4>ZFDebug $this->_version – Zend Framework "
                . Zend_Version::VERSION . " on PHP " . phpversion() . "</h4>\n"
-               . "<p>©2008-2009 <a href='http://jokke.dk'>Joakim Nygård</a>" . $this->getLinebreak()
+               . "<p>©2008-2013 <a href='http://jokke.dk'>Joakim Nygård</a>" . $this->getLinebreak()
                . "with contributions by <a href='http://www.bangal.de'>Andreas Pankratz</a> and others</p>"
-               . "<p>The project is hosted at <a href='http://code.google.com/p/zfdebug/'>http://zfdebug.googlecode.com</a>"
+               . "<p>The project is hosted at <a href='https://github.com/jokkedk/ZFDebug'>https://github.com/jokkedk/ZFDebug</a>"
                . " and released under the BSD License" . $this->getLinebreak()
                . "Includes images from the <a href='http://www.famfamfam.com/lab/icons/silk/'>Silk Icon set</a> by Mark James</p>"
                . "<p>Disable ZFDebug temporarily by sending ZFDEBUG_DISABLE as a GET/POST parameter</p>";
