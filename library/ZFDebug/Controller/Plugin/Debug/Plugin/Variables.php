@@ -96,6 +96,11 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Variables extends ZFDebug_Controlle
             $vars .= '<h4>Post variables</h4>'
                    . '<div id="ZFDebug_post" style="margin-left:-22px">' . $this->_cleanData($this->_request->getPost()) . '</div>';
         }
+        
+        $vars .= '<h4>Constants</h4>';
+        $constants = get_defined_constants(true);
+        ksort($constants['user']);
+        $vars .= '<div id="ZFDebug_constants" style="margin-left:-22px">' . $this->_cleanData($constants['user']) . '</div>';
 
         $registry = Zend_Registry::getInstance();
         $vars .= '<h4>Zend Registry</h4>';

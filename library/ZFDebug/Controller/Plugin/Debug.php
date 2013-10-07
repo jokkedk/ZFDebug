@@ -63,9 +63,6 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         'Database',
         'Exception',
         'File',
-        'Memory',
-        'Registry',
-        'Time',
         'Variables',
         'Constants',
         'Log'
