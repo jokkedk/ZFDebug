@@ -118,7 +118,6 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
             $opconfig = opcache_get_configuration();
             if ($opconfig['directives']['opcache.enable']) {
                 $opstatus = opcache_get_status();
-                var_dump($opstatus);
                 $cache = $opstatus['opcache_statistics'];
                 $panel .= '<h4>'.$opconfig['version']['opcache_product_name'].' '.$opconfig['version']['version'].' Enabled</h4>';
                 $panel .= round($opstatus['memory_usage']['used_memory']/1024/1024, 1) . 'M used, '
