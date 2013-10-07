@@ -7,7 +7,7 @@ Time spent, memory usage and number of database queries are presented at a glanc
 
 The available plugins at this point are:
 
-  * Cache: Information on Zend_Cache and APC.
+  * Cache: Information on Zend_Cache, APC and Zend OPcache (for PHP 5.5).
   * Database: Full listing of SQL queries from Zend_Db and the time for each.
   * Exception: Error handling of errors and exceptions.
   * File: Number and size of files included with complete list.
