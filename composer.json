@@ -1,0 +1,12 @@
+{
+    "name": "jokkedk/ZFDebug",
+    "description": "ZFDebug",
+    "type": "library",
+    "homepage": "https://github.com/jokkedk/ZFDebug/",
+    "license": "BSD",
+    "autoload": {
+        "psr-0": {
+            "ZFDebug_": "library/"
+        }
+    }
+}
