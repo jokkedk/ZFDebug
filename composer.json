@@ -9,6 +9,9 @@
             "ZFDebug_": "library/"
         }
     },
+    "include-path": [
+        "library/"
+    ],
     "require": {
         "zendframework/zendframework1": "1.*"
     },
