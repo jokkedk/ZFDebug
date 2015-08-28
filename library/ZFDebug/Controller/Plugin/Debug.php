@@ -214,9 +214,9 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             return;
         }
 
-        $responseHeaders = $this->getResponse()->getHeaders('Content-Type');
+        $responseHeaders = $this->getResponse()->getHeaders();
         foreach ($responseHeaders as $header) {
-            if ('Content-Type' === $header['name'] && false === strpos($header['value'], 'html')) {
+            if ('content-type' === strtolower($header['name']) && false === strpos($header['value'], 'html')) {
                 return;
             }
         }
