@@ -214,10 +214,12 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
             return;
         }
 
-        $contentType = $this->getRequest()->getHeader('Content-Type');
-		if (false !== $contentType && false === strpos($contentType, 'html')) {
-	    	return;
-		}
+        $responseHeaders = $this->getResponse()->getHeaders();
+        foreach ($responseHeaders as $header) {
+            if ('content-type' === strtolower($header['name']) && false === strpos($header['value'], 'html')) {
+                return;
+            }
+        }
 
         $disable = Zend_Controller_Front::getInstance()->getRequest()->getParam('ZFDEBUG_DISABLE');
         if (isset($disable)) {
