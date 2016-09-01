@@ -47,6 +47,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
     protected function _isXhtml()
     {
         $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
+        if (is_null($view)) {
+            return false;
+        }
         $doctype = $view->doctype();
         return $doctype->isXhtml();
     }
