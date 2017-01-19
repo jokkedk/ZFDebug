@@ -65,7 +65,8 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         'File',
         'Variables',
         'Constants',
-        'Log'
+        'Log',
+        'Auth'
         );
 
     /**
