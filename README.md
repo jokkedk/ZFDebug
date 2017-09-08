@@ -19,7 +19,7 @@ for custom memory measurements.
 Installation & Usage
 ------------
 To install, place the folder 'ZFDebug' in your library path, next to the Zend
-folder. Then add the following method to your bootstrap class (in ZF1.8+):
+folder. Then add the following method to your bootstrap file (in ZF1.8+):
 
 	protected function _initZFDebug()
 	{
@@ -40,6 +40,11 @@ folder. Then add the following method to your bootstrap class (in ZF1.8+):
 	    $frontController->registerPlugin($debug);
 	}
 
+Or you can initialize like so in your bootstrap file if you set the zfdebug configuration in your
+config file (see options below):
+
+    $debug = new ZFDebug_Controller_Plugin_Debug($this->getOption('zfdebug'));
+
 Using Composer
 --------------
 You may now install ZFDebug using the dependency management tool Composer.
@@ -56,3 +61,21 @@ Run the install command to resolve and download the dependencies:
 	php composer.phar install
 
 Further documentation will follow as the github move progresses.
+
+Options
+-------------
+    zfdebug.enabled = true
+    ; Include variables plugin
+    zfdebug.plugins.Variables = null
+
+    ; Include database without explain
+    zfdebug.plugins.Database.explain = false
+    ; Generate backtrace for queries
+    zfdebug.plugins.Database.backtrace = true
+
+    ; Log exceptions
+    zfdebug.plugins.Exception = null
+
+    ; Include file list filtered
+    zfdebug.plugins.File.base_path = APPLICATION_PATH "/../"
+    zfdebug.plugins.File.library = Regnskab
