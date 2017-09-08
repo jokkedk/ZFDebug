@@ -40,6 +40,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
     protected $_db = array();
 
     protected $_explain = false;
+    protected $_backtrace = false;
 
     /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Variables
@@ -52,7 +53,12 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
         if (!isset($options['adapter']) || !count($options['adapter'])) {
             if (Zend_Db_Table_Abstract::getDefaultAdapter()) {
                 $this->_db[0] = Zend_Db_Table_Abstract::getDefaultAdapter();
-                $this->_db[0]->getProfiler()->setEnabled(true);
+                if (isset($options['backtrace']) && $options['backtrace']) {
+                    $this->_backtrace = true;
+                    $this->_db[0]->setProfiler(new ZFDebug_Db_Profiler(true));
+                } else {
+                    $this->_db[0]->getProfiler()->setEnabled(true);
+                }
             }
         } else if ($options['adapter'] instanceof Zend_Db_Adapter_Abstract ) {
             $this->_db[0] = $options['adapter'];
@@ -186,6 +192,16 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
                     }
 
                     $queries .= "</td>\n</tr>\n";
+                    if ($this->_backtrace) {
+                        $trace = $profile->getTrace();
+                        array_walk(
+                            $trace,
+                            function (&$v, $k) {
+                                $v = ($k+1).'. '.$v;
+                            }
+                        );
+                        $queries .= "<tr>\n<td></td>\n<td>".implode('<br>', $trace)."</td>\n</tr>\n";
+                    }
                 }
                 $queries .= "</table>\n";
             }
