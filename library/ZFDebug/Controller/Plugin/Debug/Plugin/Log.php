@@ -117,9 +117,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
      */
     public function mark($name, $logFirst = false) {
         if (isset($this->_marks[$name])) {
-            $this->_marks[$name]['time'] = round((microtime(true)-$_SERVER['REQUEST_TIME'])*1000-$this->_marks[$name]['time']).'ms';
+            $this->_marks[$name]['time'] = round((microtime(true)-$_SERVER['REQUEST_TIME'])*1000-round($this->_marks[$name]['time'])).'ms';
             if (function_exists('memory_get_usage')) {
-                $this->_marks[$name]['memory'] = round((memory_get_usage()-$this->_marks[$name]['memory'])/1024) . 'K';
+                $this->_marks[$name]['memory'] = round((memory_get_usage()-round($this->_marks[$name]['memory']))/1024) . 'K';
             } else {
                 $this->_marks[$name]['memory'] = 'N/A';
             }
