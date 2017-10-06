@@ -1,5 +1,5 @@
 {
-    "name": "jokkedk/zfdebug",
+    "name": "anikanovna/zfdebug",
     "description": "ZFDebug is a plugin for the Zend Framework for PHP5, providing useful debug information displayed in a small bar at the bottom of every page.",
     "type": "library",
     "homepage": "https://github.com/jokkedk/ZFDebug",
