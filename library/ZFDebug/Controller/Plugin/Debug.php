@@ -74,7 +74,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @var string
      */
-    protected $_version = '1.6.4';
+    protected $_version = '1.6.5';
 
     /**
      * Creates a new instance of the Debug Bar
@@ -264,7 +264,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
         $html .= '<span id="ZFDebugInfo_Request" class="ZFDebug_span">'
                . "\n"
                . round(memory_get_peak_usage()/1024) . 'K in '
-               . round((microtime(true)-$_SERVER['REQUEST_TIME'])*1000) . 'ms'
+               . round((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'])*1000) . 'ms'
                . '</span>' . "\n";
 
         $html .= "</div>\n";
