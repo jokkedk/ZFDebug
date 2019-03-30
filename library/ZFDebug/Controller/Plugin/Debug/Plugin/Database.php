@@ -107,6 +107,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
         if (!$this->_db)
             return 'No adapter';
 
+        $adapterInfo = array();
         foreach ($this->_db as $adapter) {
             $profiler = $adapter->getProfiler();
             $adapterInfo[] = $profiler->getTotalNumQueries() . ' in '
