@@ -50,7 +50,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database
      */
     public function __construct(array $options = array())
     {
-        if (!isset($options['adapter']) || !count($options['adapter'])) {
+        if (!isset($options['adapter']) || empty($options['adapter'])) {
             if (Zend_Db_Table_Abstract::getDefaultAdapter()) {
                 $this->_db[0] = Zend_Db_Table_Abstract::getDefaultAdapter();
                 if (isset($options['backtrace']) && $options['backtrace']) {
