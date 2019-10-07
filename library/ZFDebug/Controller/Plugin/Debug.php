@@ -6,7 +6,7 @@
  * @package    ZFDebug_Controller
  * @subpackage Plugins
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
- * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
+ * @license    https://github.com/jokkedk/ZFDebug/blob/master/license     New BSD License
  * @version    $Id$
  */
 
@@ -30,7 +30,7 @@ require_once 'ZFDebug/Controller/Plugin/Debug/Plugin/Text.php';
  * @package    ZFDebug_Controller
  * @subpackage Plugins
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
- * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
+ * @license    https://github.com/jokkedk/ZFDebug/blob/master/license     New BSD License
  */
 class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
 {
@@ -73,7 +73,7 @@ class ZFDebug_Controller_Plugin_Debug extends Zend_Controller_Plugin_Abstract
      *
      * @var string
      */
-    protected $version = '1.6.5';
+    protected $version = '1.7.0';
 
     /**
      * Creates a new instance of the Debug Bar
