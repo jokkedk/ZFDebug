@@ -17,21 +17,19 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
-    extends ZFDebug_Controller_Plugin_Debug_Plugin
-    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_Cache extends ZFDebug_Controller_Plugin_Debug_Plugin implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     /**
      * Contains plugin identifier name
      *
      * @var string
      */
-    protected $_identifier = 'cache';
+    protected $identifier = 'cache';
 
     /**
      * @var Zend_Cache_Backend_ExtendedInterface
      */
-    protected $_cacheBackends = array();
+    protected $cacheBackends = array();
 
     /**
      * Create ZFDebug_Controller_Plugin_Debug_Plugin_Cache
@@ -46,8 +44,8 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
         }
         is_array($options['backend']) || $options['backend'] = array($options['backend']);
         foreach ($options['backend'] as $name => $backend) {
-            if ($backend instanceof Zend_Cache_Backend_ExtendedInterface ) {
-                $this->_cacheBackends[$name] = $backend;
+            if ($backend instanceof Zend_Cache_Backend_ExtendedInterface) {
+                $this->cacheBackends[$name] = $backend;
             }
         }
     }
@@ -59,7 +57,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
      */
     public function getIdentifier()
     {
-        return $this->_identifier;
+        return $this->identifier;
     }
 
     /**
@@ -113,7 +111,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
                         . $cache['expunges'] . ' Expunges (cache full count)';
             }
         }
-        
+
         if (function_exists('opcache_get_configuration')) {
             $opconfig = opcache_get_configuration();
             if ($opconfig['directives']['opcache.enable']) {
@@ -129,7 +127,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Cache
             }
         }
 
-        foreach ($this->_cacheBackends as $name => $backend) {
+        foreach ($this->cacheBackends as $name => $backend) {
             $fillingPercentage = $backend->getFillingPercentage();
             $ids = $backend->getIds();
 

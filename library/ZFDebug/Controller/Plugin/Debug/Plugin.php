@@ -19,7 +19,7 @@
  */
 class ZFDebug_Controller_Plugin_Debug_Plugin
 {
-    protected $_closingBracket = null;
+    protected $closingBracket = null;
 
     public function getLinebreak()
     {
@@ -33,18 +33,18 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
 
     public function getClosingBracket()
     {
-        if (!$this->_closingBracket) {
-            if ($this->_isXhtml()) {
-                $this->_closingBracket = ' />';
+        if (!$this->closingBracket) {
+            if ($this->isXhtml()) {
+                $this->closingBracket = ' />';
             } else {
-                $this->_closingBracket = '>';
+                $this->closingBracket = '>';
             }
         }
 
-        return $this->_closingBracket;
+        return $this->closingBracket;
     }
 
-    protected function _isXhtml()
+    protected function isXhtml()
     {
         $view = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->view;
         $doctype = $view->doctype();
@@ -57,7 +57,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
      * @param array $values
      * @return string
      */
-    protected function _cleanData($values)
+    protected function cleanData($values)
     {
         $linebreak = $this->getLinebreak();
 
@@ -65,25 +65,18 @@ class ZFDebug_Controller_Plugin_Debug_Plugin
             ksort($values);
         }
         $retVal = '<div class="pre">';
-        foreach ($values as $key => $value)
-        {
+        foreach ($values as $key => $value) {
             $key = htmlspecialchars($key);
             if (is_numeric($value)) {
                 $retVal .= $key.' => '.$value.$linebreak;
-            }
-            else if (is_string($value)) {
+            } elseif (is_string($value)) {
                 $retVal .= $key.' => \''.htmlspecialchars($value).'\''.$linebreak;
-            }
-            else if (is_array($value))
-            {
-                $retVal .= $key.' => '.self::_cleanData($value);
-            }
-            else if (is_object($value))
-            {
-                $retVal .= $key.' => '.get_class($value).' Object()'.$linebreak;
-            }
-            else if (is_null($value))
-            {
+            } elseif (is_array($value)) {
+                $retVal .= $key.' => '.self::cleanData($value);
+            } elseif (is_object($value)) {
+                $retVal .= $key.' => '.get_class($value).' Object()';
+                $retVal .= $linebreak;
+            } elseif (is_null($value)) {
                 $retVal .= $key.' => NULL'.$linebreak;
             }
         }

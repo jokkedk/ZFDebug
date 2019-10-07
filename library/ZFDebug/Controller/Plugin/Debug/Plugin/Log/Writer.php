@@ -76,7 +76,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer extends Zend_Log_Writer_
         foreach ($event as $name => $value) {
             if ('message' == $name) {
                 $measure = '&nbsp;';
-                if ((is_object($value) && !method_exists($value,'__toString'))) {
+                if ((is_object($value) && !method_exists($value, '__toString'))) {
                     $value = gettype($value);
                 } elseif (is_array($value)) {
                     $measure = $value[0];

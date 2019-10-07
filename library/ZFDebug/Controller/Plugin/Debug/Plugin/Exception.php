@@ -17,27 +17,25 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
-    extends Zend_Controller_Plugin_Abstract
-    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_Exception extends Zend_Controller_Plugin_Abstract implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
-    protected static $_logger;
+    protected static $logger;
 
     /**
      * Contains plugin identifier name
      *
      * @var string
      */
-    protected $_identifier = 'exception';
+    protected $identifier = 'exception';
 
     /**
      * Contains any errors
      *
      * @var param array
      */
-    static $errors = array();
+    protected static $errors = array();
 
-    protected $_rendered = false;
+    protected $rendered = false;
 
     /**
      * Get the ZFDebug logger
@@ -46,14 +44,14 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
      */
     public static function getLogger()
     {
-        if (!self::$_logger) {
+        if (!self::$logger) {
             if ($zfdebug = Zend_Controller_Front::getInstance()->getPlugin('ZFDebug_Controller_Plugin_Debug')) {
-                self::$_logger = $zfdebug->getPlugin('Log')->getLog();
+                self::$logger = $zfdebug->getPlugin('Log')->getLog();
             } else {
                 return false;
             }
         }
-        return self::$_logger;
+        return self::$logger;
     }
 
     /**
@@ -63,7 +61,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
      */
     public function getIdentifier()
     {
-        return $this->_identifier;
+        return $this->identifier;
     }
 
     /**
@@ -105,7 +103,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
      */
     public function getPanel()
     {
-        $this->_rendered = true;
+        $this->rendered = true;
         return '';
     }
 
@@ -120,8 +118,9 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
      */
     public static function errorHandler($level, $message, $file, $line)
     {
-        if (! ($level & error_reporting()))
+        if (! ($level & error_reporting())) {
             return false;
+        }
         switch ($level) {
             case E_NOTICE:
             case E_USER_NOTICE:
@@ -233,19 +232,23 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Exception
             $exception .= '<ol>';
             foreach ($e->getTrace() as $t) {
                 $func = $t['function'] . '()';
-                if (isset($t['class']))
+                if (isset($t['class'])) {
                     $func = $t['class'] . $t['type'] . $func;
-                if (! isset($t['file']))
+                }
+                if (! isset($t['file'])) {
                     $t['file'] = 'unknown';
-                if (! isset($t['line']))
+                }
+                if (! isset($t['line'])) {
                     $t['line'] = 'n/a';
+                }
                 $exception .= '<li>' . $func . ' in '
                        . str_replace($_SERVER['DOCUMENT_ROOT'], '', $t['file'])
                        . ' on line ' . $t['line'] . '</li>';
             }
             $exception .= '</ol>';
-            if ($logger = self::getLogger())
+            if ($logger = self::getLogger()) {
                 $logger->crit($exception);
+            }
         }
     }
 }

@@ -17,38 +17,36 @@
  * @copyright  Copyright (c) 2008-2009 ZF Debug Bar Team (http://code.google.com/p/zfdebug)
  * @license    http://code.google.com/p/zfdebug/wiki/License     New BSD License
  */
-class ZFDebug_Controller_Plugin_Debug_Plugin_Log
-    extends Zend_Controller_Plugin_Abstract
-    implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
+class ZFDebug_Controller_Plugin_Debug_Plugin_Log extends Zend_Controller_Plugin_Abstract implements ZFDebug_Controller_Plugin_Debug_Plugin_Interface
 {
     const ZFLOG = 10;
 
-    protected $_logger;
-    protected $_writer;
+    protected $logger;
+    protected $writer;
 
-    protected $_marks = array();
+    protected $marks = array();
 
     public function __construct()
     {
         Zend_Controller_Front::getInstance()->registerPlugin($this);
-        $this->_writer = new ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer();
-        $this->_logger = new Zend_Log($this->_writer);
-        $this->_logger->addPriority('ZFLOG', self::ZFLOG);
+        $this->writer = new ZFDebug_Controller_Plugin_Debug_Plugin_Log_Writer();
+        $this->logger = new Zend_Log($this->writer);
+        $this->logger->addPriority('ZFLOG', self::ZFLOG);
     }
 
     public function __call($method, $params)
     {
-        $this->_logger->$method(array_shift($params));
+        $this->logger->$method(array_shift($params));
     }
 
     public function getLog()
     {
-        return $this->_logger;
+        return $this->logger;
     }
 
     public function getWriter()
     {
-        return $this->_writer;
+        return $this->writer;
     }
 
     /**
@@ -58,10 +56,10 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
      */
     public function getTab()
     {
-        // $this->_logger->zflog('test');
+        // $this->logger->zflog('test');
         $tab = " Log";
-        if ($this->_writer->getErrorCount()) {
-            $tab .= " (".$this->_writer->getErrorCount().")";
+        if ($this->writer->getErrorCount()) {
+            $tab .= " (".$this->writer->getErrorCount().")";
             $_COOKIE['ZFDebugCollapsed'] = 'ZFDebug_'.$this->getIdentifier();
         }
         return $tab;
@@ -85,7 +83,7 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
         $action = $request->getActionName();
 
         $panel = "<h4>Event log for {$controller}Controller->{$action}Action() {$module}</h4>";
-        $panel .= '<table cellpadding="0" cellspacing="0">'.implode('', $this->_writer->getMessages()).'</table>';
+        $panel .= '<table cellpadding="0" cellspacing="0">'.implode('', $this->writer->getMessages()).'</table>';
         return $panel;
     }
 
@@ -115,31 +113,32 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Log
      *
      * @param string $name
      */
-    public function mark($name, $logFirst = false) {
-        if (isset($this->_marks[$name])) {
-            $this->_marks[$name]['time'] = round((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'])*1000-$this->_marks[$name]['time']).'ms';
+    public function mark($name, $logFirst = false)
+    {
+        if (isset($this->marks[$name])) {
+            $this->marks[$name]['time'] = round((microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'])*1000-$this->marks[$name]['time']).'ms';
             if (function_exists('memory_get_usage')) {
-                $this->_marks[$name]['memory'] = round((memory_get_usage()-$this->_marks[$name]['memory'])/1024) . 'K';
+                $this->marks[$name]['memory'] = round((memory_get_usage()-$this->marks[$name]['memory'])/1024) . 'K';
             } else {
-                $this->_marks[$name]['memory'] = 'N/A';
+                $this->marks[$name]['memory'] = 'N/A';
             }
-            $this->_logger->zflog(
-                array('time' => $this->_marks[$name]['time'],
-                      'memory' => $this->_marks[$name]['memory'],
+            $this->logger->zflog(
+                array('time' => $this->marks[$name]['time'],
+                      'memory' => $this->marks[$name]['memory'],
                       'message' => $name
                 )
             );
         } else {
-            $this->_marks[$name]['time'] = (microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'])*1000;
+            $this->marks[$name]['time'] = (microtime(true)-$_SERVER['REQUEST_TIME_FLOAT'])*1000;
             if (function_exists('memory_get_usage')) {
-                $this->_marks[$name]['memory'] = memory_get_usage();
+                $this->marks[$name]['memory'] = memory_get_usage();
             } else {
-                $this->_marks[$name]['memory'] = 'N/A';
+                $this->marks[$name]['memory'] = 'N/A';
             }
             if ($logFirst) {
-                $this->_logger->zflog(
-                    array('time' => round($this->_marks[$name]['time']).'ms',
-                          'memory' => round($this->_marks[$name]['memory']/1024).'K',
+                $this->logger->zflog(
+                    array('time' => round($this->marks[$name]['time']).'ms',
+                          'memory' => round($this->marks[$name]['memory']/1024).'K',
                           'message' => $name
                     )
                 );
