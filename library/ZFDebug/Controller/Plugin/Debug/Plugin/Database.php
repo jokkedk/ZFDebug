@@ -167,25 +167,29 @@ class ZFDebug_Controller_Plugin_Debug_Plugin_Database extends ZFDebug_Controller
                     # Run explain if enabled, supported adapter and SELECT query
                     if ($this->explain && $supportedAdapter) {
                         $queries .= "</td><td style='color:#7F7F7F;padding-left:2em;' nowrap>";
-
-                        foreach ($adapter->fetchAll('EXPLAIN '.$profile->getQuery()) as $explain) {
-                            $queries .= "<div style='padding-bottom:0.5em'>";
-                            $explainData = array(
-                                'Type' => $explain['select_type'] . ', ' . $explain['type'],
-                                'Table' => $explain['table'],
-                                'Possible keys' => str_replace(',', ', ', $explain['possible_keys']),
-                                'Key used' => $explain['key'],
-                            );
-                            if ($explain['Extra']) {
-                                $explainData['Extra'] = $explain['Extra'];
+                        $queries .= "</td></tr><tr style='color:#7F7F7F;padding-left:2em;' nowrap><td></td><td>"; // better layout
+						$q = $profile->getQuery();
+						if ($q !== 'connect') { // can't explain 'connect'
+                            foreach ($adapter->fetchAll('EXPLAIN '.$profile->getQuery()) as $explain) {
+                                $explain = (array)$explain; // in case is a object
+                                $queries .= "<div style='padding-bottom:0.5em'>";
+                                $explainData = array(
+                                    'Type' => $explain['select_type'] . ', ' . $explain['type'],
+                                    'Table' => $explain['table'],
+                                    'Possible keys' => str_replace(',', ', ', $explain['possible_keys']),
+                                    'Key used' => $explain['key'],
+                                );
+                                if ($explain['Extra']) {
+                                    $explainData['Extra'] = $explain['Extra'];
+                                }
+                                $explainData['Rows'] = $explain['rows'];
+    
+                                $explainEnd = end($explainData);
+                                foreach ($explainData as $key => $value) {
+                                    $queries .= "$key: <span style='color:#ffb13e'>$value</span><br>\n";
+                                }
+                                $queries .= "</div>";
                             }
-                            $explainData['Rows'] = $explain['rows'];
-
-                            $explainEnd = end($explainData);
-                            foreach ($explainData as $key => $value) {
-                                $queries .= "$key: <span style='color:#ffb13e'>$value</span><br>\n";
-                            }
-                            $queries .= "</div>";
                         }
                     }
 
