@@ -13,6 +13,7 @@
         "library/"
     ],
     "require": {
+        "php": ">=5.3",
         "zendframework/zendframework1": "1.*"
     },
     "authors": [
