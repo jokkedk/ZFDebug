@@ -16,6 +16,10 @@ for custom memory measurements.
   * Log: Timing information of current request, time spent in action controller and custom timers. Also average, min and max time for requests.
   * Variables: View variables, request info and contents of `$_COOKIE`, `$_POST` and `$_SESSION`
 
+System Requirements
+------------
+Zfdebug runs on any version of PHP between 5.3 and 8.1! (see composer.json)
+
 Installation & Usage
 ------------
 To install, place the folder 'ZFDebug' in your library path, next to the Zend
